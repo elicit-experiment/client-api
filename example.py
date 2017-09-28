@@ -21,22 +21,45 @@ print(auth_request)
 # making a request
 resp = client.request(app.op['getAuthToken'](auth_request=auth_request))
 
-# Status
 assert resp.status == 200
 
+
+#
+# Add access token 
+#
+
 access_token = resp.data.access_token
+auth = 'Bearer ' + access_token
+client._Client__s.headers['Authorization'] = auth
 
-client._Client__s.headers['Authorization'] = 'Bearer ' + access_token
+#
+# Get the list of Study Definitions
+#
 
-resp = client.request(app.op['findStudyDefinitions']())
+resp = client.request(app.op['findStudyDefinitions'](authorization=auth))
 
-# Status
 assert resp.status == 200
 
 print(resp.data)
 
+
+#
+# Get the list of Users
+#
+
+resp = client.request(app.op['findUsers'](authorization=auth))
+
+assert resp.status == 200
+
+print(resp.data)
+
+
+#
+# Add a new Study Definition
+#
+
 new_study = dict(study_definition=dict(title='Newly created from Python', principal_investigator_user_id=0))
-resp = client.request(app.op['addStudy'](study=new_study))
+resp = client.request(app.op['addStudy'](authorization=auth, study=new_study))
 
 assert resp.status == 201
 
