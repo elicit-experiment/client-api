@@ -72,7 +72,7 @@ print(new_study)
 # Add a new Protocol Definition
 #
 
-new_protocol_definition = dict(protocol_definition=dict(name='Newly created from Python', definition_data="foo"))
+new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python', definition_data="foo"))
 resp = client.request(app.op['addProtocolDefinition'](authorization=auth, protocol_definition=new_protocol_definition, study_definition_id=new_study.id))
 
 assert resp.status == 201
@@ -86,7 +86,7 @@ print(new_protocol_definition)
 # Add a new Phase Definition
 #
 
-new_phase_definition = dict(phase_definition=dict(name='Newly created from Python', definition_data="foo"))
+new_phase_definition = dict(phase_definition=dict(name='Newly created phase definition from Python', definition_data="foo"))
 resp = client.request(app.op['addPhaseDefinition'](authorization=auth, phase_definition=new_phase_definition, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id))
 
 assert resp.status == 201
@@ -95,6 +95,20 @@ assert resp.status == 201
 new_phase_definition = resp.data
 
 print(new_phase_definition)
+
+#
+# Add a new Trial Definition
+#
+
+new_trial_definition = dict(trial_definition=dict(name='Newly created trial definition from Python', definition_data="foo"))
+resp = client.request(app.op['addTrialDefinition'](authorization=auth, trial_definition=new_trial_definition, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id))
+
+assert resp.status == 201
+
+
+new_trial_definition = resp.data
+
+print(new_trial_definition)
 
 
 
