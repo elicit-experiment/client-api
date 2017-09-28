@@ -63,6 +63,34 @@ resp = client.request(app.op['addStudy'](authorization=auth, study=new_study))
 
 assert resp.status == 201
 
-print(resp.data)
+
+new_study = resp.data
+
+print(new_study)
+
+#
+# Add a new Study Definition
+#
+
+new_protocol_definition = dict(protocol_definition=dict(name='Newly created from Python', definition_data="foo"))
+resp = client.request(app.op['addProtocolDefinition'](authorization=auth, protocol_definition=new_protocol_definition, study_definition_id=new_study.id))
+
+assert resp.status == 201
+
+
+new_protocol_definition = resp.data
+
+print(new_protocol_definition)
+
+
+#
+# Delete Study Definition
+#
+
+resp = client.request(app.op['deleteStudyDefinition'](id=new_study.id))
+
+assert resp.status == 204
+
+
 
 
