@@ -97,6 +97,19 @@ new_phase_definition = resp.data
 print(new_phase_definition)
 
 #
+# Add a new Phase Order
+#
+
+new_phase_order = dict(phase_order=dict(name='Newly created phase order from Python', sequence_data="0", user_id=0))
+resp = client.request(app.op['addPhaseOrder'](authorization=auth, phase_order=new_phase_order, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id))
+
+assert resp.status == 201
+
+new_phase_order = resp.data
+
+print(new_phase_order)
+
+#
 # Add a new Trial Definition
 #
 
@@ -105,11 +118,47 @@ resp = client.request(app.op['addTrialDefinition'](authorization=auth, trial_def
 
 assert resp.status == 201
 
-
 new_trial_definition = resp.data
 
 print(new_trial_definition)
 
+#
+# Add a new Trial Order
+#
+
+new_trial_order = dict(trial_order=dict(name='Newly created trial order from Python', sequence_data="0", user_id="0"))
+resp = client.request(app.op['addTrialOrder'](authorization=auth, trial_order=new_trial_order, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id))
+
+assert resp.status == 201
+
+new_trial_order = resp.data
+
+print(new_trial_order)
+
+#
+# Add a new Component
+#
+
+new_component = dict(component=dict(name='Newly created component definition from Python', definition_data="foo"))
+resp = client.request(app.op['addComponent'](authorization=auth, component=new_component, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id, trial_definition_id=new_trial_definition.id))
+
+assert resp.status == 201
+
+
+new_component = resp.data
+
+print(new_component)
+
+
+new_stimulus = dict(stimulus=dict(name='Newly created stimulus definition from Python', definition_data="foo"))
+resp = client.request(app.op['addStimulus'](authorization=auth, stimulus=new_stimulus, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id, trial_definition_id=new_trial_definition.id))
+
+assert resp.status == 201
+
+
+new_component = resp.data
+
+print(new_component)
 
 
 #
