@@ -16,7 +16,11 @@ auth = Security(app)
 client = Client(auth)
 
 # a request to create a new pet
-auth_request=dict(client_id=public_client_id, client_secret=public_client_secret, grant_type='password', email='foo5@bar.com', password='abcd12_') 
+auth_request=dict(client_id=public_client_id,
+                  client_secret=public_client_secret,
+                  grant_type='password',
+                  email='foo5@bar.com',
+                  password='abcd12_') 
 print(auth_request)
 # making a request
 resp = client.request(app.op['getAuthToken'](auth_request=auth_request))
@@ -57,8 +61,17 @@ print(resp.data)
 #
 # Add a new Study Definition
 #
-
-new_study = dict(study_definition=dict(title='Newly created from Python', principal_investigator_user_id=0))
+study_definition = dict(title='Newly created from Python',
+                        description='Fun study created with Python',
+                        version=1,
+                        lock_question=1,
+                        enable_previous=1,
+                        no_of_trials=5,
+                        footer_label="This is the footer of the sutdy",
+                        redirect_close_on_url="",
+                        data="DATA",
+                        principal_investigator_user_id=0)
+new_study = dict(study_definition=study_definition)
 resp = client.request(app.op['addStudy'](authorization=auth, study=new_study))
 
 assert resp.status == 201
@@ -165,7 +178,7 @@ print(new_component)
 # Delete Study Definition
 #
 
-resp = client.request(app.op['deleteStudyDefinition'](id=new_study.id))
+#resp = client.request(app.op['deleteStudyDefinition'](id=new_study.id))
 
 assert resp.status == 204
 

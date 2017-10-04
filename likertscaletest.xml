@@ -1,0 +1,1037 @@
+<Experiment>
+    <Id>a9f56a58-aaaa-eeee-1355-012345678902</Id>
+    <Name>likertscale test</Name>
+    <Version>1</Version>
+    <Target Id="null" Name="null" />
+    <ExperimentDescription>Description of the likertscale test.</ExperimentDescription>
+    <CreatedBy>Jens Madsen</CreatedBy>
+    <LockQuestion>0</LockQuestion>
+    <EnablePrevious>1</EnablePrevious>
+    <NoOfTrials>6</NoOfTrials>
+    <TrialsCompleted>0</TrialsCompleted>
+    <FooterLabel>Footer for the likertscale test</FooterLabel>
+    <RedirectOnCloseUrl/>
+    <Trials>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>Likertscale test</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question for the likert scale (AlignForStimuli=0)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question for the likert scale (AlignForStimuli=1)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question with sound stimuli</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus>
+                            <Type>audio/mpeg</Type>
+                            <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3</URI>
+                            <Label>Music excerpt</Label>
+                        </Stimulus>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>Likertscale test</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question for the likert scale (MinNoOfScalings=0)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>0</MinNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question for the likert scale (only answer=2)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation="1:2" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question for the likert scale (only answer=2 or 3)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:2</Id>
+                                <Label>2</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:3</Id>
+                                <Label>3</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:4</Id>
+                                <Label>4</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:5{{n}}{{b|neutral}}</Id>
+                                <Label>5{{n}}{{b|neutral}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:6</Id>
+                                <Label>6</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:7</Id>
+                                <Label>7</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:8</Id>
+                                <Label>8</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Id>
+                                <Label>9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation="1:2|2:3" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>Pictures as ticklabels</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question with pictures as ticklabels (AlignForStimuli=0)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question with pictures as ticklabels (AlignForStimuli=1)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Question with pictures as ticklabels with stimuli(AlignForStimuli=0)</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus>
+                            <Type>audio/mpeg</Type>
+                            <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3</URI>
+                            <Label>Music excerpt</Label>
+                        </Stimulus>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <TextBlock Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <Text>This is a trial with no header or components</Text>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </TextBlock>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>This tests likert scale with images</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <LikertScale Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>{{b|How do you like the hair?}}{{n}}{{n}}{{image|http://sites.psu.edu/juanitauribercl/wp-content/uploads/sites/38826/2016/01/donald-trumps-hair_zpswqc4ev8g.jpg|300|339|center}}</HeaderLabel>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V3.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V4.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>7:</Id>
+                                <Label/>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>8:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V5.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </LikertScale>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>Thank you for your participation</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+            <EndOfExperiment Version="1">
+                <Inputs/>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </EndOfExperiment>
+        </Trial>
+    </Trials>
+</Experiment>
