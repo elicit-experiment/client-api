@@ -5,7 +5,10 @@ import pprint
 from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 from pyswagger.utils import jp_compose
+import sys
 
+# usage:
+# find . -iname "*.xml" -exec python from_experiment_xml.py {} \;
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -75,6 +78,11 @@ class ComponentParser:
         raise NotImplementedError, ("don't know how to parser %s" % element.tag)
     def do_default(self, element):
       d = etree_to_dict(element)
+      if "Inputs" in d[element.tag]:
+        if isinstance(d[element.tag]["Inputs"], dict) and "Events" in d[element.tag]["Inputs"]:
+          del d[element.tag]["Inputs"]["Events"] # we're not uploading the _results_ of experiments
+      if "@Version" in d[element.tag]:
+        del d[element.tag]["@Version"]
       pp.pprint(d)
       data = json.dumps(d)
       return data
@@ -87,7 +95,10 @@ class ComponentParser:
         return self.do_default(element)
 
 
-file = 'freetexttest.xml'
+if len(sys.argv) >= 2:
+  file = sys.argv[1]
+else:
+  file = 'freetexttest.xml'
 
 tree = ET.ElementTree(file=file)
 
@@ -102,7 +113,7 @@ study_definition = dict(title=root[root_tags.index('Name')].text,
                         no_of_trials=root[root_tags.index('NoOfTrials')].text,
                         footer_label=root[root_tags.index('FooterLabel')].text,
                         redirect_close_on_url=root[root_tags.index('RedirectOnCloseUrl')].text,
-                        data="DATA",
+                        data=root[root_tags.index('Id')].text,
                         principal_investigator_user_id=0)
 
 new_study = dict(study_definition=study_definition)
