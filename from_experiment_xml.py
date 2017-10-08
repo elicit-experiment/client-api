@@ -43,9 +43,19 @@ assert resp.status == 200
 #
 
 access_token = resp.data.access_token
+pp.pprint(resp.data)
 auth = 'Bearer ' + access_token
 client._Client__s.headers['Authorization'] = auth
 
+
+resp = client.request(app.op['getCurrentUser'](authorization=auth))
+
+assert resp.status == 200
+
+
+pp.pprint(resp.data)
+
+user = resp.data
 
 
 # https://stackoverflow.com/questions/7684333/converting-xml-to-dictionary-using-elementtree
@@ -114,7 +124,7 @@ study_definition = dict(title=root[root_tags.index('Name')].text,
                         footer_label=root[root_tags.index('FooterLabel')].text,
                         redirect_close_on_url=root[root_tags.index('RedirectOnCloseUrl')].text,
                         data=root[root_tags.index('Id')].text,
-                        principal_investigator_user_id=0)
+                        principal_investigator_user_id=user.id)
 
 new_study = dict(study_definition=study_definition)
 resp = client.request(app.op['addStudy'](authorization=auth, study=new_study))
