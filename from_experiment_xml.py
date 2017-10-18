@@ -29,8 +29,8 @@ client = Client(auth)
 auth_request=dict(client_id=public_client_id,
                   client_secret=public_client_secret,
                   grant_type='password',
-                  email='foo5@bar.com',
-                  password='abcd12_') 
+                  email='admin@elicit.com',
+                  password='password') 
 print(auth_request)
 # making a request
 resp = client.request(app.op['getAuthToken'](auth_request=auth_request))
@@ -52,10 +52,17 @@ resp = client.request(app.op['getCurrentUser'](authorization=auth))
 
 assert resp.status == 200
 
-
+print("Current User:")
 pp.pprint(resp.data)
 
 user = resp.data
+
+
+resp = client.request(app.op['findUsers'](authorization=auth))
+
+assert resp.status == 200
+
+registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data))
 
 
 # https://stackoverflow.com/questions/7684333/converting-xml-to-dictionary-using-elementtree
@@ -147,6 +154,18 @@ assert resp.status == 201
 new_protocol_definition = resp.data
 
 print(new_protocol_definition)
+
+#
+# Add user to protocol
+#
+
+for user in registered_users:
+  pp.pprint(user)
+  protocol_user = dict(protocol_user=dict(user_id=user.id, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id))
+#study_definition_id=new_study.id,   
+  resp = client.request(app.op['addProtocolUser'](authorization=auth, protocol_user=protocol_user, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id))
+
+  assert resp.status == 201
 
 #
 # Add a new Phase Definition
