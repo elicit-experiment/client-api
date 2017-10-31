@@ -6,58 +6,76 @@ from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 from pyswagger.utils import jp_compose
 import sys
+import pyelicit
+
+##
+## MAIN
+##
 
 pp = pprint.PrettyPrinter(indent=4)
 
-public_client_id = 'admin_public'
-public_client_secret = 'czZCaGRSa3F0MzpnWDFmQmF0M2JW'
+#api_url = 'https://docker.local'
+#elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), api_url)
+elicit = pyelicit.Elicit()
 
-app = App._create_('http://localhost:3000/apidocs/v1/swagger.json')
-# init swagger client
-client = Client(Security(app))
+#
+# Parse command line
+#
 
-# a request to create a new pet
-auth_request=dict(client_id=public_client_id,
-                  client_secret=public_client_secret,
-                  grant_type='password',
-                  email='admin@elicit.com',
-                  password='password') 
-resp = client.request(app.op['getAuthToken'](auth_request=auth_request))
+if len(sys.argv) >= 2:
+  file = sys.argv[1]
+else:
+  file = 'freetexttest.xml'
+
+#
+# Login admin user to get study results
+#
+client = elicit.login()
+
+
+resp = client.request(elicit['findStudyResults'](study_definition_id=1))
+assert resp.status == 200
+study_results = resp.data
+print("\n\nSTUDY_RESULTS:\n")
+pp.pprint(study_results)
+
+
+study_result = study_results[0]
+user_id = study_result.user_id
+protocol_id = 1
+
+resp = client.request(elicit['findProtocolUsers'](study_definition_id=study_result.study_definition_id, protocol_definition_id=protocol_id))
+assert resp.status == 200
+protocol_users = resp.data
+print("\n\nPROTOCOL USERS:\n")
+pp.pprint(protocol_users)
+
+protocol_users = filter(lambda p: p.user_id == user_id, protocol_users)
+print("\n\nPROTOCOL USERS FOR USER %d:\n"%user_id)
+pp.pprint(protocol_users)
+
+protocol_user_id = protocol_users[0].id
+
+resp = client.request(elicit['findExperiments'](study_results_id=study_result.id))
 
 assert resp.status == 200
 
-access_token = resp.data.access_token
-auth = 'Bearer ' + access_token
+print("\n\nEXPERIMENTS:\n")
+pp.pprint(resp.data)
 
-resp = client.request(app.op['findStudyResults'](authorization=auth, study_definition_id=1))
+# chose the first experiment
+experiment = resp.data[0]
 
+
+resp = client.request(elicit['findStages'](study_results_id=study_result.id, experiment_id=experiment.id))
 assert resp.status == 200
-
+print("\n\nSTAGES:\n")
 pp.pprint(resp.data)
 
 
-resp = client.request(app.op['findExperiments'](authorization=auth, study_definition_id=1, protocol_definition_id=1))
+resp = client.request(elicit['findDataPoints'](study_results_id=study_result.id, protocol_user_id=protocol_user_id))
 
 assert resp.status == 200
-
+print("\n\nDATA POINTS:\n")
 pp.pprint(resp.data)
 
-
-resp = client.request(app.op['findStages'](authorization=auth, study_definition_id=1, protocol_definition_id=1, phase_definition_id=1))
-
-assert resp.status == 200
-
-pp.pprint(resp.data)
-
-
-
-resp = client.request(app.op['findDataPoints'](authorization=auth, study_definition_id=1, protocol_definition_id=1, phase_definition_id=1, trial_definition_id=1))
-
-assert resp.status == 200
-
-pp.pprint(resp.data)
-
-
-resp = client.request(app.op['queryDataPoints'](authorization=auth, study_definition_id=1, protocol_definition_id=1))
-assert resp.status == 200
-pp.pprint(resp.data)

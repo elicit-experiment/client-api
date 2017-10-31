@@ -6,7 +6,8 @@ from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 from pyswagger.utils import jp_compose
 import sys
-
+import lorem
+import pyelicit
 # usage:
 # find . -iname "*.xml" -exec python from_experiment_xml.py {} \;
 
@@ -68,28 +69,8 @@ class ComponentParser:
 
 pp = pprint.PrettyPrinter(indent=4)
 
-public_client_id = 'admin_public'
-public_client_secret = 'czZCaGRSa3F0MzpnWDFmQmF0M2JW'
-admin_user = 'admin@elicit.dk'
-admin_password = 'password'
-
-# if you try this with a non-admin user, you get a fail
-#admin_user = 'subject1@elicit.com'
-#admin_password = 'abcd12_'
-
-
-# load Swagger resource file into App object
-app = App._create_('http://localhost:3000/apidocs/v1/swagger.json')
-#app = App._create_('http://docker.local/apidocs/v1/swagger.json')
-#app = App._create_('http://elicit.compute.dtu.dk/apidocs/v1/swagger.json')
-
-auth = Security(app)
-#auth.update_with('api_key', 'admin_public') # api key
-#auth.update_with('petstore_auth', 'czZCaGRSa3F0MzpnWDFmQmF0M2JW') # oauth2
-
-# init swagger client
-client = Client(auth)
-
+api_url = 'https://elicit.docker.local'
+elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), api_url)
 
 #
 # Parse command line and load XML tree
@@ -100,6 +81,7 @@ if len(sys.argv) >= 2:
 else:
   file = 'freetexttest.xml'
 
+
 tree = ET.ElementTree(file=file)
 
 root = tree.getroot() # experiment
@@ -109,29 +91,12 @@ root_tags = list(map(lambda x: x.tag, root))
 #
 # Login admin user to create study
 #
-auth_request=dict(client_id=public_client_id,
-                  client_secret=public_client_secret,
-                  grant_type='password',
-                  email=admin_user,
-                  password=admin_password) 
-resp = client.request(app.op['getAuthToken'](auth_request=auth_request))
-
-assert resp.status == 200
-
-
-#
-# Add access token 
-#
-
-access_token = resp.data.access_token
-auth = 'Bearer ' + access_token
-client._Client__s.headers['Authorization'] = auth
+client = elicit.login()
 
 #
 # Double-check that we have the right user
 #
-
-resp = client.request(app.op['getCurrentUser'](authorization=auth))
+resp = client.request(elicit['getCurrentUser']())
 
 assert resp.status == 200
 
@@ -140,12 +105,13 @@ pp.pprint(resp.data)
 
 user = resp.data
 
+assert(resp.data.role == 'admin') # must be admin!
 
 #
 # Get list of users who will use the study
 #
 
-resp = client.request(app.op['findUsers'](authorization=auth))
+resp = client.request(elicit['findUsers']())
 
 assert resp.status == 200
 
@@ -154,20 +120,21 @@ registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data)
 #
 # Create Study
 #
-
-study_definition = dict(title=root[root_tags.index('Name')].text,
-                        description=root[root_tags.index('ExperimentDescription')].text,
+title = root[root_tags.index('Name')].text
+description = root[root_tags.index('ExperimentDescription')].text
+study_definition = dict(title=title,
+                        description=description,
                         version=root[root_tags.index('Version')].text,
                         lock_question=root[root_tags.index('LockQuestion')].text,
                         enable_previous=root[root_tags.index('EnablePrevious')].text,
                         no_of_trials=root[root_tags.index('NoOfTrials')].text,
                         footer_label=root[root_tags.index('FooterLabel')].text,
-                        redirect_close_on_url=root[root_tags.index('RedirectOnCloseUrl')].text,
+                        redirect_close_on_url=api_url+"/participant",#root[root_tags.index('RedirectOnCloseUrl')].text,
                         data=root[root_tags.index('Id')].text,
                         principal_investigator_user_id=user.id)
 
 new_study = dict(study_definition=study_definition)
-resp = client.request(app.op['addStudy'](authorization=auth, study=new_study))
+resp = client.request(elicit['addStudy'](study=new_study))
 
 if resp.status != 201:
   print("Failed to create study!")
@@ -180,9 +147,11 @@ new_study = resp.data
 # Add a new Protocol Definition
 #
 
-new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
+new_protocol_definition = dict(protocol_definition=dict(name=title,
+                                                        summary=title,
+                                                        description=description + lorem.paragraph(),
                                                         definition_data="foo"))
-resp = client.request(app.op['addProtocolDefinition'](authorization=auth,
+resp = client.request(elicit['addProtocolDefinition'](
                                                       protocol_definition=new_protocol_definition,
                                                       study_definition_id=new_study.id))
 
@@ -201,7 +170,7 @@ for user in registered_users:
   protocol_user = dict(protocol_user=dict(user_id=user.id,
                                           study_definition_id=new_study.id,
                                           protocol_definition_id=new_protocol_definition.id))
-  resp = client.request(app.op['addProtocolUser'](authorization=auth,
+  resp = client.request(elicit['addProtocolUser'](
                                                   protocol_user=protocol_user,
                                                   study_definition_id=new_study.id,
                                                   protocol_definition_id=new_protocol_definition.id))
@@ -212,9 +181,8 @@ for user in registered_users:
 # Add a new Phase Definition
 #
 
-new_phase_definition = dict(phase_definition=dict(name='Newly created phase definition from Python',
-                                                  definition_data="foo"))
-resp = client.request(app.op['addPhaseDefinition'](authorization=auth,
+new_phase_definition = dict(phase_definition=dict(definition_data="foo"))
+resp = client.request(elicit['addPhaseDefinition'](
                                                    phase_definition=new_phase_definition,
                                                    study_definition_id=new_study.id,
                                                    protocol_definition_id=new_protocol_definition.id))
@@ -227,10 +195,9 @@ new_phase_definition = resp.data
 # Add a new Phase Order
 #
 
-new_phase_order = dict(phase_order=dict(name='Newly created phase order from Python',
-                                        sequence_data="0",
-                                        user_id=0))
-resp = client.request(app.op['addPhaseOrder'](authorization=auth,
+new_phase_order = dict(phase_order=dict(sequence_data="0",
+                                        user_id=user.id))
+resp = client.request(elicit['addPhaseOrder'](
                                               phase_order=new_phase_order,
                                               study_definition_id=new_study.id,
                                               protocol_definition_id=new_protocol_definition.id))
@@ -246,9 +213,8 @@ for trial in trials:
   # Add a new Trial Definition
   #
 
-  new_trial_definition = dict(trial_definition=dict(name='Newly created trial definition from Python',
-                                                    definition_data="I DON't KNOW WHAT WILL GO HERE"))
-  resp = client.request(app.op['addTrialDefinition'](authorization=auth,
+  new_trial_definition = dict(trial_definition=dict(definition_data="I DON't KNOW WHAT WILL GO HERE"))
+  resp = client.request(elicit['addTrialDefinition'](
                                                      trial_definition=new_trial_definition,
                                                      study_definition_id=new_study.id,
                                                      protocol_definition_id=new_protocol_definition.id,
@@ -266,9 +232,8 @@ for trial in trials:
     # Add a new Component
     #
 
-    new_component = dict(component=dict(name=("Newly created component definition  %s from Python"%component.tag),
-                                        definition_data=component_data))
-    resp = client.request(app.op['addComponent'](authorization=auth,
+    new_component = dict(component=dict(definition_data=component_data))
+    resp = client.request(elicit['addComponent'](
                                                  component=new_component,
                                                  study_definition_id=new_study.id,
                                                  protocol_definition_id=new_protocol_definition.id,
@@ -285,10 +250,9 @@ for trial in trials:
 # Add a new Trial Order
 #
 
-new_trial_order = dict(trial_order=dict(name='Newly created trial order from Python',
-                                        sequence_data=",".join([str(x) for x in range(len(trials))]),
-                                        user_id="0"))
-resp = client.request(app.op['addTrialOrder'](authorization=auth,
+new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(x) for x in range(len(trials))]),
+                                        user_id=user.id))
+resp = client.request(elicit['addTrialOrder'](
                                               trial_order=new_trial_order,
                                               study_definition_id=new_study.id,
                                               protocol_definition_id=new_protocol_definition.id,
