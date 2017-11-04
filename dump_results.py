@@ -1,10 +1,8 @@
-import xml.etree.cElementTree as ET
-import json
-from collections import defaultdict
+"""
+Example for dumping the results of a study.
+"""
+
 import pprint
-from pyswagger import App, Security
-from pyswagger.contrib.client.requests import Client
-from pyswagger.utils import jp_compose
 import sys
 import pyelicit
 
@@ -14,18 +12,7 @@ import pyelicit
 
 pp = pprint.PrettyPrinter(indent=4)
 
-#api_url = 'https://docker.local'
-#elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), api_url)
 elicit = pyelicit.Elicit()
-
-#
-# Parse command line
-#
-
-if len(sys.argv) >= 2:
-  file = sys.argv[1]
-else:
-  file = 'freetexttest.xml'
 
 #
 # Login admin user to get study results

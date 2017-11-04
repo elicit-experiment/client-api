@@ -9,7 +9,7 @@ import sys
 import lorem
 import pyelicit
 # usage:
-# find . -iname "*.xml" -exec python from_experiment_xml.py {} \;
+# find . -iname "experiment_xml/*.xml" -exec python from_experiment_xml.py {} \;
 
 
 ##
@@ -69,8 +69,8 @@ class ComponentParser:
 
 pp = pprint.PrettyPrinter(indent=4)
 
-api_url = 'https://elicit.docker.local'
-elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), api_url)
+#elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), 'https://elicit.docker.local')
+elicit = pyelicit.Elicit()
 
 #
 # Parse command line and load XML tree
@@ -129,7 +129,7 @@ study_definition = dict(title=title,
                         enable_previous=root[root_tags.index('EnablePrevious')].text,
                         no_of_trials=root[root_tags.index('NoOfTrials')].text,
                         footer_label=root[root_tags.index('FooterLabel')].text,
-                        redirect_close_on_url=api_url+"/participant",#root[root_tags.index('RedirectOnCloseUrl')].text,
+                        redirect_close_on_url=elicit.api_url+"/participant",#root[root_tags.index('RedirectOnCloseUrl')].text,
                         data=root[root_tags.index('Id')].text,
                         principal_investigator_user_id=user.id)
 

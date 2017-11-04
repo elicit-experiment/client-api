@@ -47,7 +47,7 @@ class ElicitCreds:
     self.public_client_secret = _public_client_secret
 
 class Elicit:
-  PRODUCTION_URL = 'http://elicit.compute.dtu.dk'
+  PRODUCTION_URL = 'https://elicit.compute.dtu.dk'
 
   def __init__(self, creds = ElicitCreds(), api_url = PRODUCTION_URL):
     self.api_url = api_url

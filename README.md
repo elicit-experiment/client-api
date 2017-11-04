@@ -31,3 +31,27 @@ You can dump experiment results via:
 ```
 python dump_results.py
 ```
+
+### Create an Experiment
+
+You can create a simple experiment via:
+
+```
+python create_study_example.py
+```
+
+### Find out which Protocols a User May Take
+
+Find out which studies a user is eligeable for with:
+
+```
+python dump_participation.py
+```
+
+### List all the users in the System
+
+
+```
+python list_users.py
+```
+

@@ -1,0 +1,394 @@
+<Experiment>
+    <Id>a9f56a58-aaaa-eeee-1355-012345678903</Id>
+    <Name>radiobottongroup test</Name>
+    <Version>1</Version>
+    <Target Id="null" Name="null" />
+    <ExperimentDescription>Description of the radiobottongroup test.</ExperimentDescription>
+    <CreatedBy>Jens Madsen</CreatedBy>
+    <LockQuestion>0</LockQuestion>
+    <EnablePrevious>1</EnablePrevious>
+    <NoOfTrials>3</NoOfTrials>
+    <TrialsCompleted>0</TrialsCompleted>
+    <FooterLabel>Footer for the radiobottongroup test</FooterLabel>
+    <RedirectOnCloseUrl/>
+    <Trials>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>{{center|Radiobutton test}}</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <RadioButtonGroup Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Radiobuttongroup (AlignForStimuli=1,MinNoOfScalings=0)</HeaderLabel>
+                        <MinNoOfScalings>0</MinNoOfScalings>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:yes</Id>
+                                <Label>yes</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:no</Id>
+                                <Label>no</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </RadioButtonGroup>
+            <RadioButtonGroup Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Radiobuttongroup (AlignForStimuli=0, only answer yes)</HeaderLabel>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <AlignForStimuli>0</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:yes</Id>
+                                <Label>yes</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:no</Id>
+                                <Label>no</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation="0:yes" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </RadioButtonGroup>
+            <RadioButtonGroup Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Radiobuttongroup with stimuli</HeaderLabel>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:yes</Id>
+                                <Label>yes</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:no</Id>
+                                <Label>no</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus>
+                            <Type>audio/mpeg</Type>
+                            <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3</URI>
+                            <Label>This is my stimuli Label</Label>
+                        </Stimulus>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </RadioButtonGroup>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <RadioButtonGroup Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>Radiobuttongroup with stimuli</HeaderLabel>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:Lovely</Id>
+                                <Label>Lovely</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:Great</Id>
+                                <Label>Great</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:Awesome</Id>
+                                <Label>Awesome</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:Something really really long text that simply never stops</Id>
+                                <Label>Something really really long text that simply never stops</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus>
+                            <Type>audio/mpeg</Type>
+                            <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3</URI>
+                            <Label>This is my stimuli Label</Label>
+                        </Stimulus>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </RadioButtonGroup>
+            <RadioButtonGroup Version="1">
+                <Inputs>
+                    <Events/>
+                    <Instrument>
+                        <HeaderLabel>{{b|How do you like the hair?}}{{n}}{{n}}{{image|http://sites.psu.edu/juanitauribercl/wp-content/uploads/sites/38826/2016/01/donald-trumps-hair_zpswqc4ev8g.jpg|300|339|center}}</HeaderLabel>
+                        <MinNoOfScalings>1</MinNoOfScalings>
+                        <MaxNoOfScalings>1</MaxNoOfScalings>
+                        <AlignForStimuli>1</AlignForStimuli>
+                        <Items>
+                            <Item>
+                                <Id>0:Lovely</Id>
+                                <Label>Lovely</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>1:Great</Id>
+                                <Label>Great</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>2:Awesome</Id>
+                                <Label>Awesome</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>3:Something really really long text that simply never stops</Id>
+                                <Label>Something really really long text that simply never stops</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>4:{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Id>
+                                <Label>{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>5:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V1.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                            <Item>
+                                <Id>6:{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Id>
+                                <Label>{{image|https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/img/SAM_V2.png|124|133|center}}</Label>
+                                <Selected>0</Selected>
+                            </Item>
+                        </Items>
+                        <Stimulus/>
+                    </Instrument>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <SimpleValue Id="Id" Validation=".*" />
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                </Outputs>
+            </RadioButtonGroup>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+        </Trial>
+        <Trial TaskId="1">
+            <Header Version="1">
+                <Inputs>
+                    <HeaderLabel>Thank you for your participation</HeaderLabel>
+                </Inputs>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </Header>
+            <Monitor Version="1">
+                <Inputs>
+                    <Validation/>
+                    <Events/>
+                </Inputs>
+                <Outputs>
+                    <Validation>
+                        <MultiValue Id="Events" Max="Inf" Min="0">
+                            <ComplexValue Id="Event">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Id" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                                <SimpleValue Id="Method" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                        <MultiValue Id="Contexts" Max="Inf" Min="0">
+                            <ComplexValue Id="Context">
+                                <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z" />
+                                <SimpleValue Id="Type" Validation=".*" />
+                                <SimpleValue Id="Data" Validation=".*" />
+                            </ComplexValue>
+                        </MultiValue>
+                    </Validation>
+                    <Value>
+                        <Events/>
+                        <Context>
+                            <Type/>
+                            <Data/>
+                        </Context>
+                    </Value>
+                </Outputs>
+            </Monitor>
+            <EndOfExperiment Version="1">
+                <Inputs/>
+                <Outputs>
+                    <Validation/>
+                    <Value/>
+                </Outputs>
+            </EndOfExperiment>
+        </Trial>
+    </Trials>
+</Experiment>
