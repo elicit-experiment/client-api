@@ -31,8 +31,10 @@ def assert_admin(client, elicit):
   assert resp.status == 200
 
   print("Current User:")
-  pp.pprint(resp.data)
+  print(resp.data)
 
   user = resp.data
 
   assert(resp.data.role == 'admin') # must be admin!
+
+  return user

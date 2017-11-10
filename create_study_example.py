@@ -15,6 +15,7 @@ import examples_default
 
 pp = pprint.PrettyPrinter(indent=4)
 
+examples_default.parser.add_argument('--active', default=False, help="The study is active and visible to participants.")
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 
@@ -25,6 +26,7 @@ client = elicit.login()
 
 # Define and validate component definitions
 component_definitions_json = [
+      [
 '''{
   "Header": {
     "Inputs": {
@@ -44,7 +46,7 @@ component_definitions_json = [
     }
   }
 }
-''','''\
+'''],['''\
 {
   "Header": {
     "Inputs": {
@@ -53,27 +55,19 @@ component_definitions_json = [
   }
 }\
 ''',
-'{"EndOfExperiment": {}}',
+'{"EndOfExperiment": {}}'],
 ]
 
-component_definitions = map(lambda j: json.loads(j), component_definitions_json)
+for cd in component_definitions_json:
+  component_definitions = map(lambda j: json.loads(j), cd)
 
-pp.pprint(component_definitions)
+  pp.pprint(component_definitions)
 
 #
 # Double-check that we have the right user
 #
-resp = client.request(elicit['getCurrentUser']())
 
-assert resp.status == 200
-
-print("Current User:")
-pp.pprint(resp.data)
-
-user = resp.data
-
-assert(resp.data.role == 'admin') # must be admin!
-
+user = examples_default.assert_admin(client, elicit)
 
 #
 # Get list of users who will use the study
@@ -112,7 +106,7 @@ pp.pprint(new_study)
 
 new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
                                                         definition_data="foo",
-                                                        active=True))
+                                                        active=args.active)))
 resp = client.request(elicit['addProtocolDefinition'](protocol_definition=new_protocol_definition,
                                                       study_definition_id=new_study.id))
 
@@ -162,23 +156,60 @@ for phase_idx in xrange(2):
 
       phase_definitions.append(new_phase_definition)
 
-      #
-      # Add a new Trial Definition
-      #
 
-      new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
-      resp = client.request(elicit['addTrialDefinition'](trial_definition=new_trial_definition,
-                                                         study_definition_id=new_study.id,
-                                                         protocol_definition_id=new_protocol_definition.id,
-                                                         phase_definition_id=new_phase_definition.id))
+      trials = []
 
+      # generate two trials for example
+      for trial_idx in xrange(2):
+            #
+            # Add a new Trial Definition
+            #
+
+            new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
+            resp = client.request(elicit['addTrialDefinition'](trial_definition=new_trial_definition,
+                                                               study_definition_id=new_study.id,
+                                                               protocol_definition_id=new_protocol_definition.id,
+                                                               phase_definition_id=new_phase_definition.id))
+
+            assert resp.status == 201
+
+            new_trial_definition = resp.data
+            print("\n\nCreated new trial definition:\n")
+            pp.pprint(new_trial_definition)
+
+            trials.append(new_trial_definition)
+
+            #
+            # Add a new Component
+            #
+
+            for component_definition in component_definitions_json[trial_idx]:
+
+                  new_component = dict(component=dict(name='Newly created component definition from Python',
+                                                      definition_data=component_definition))
+                  resp = client.request(elicit['addComponent'](component=new_component,
+                                                               study_definition_id=new_study.id,
+                                                               protocol_definition_id=new_protocol_definition.id,
+                                                               phase_definition_id=new_phase_definition.id,
+                                                               trial_definition_id=new_trial_definition.id))
+                  print("\n\nCreated new phase component:\n")
+                  assert resp.status == 201
+
+
+                  new_component = resp.data
+
+                  pp.pprint(new_component)
+
+
+      new_stimulus = dict(stimulus=dict(name='Newly created stimulus definition from Python', definition_data="foo"))
+      resp = client.request(elicit['addStimulus'](stimulus=new_stimulus, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id, trial_definition_id=new_trial_definition.id))
+      print("\n\nCreated new phase stimulus:\n")
       assert resp.status == 201
 
-      new_trial_definition = resp.data
-      print("\n\nCreated new trial definition:\n")
-      pp.pprint(new_trial_definition)
 
-      trials = [new_trial_definition]
+      new_stimulus = resp.data
+
+      pp.pprint(new_stimulus)
 
       #
       # Add a new Trial Order
@@ -197,41 +228,6 @@ for phase_idx in xrange(2):
       new_trial_order = resp.data
       print("\n\nCreated new trial order:\n")
       pp.pprint(new_trial_order)
-
-      #
-      # Add a new Component
-      #
-
-
-
-      for component_definition in component_definitions_json:
-
-            new_component = dict(component=dict(name='Newly created component definition from Python',
-                                                definition_data=component_definition))
-            resp = client.request(elicit['addComponent'](component=new_component,
-                                                         study_definition_id=new_study.id,
-                                                         protocol_definition_id=new_protocol_definition.id,
-                                                         phase_definition_id=new_phase_definition.id,
-                                                         trial_definition_id=new_trial_definition.id))
-            print("\n\nCreated new phase component:\n")
-            assert resp.status == 201
-
-
-            new_component = resp.data
-
-            pp.pprint(new_component)
-
-
-      new_stimulus = dict(stimulus=dict(name='Newly created stimulus definition from Python', definition_data="foo"))
-      resp = client.request(elicit['addStimulus'](stimulus=new_stimulus, study_definition_id=new_study.id, protocol_definition_id=new_protocol_definition.id, phase_definition_id=new_phase_definition.id, trial_definition_id=new_trial_definition.id))
-      print("\n\nCreated new phase stimulus:\n")
-      assert resp.status == 201
-
-
-      new_component = resp.data
-
-      pp.pprint(new_component)
-
 
 
 #

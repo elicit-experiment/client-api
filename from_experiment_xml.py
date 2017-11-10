@@ -72,20 +72,17 @@ class ComponentParser:
 
 pp = pprint.PrettyPrinter(indent=4)
 
+examples_default.parser.add_argument('file', type=str,  nargs='?', default='experiment_xml/freetexttest.xml', help='experiment.xml format filename')
+examples_default.parser.add_argument('--active', default=False, help="The study is active and visible to participants.")
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 
 #
 # Parse command line and load XML tree
 #
+print("Loading %s"%args.file)
 
-if len(sys.argv) >= 2:
-  file = sys.argv[1]
-else:
-  file = 'freetexttest.xml'
-
-
-tree = ET.ElementTree(file=file)
+tree = ET.ElementTree(file=args.file)
 
 root = tree.getroot() # experiment
 root_tags = list(map(lambda x: x.tag, root))
@@ -99,16 +96,8 @@ client = elicit.login()
 #
 # Double-check that we have the right user
 #
-resp = client.request(elicit['getCurrentUser']())
 
-assert resp.status == 200
-
-print("Current User:")
-pp.pprint(resp.data)
-
-user = resp.data
-
-assert(resp.data.role == 'admin') # must be admin!
+user = examples_default.assert_admin(client, elicit)
 
 #
 # Get list of users who will use the study
@@ -130,7 +119,7 @@ study_definition = dict(title=title,
                         version=root[root_tags.index('Version')].text,
                         lock_question=root[root_tags.index('LockQuestion')].text,
                         enable_previous=root[root_tags.index('EnablePrevious')].text,
-                        no_of_trials=root[root_tags.index('NoOfTrials')].text,
+                        #no_of_trials=root[root_tags.index('NoOfTrials')].text,
                         footer_label=root[root_tags.index('FooterLabel')].text,
                         redirect_close_on_url=elicit.api_url+"/participant",#root[root_tags.index('RedirectOnCloseUrl')].text,
                         data=root[root_tags.index('Id')].text,
@@ -153,7 +142,8 @@ new_study = resp.data
 new_protocol_definition = dict(protocol_definition=dict(name=title,
                                                         summary=title,
                                                         description=description + lorem.paragraph(),
-                                                        definition_data="foo"))
+                                                        definition_data="foo",
+                                                        active=args.active))
 resp = client.request(elicit['addProtocolDefinition'](
                                                       protocol_definition=new_protocol_definition,
                                                       study_definition_id=new_study.id))
@@ -193,12 +183,13 @@ resp = client.request(elicit['addPhaseDefinition'](
 assert resp.status == 201
 
 new_phase_definition = resp.data
+phase_definitions = [new_phase_definition]
 
 #
 # Add a new Phase Order
 #
-
-new_phase_order = dict(phase_order=dict(sequence_data="0",
+phase_sequence_data=",".join([str(phase_definition.id) for phase_definition in phase_definitions]),                                        
+new_phase_order = dict(phase_order=dict(sequence_data=phase_sequence_data,
                                         user_id=user.id))
 resp = client.request(elicit['addPhaseOrder'](
                                               phase_order=new_phase_order,
@@ -210,6 +201,7 @@ assert resp.status == 201
 new_phase_order = resp.data
 
 trials = root[root_tags.index('Trials')]
+trial_defs = []
 
 for trial in trials:
   #
@@ -226,6 +218,7 @@ for trial in trials:
   assert resp.status == 201
 
   new_trial_definition = resp.data
+  trial_defs.append(new_trial_definition)
 
   for component in trial:
     print(component.tag)
@@ -253,8 +246,11 @@ for trial in trials:
 # Add a new Trial Order
 #
 
-new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(x) for x in range(len(trials))]),
+trial_sequence_data=",".join([str(trial_definition.id) for trial_definition in trial_defs])                   
+
+new_trial_order = dict(trial_order=dict(sequence_data=trial_sequence_data,
                                         user_id=user.id))
+pp.pprint(new_trial_order)
 resp = client.request(elicit['addTrialOrder'](
                                               trial_order=new_trial_order,
                                               study_definition_id=new_study.id,

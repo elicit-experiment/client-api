@@ -24,7 +24,7 @@ elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.s
 #
 client = elicit.login()
 
-examples_default.assert_admin()
+user = examples_default.assert_admin(client, elicit)
 
 #
 # Delete Study Definitions

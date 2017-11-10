@@ -6,8 +6,7 @@ from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 from pyswagger.utils import jp_compose
 import sys
-import lorem
-
+import argparse
 
 ##
 ## UTILITIES
@@ -70,13 +69,12 @@ pp = pprint.PrettyPrinter(indent=4)
 # Parse command line and load XML tree
 #
 
-if len(sys.argv) >= 2:
-  file = sys.argv[1]
-else:
-  file = 'freetexttest.xml'
+parser = argparse.ArgumentParser(prog='extract_component_definitions.py')
+parser.add_argument('file', type=str,  nargs='?', default='experiment_xml/freetexttest.xml', help='experiment.xml format filename')
+args = parser.parse_args()
 
-
-tree = ET.ElementTree(file=file)
+print("Loading %s"%args.file)
+tree = ET.ElementTree(file=args.file)
 
 root = tree.getroot() # experiment
 root_tags = list(map(lambda x: x.tag, root))
