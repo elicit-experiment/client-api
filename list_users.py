@@ -22,7 +22,7 @@ client = elicit.login()
 
 
 #
-# Get the list of Study Definitions
+# Get the list of users
 #
 
 resp = client.request(elicit['findUsers']())
