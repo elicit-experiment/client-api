@@ -23,7 +23,7 @@ elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.s
 client = elicit.login()
 
 #
-# Get the list of Study Definitions
+# Get the list of users
 #
 
 resp = client.request(elicit['findUsers']())
