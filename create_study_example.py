@@ -7,14 +7,16 @@ import sys
 import json
 import pyelicit
 
+import examples_default
+
 ##
 ## MAIN
 ##
 
 pp = pprint.PrettyPrinter(indent=4)
 
-#elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), 'http://localhost:3000')
-elicit = pyelicit.Elicit()
+args = examples_default.parse_command_line_args()
+elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 
 #
 # Login admin user to get study results
@@ -86,12 +88,11 @@ registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data)
 #
 # Add a new Study Definition
 #
-study_definition = dict(title='Newly created from Python',
+study_definition = dict(title='Newly created from Python: create_study_example.py',
                         description='Fun study created with Python',
                         version=1,
                         lock_question=1,
                         enable_previous=1,
-                        no_of_trials=5,
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=elicit.api_url+"/participant",
                         data="Put some data here, we don't really care about it.",

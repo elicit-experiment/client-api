@@ -6,13 +6,16 @@ import pprint
 import sys
 import pyelicit
 
+import examples_default
+
 ##
 ## MAIN
 ##
 
 pp = pprint.PrettyPrinter(indent=4)
 
-elicit = pyelicit.Elicit()
+args = examples_default.parse_command_line_args()
+elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 
 #
 # Login admin user to get study results

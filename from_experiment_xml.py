@@ -8,6 +8,9 @@ from pyswagger.utils import jp_compose
 import sys
 import lorem
 import pyelicit
+
+import examples_default
+
 # usage:
 # find . -iname "experiment_xml/*.xml" -exec python from_experiment_xml.py {} \;
 
@@ -69,8 +72,8 @@ class ComponentParser:
 
 pp = pprint.PrettyPrinter(indent=4)
 
-#elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), 'https://elicit.docker.local')
-elicit = pyelicit.Elicit()
+args = examples_default.parse_command_line_args()
+elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 
 #
 # Parse command line and load XML tree

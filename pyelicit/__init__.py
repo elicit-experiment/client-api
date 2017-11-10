@@ -9,18 +9,19 @@ from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 from pyswagger.utils import jp_compose
 import sys
+import ssl
 
 
 # HACK to work around self-signed SSL certs used in development
-import ssl
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    # Legacy Python that doesn't verify HTTPS certificates by default
-    pass
-else:
-    # Handle target environment that doesn't support HTTPS verification
-    ssl._create_default_https_context = _create_unverified_https_context
+def dont_check_ssl():
+  try:
+      _create_unverified_https_context = ssl._create_unverified_context
+  except AttributeError:
+      # Legacy Python that doesn't verify HTTPS certificates by default
+      pass
+  else:
+      # Handle target environment that doesn't support HTTPS verification
+      ssl._create_default_https_context = _create_unverified_https_context
 
 
 class ElicitCreds:
@@ -49,14 +50,17 @@ class ElicitCreds:
 class Elicit:
   PRODUCTION_URL = 'https://elicit.compute.dtu.dk'
 
-  def __init__(self, creds = ElicitCreds(), api_url = PRODUCTION_URL):
+  def __init__(self, creds = ElicitCreds(), api_url = PRODUCTION_URL, send_opt=dict(verify=True)):
     self.api_url = api_url
     self.app = App._create_(self.api_url + '/apidocs/v1/swagger.json')
     self.auth = Security(self.app)
     self.creds = creds
 
+    if ( (not send_opt['verify']) and api_url.startswith("https")):
+      dont_check_ssl()
+
     # init swagger client
-    self.client = Client(self.auth, send_opt=dict(verify=False)) # HACK to work around self-signed SSL certs used in development
+    self.client = Client(self.auth, send_opt=send_opt) # HACK to work around self-signed SSL certs used in development
 
 
   def login(self):
