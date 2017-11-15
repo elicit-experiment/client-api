@@ -19,11 +19,11 @@ def etree_to_dict(t):
     if children:
         dd = defaultdict(list)
         for dc in map(etree_to_dict, children):
-            for k, v in dc.iteritems():
+            for k, v in dc.items():
                 dd[k].append(v)
-        d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.iteritems()}}
+        d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}
     if t.attrib:
-        d[t.tag].update(('@' + k, v) for k, v in t.attrib.iteritems())
+        d[t.tag].update(('@' + k, v) for k, v in t.attrib.items())
     if t.text:
         text = t.text.strip()
         if children or t.attrib:
@@ -39,7 +39,7 @@ class ComponentParser:
     def lookupMethod(self, command):
         return getattr(self, 'do_' + command.upper(), None) or getattr(self, "do_default")
     def unknown(self, element):
-        raise NotImplementedError, ("don't know how to parser %s" % element.tag)
+        raise NotImplementedError("don't know how to parser %s" % element.tag)
     def do_default(self, element):
       d = etree_to_dict(element)
       if "Inputs" in d[element.tag]:
@@ -53,7 +53,6 @@ class ComponentParser:
       return self.do_default(element)
       for headerLabel in element.iterfind('Inputs/HeaderLabel'):
         print("HEADER %s"%headerLabel.text)
-      print element
     def do_FREETEXT(self, element):
         return self.do_default(element)
 

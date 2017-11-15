@@ -106,7 +106,7 @@ pp.pprint(new_study)
 
 new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
                                                         definition_data="foo",
-                                                        active=args.active)))
+                                                        active=args.active))
 resp = client.request(elicit['addProtocolDefinition'](protocol_definition=new_protocol_definition,
                                                       study_definition_id=new_study.id))
 
@@ -138,7 +138,7 @@ for user in registered_users:
 phase_definitions = []
 
 # generate two phases for example
-for phase_idx in xrange(2):
+for phase_idx in range(2):
       #
       # Add a new Phase Definition
       #
@@ -160,7 +160,7 @@ for phase_idx in xrange(2):
       trials = []
 
       # generate two trials for example
-      for trial_idx in xrange(2):
+      for trial_idx in range(2):
             #
             # Add a new Trial Definition
             #
