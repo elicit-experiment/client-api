@@ -156,7 +156,6 @@ for phase_idx in range(2):
 
       phase_definitions.append(new_phase_definition)
 
-
       trials = []
 
       # generate two trials for example
@@ -194,7 +193,6 @@ for phase_idx in range(2):
                                                                trial_definition_id=new_trial_definition.id))
                   print("\n\nCreated new phase component:\n")
                   assert resp.status == 201
-
 
                   new_component = resp.data
 
