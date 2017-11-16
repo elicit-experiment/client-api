@@ -33,7 +33,11 @@ class ElicitCreds:
   ADMIN_USER = 'admin@elicit.dk'
   ADMIN_PASSWORD = 'password'
 
-  def __init__(self, _admin_user = ADMIN_USER, _admin_password = ADMIN_PASSWORD, _public_client_id = PUBLIC_CLIENT_ID, _public_client_secret = PUBLIC_CLIENT_SECRET):
+  def __init__(self,
+               _admin_user = ADMIN_USER,
+               _admin_password = ADMIN_PASSWORD,
+               _public_client_id = PUBLIC_CLIENT_ID,
+               _public_client_secret = PUBLIC_CLIENT_SECRET):
     """
     Initialize
     :param _admin_user: The (typically admin) user name
@@ -50,7 +54,10 @@ class ElicitCreds:
 class Elicit:
   PRODUCTION_URL = 'https://elicit.compute.dtu.dk'
 
-  def __init__(self, creds = ElicitCreds(), api_url = PRODUCTION_URL, send_opt=dict(verify=True)):
+  def __init__(self,
+               creds = ElicitCreds(),
+               api_url = PRODUCTION_URL,
+               send_opt=dict(verify=True)):
     self.api_url = api_url
     self.app = App._create_(self.api_url + '/apidocs/v1/swagger.json')
     self.auth = Security(self.app)

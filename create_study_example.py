@@ -6,6 +6,7 @@ import pprint
 import sys
 import json
 import pyelicit
+import lorem
 
 import examples_default
 
@@ -27,6 +28,26 @@ client = elicit.login()
 # Define and validate component definitions
 component_definitions_json = [
       [
+'''{
+  "Header": {
+    "Inputs": {
+      "HeaderLabel": "Freetext test"
+    } 
+  },
+  "Freetext": {
+    "Inputs": {
+      "Instrument": {
+        "BoxHeight": null, 
+        "Resizable": null, 
+        "BoxWidth": null, 
+        "LabelPosition": "top", 
+        "Label": "Only digits here (LabelPosition=top)", 
+        "Validation": "^[0-9]+$"
+      }
+    }
+  }
+}
+'''],[
 '''{
   "Header": {
     "Inputs": {
@@ -83,7 +104,7 @@ registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data)
 # Add a new Study Definition
 #
 study_definition = dict(title='Newly created from Python: create_study_example.py',
-                        description='Fun study created with Python',
+                        description='Fun study created with Python ' + lorem.paragraph(),
                         version=1,
                         lock_question=1,
                         enable_previous=1,
@@ -106,6 +127,8 @@ pp.pprint(new_study)
 
 new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
                                                         definition_data="foo",
+                                                        summary=lorem.sentence(),
+                                                        description=lorem.paragraph(),
                                                         active=args.active))
 resp = client.request(elicit['addProtocolDefinition'](protocol_definition=new_protocol_definition,
                                                       study_definition_id=new_study.id))
@@ -159,7 +182,7 @@ for phase_idx in range(2):
       trials = []
 
       # generate two trials for example
-      for trial_idx in range(2):
+      for trial_idx in range(len(component_definitions_json)):
             #
             # Add a new Trial Definition
             #
