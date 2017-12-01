@@ -16,7 +16,9 @@ import examples_default
 
 pp = pprint.PrettyPrinter(indent=4)
 
-examples_default.parser.add_argument('--active', default=False, help="The study is active and visible to participants.")
+examples_default.parser.add_argument('--active',
+                                     default=False,
+                                     help="The study is active and visible to participants.")
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
 

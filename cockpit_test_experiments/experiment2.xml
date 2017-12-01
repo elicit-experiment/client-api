@@ -1,0 +1,998 @@
+﻿<Experiment>
+  <Id>6a0fae3a-2ac0-477b-892a-b24433ff3bd2</Id>
+  <Name>DTU:Test:002</Name>
+  <Version>1</Version>
+  <Target Id="bbbd5ffb-1add-4435-9f00-8769aa56624c" Name="Hans Hansen" />
+  <Trials>
+    <Trial TaskId="0">
+      <Monitor Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Contexts>
+            <Context>
+              <Type />
+              <Data />
+            </Context>
+            <Context>
+              <Type>IPaddress</Type>
+              <Data />
+            </Context>
+          </Contexts>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+            <MultiValue Id="Contexts" Max="Inf" Min="0">
+              <ComplexValue Id="Context">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value>
+            <Contexts />
+            <Events>
+              <Item>
+                <Id> </Id>
+                <Type>Trial Start</Type>
+                <Method> </Method>
+                <Data> </Data>
+                <DateTime>2015-04-03T09:34:59.226Z</DateTime>
+              </Item>
+            </Events>
+          </Value>
+        </Outputs>
+      </Monitor>
+    </Trial>
+    <Trial TaskId="1">
+      <TextBlock Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Text>(Textblock 1) This is an experiment which focuses on</Text>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TextBlock>
+      <TextBlock Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Text>(Textblock 2) ...which focuse on bla bla</Text>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TextBlock>
+    </Trial>
+    <Trial TaskId="1">
+      <TextBlock Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Text>In this part of the experiment you need to enter your Birthplace !</Text>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TextBlock>
+      <Freetext Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start,Stop</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Label>Please enter your Birthplace:</Label>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Text" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value>
+            <Events></Events>
+            <Text>Mars</Text>
+          </Value>
+        </Outputs>
+      </Freetext>
+    </Trial>
+    <Trial TaskId="3">
+      <RadioButtonGroup Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start,Stop</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <HeaderLabel>Gender</HeaderLabel>
+            <Items>
+              <Item>
+                <Label>Male</Label>
+                <Selected>0</Selected>
+                <Id>M</Id>
+              </Item>
+              <Item>
+                <Label>Female</Label>
+                <Selected>0</Selected>
+                <Id>F</Id>
+              </Item>
+              <Item>
+                <Label>Other</Label>
+                <Selected>0</Selected>
+                <Id>O</Id>
+              </Item>
+            </Items>
+            <Stimulus />
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Id" Validation="M|F|O" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value>
+            <Events></Events>
+            <Id>M</Id>
+          </Value>
+        </Outputs>
+      </RadioButtonGroup>
+    </Trial>
+    <Trial TaskId="2">
+      <CheckBoxGroup Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start,Stop</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <HeaderLabel>Select the genres you prefer (0-2)</HeaderLabel>
+            <MinNoOfSelections>0</MinNoOfSelections>
+            <MaxNoOfSelections>2</MaxNoOfSelections>
+            <Items>
+              <Item>
+                <Label>Rock</Label>
+                <Selected>0</Selected>
+                <Id>1</Id>
+              </Item>
+              <Item>
+                <Label>Pop</Label>
+                <Selected>0</Selected>
+                <Id>2</Id>
+              </Item>
+              <Item>
+                <Label>Jazz</Label>
+                <Selected>0</Selected>
+                <Id>3</Id>
+              </Item>
+              <Item>
+                <Label>Other</Label>
+                <Selected>0</Selected>
+                <Id>4</Id>
+              </Item>
+            </Items>
+            <Stimulus />
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Selections" Max="2" Min="0">
+              <SimpleValue Id="Id" Validation=".*" />
+            </MultiValue>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value>
+            <Selections>
+              <Item>4</Item>
+              <Item>3</Item>
+            </Selections>
+            <Events />
+          </Value>
+        </Outputs>
+      </CheckBoxGroup>
+    </Trial>
+    <Trial TaskId="2">
+      <CheckBoxGroup Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start,Stop</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <HeaderLabel>Select the genres you prefer (0-2)</HeaderLabel>
+            <MinNoOfSelections>0</MinNoOfSelections>
+            <MaxNoOfSelections>2</MaxNoOfSelections>
+            <Items>
+              <Item>
+                <Label>Indie</Label>
+                <Selected>0</Selected>
+                <Id>1</Id>
+              </Item>
+              <Item>
+                <Label>Metal</Label>
+                <Selected>0</Selected>
+                <Id>2</Id>
+              </Item>
+            </Items>
+            <Stimulus />
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Selections" Max="2" Min="0">
+              <SimpleValue Id="Id" Validation=".*" />
+            </MultiValue>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </CheckBoxGroup>
+    </Trial>
+    <Trial TaskId="2">
+      <CheckBoxGroup Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start,Stop</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <HeaderLabel>Select the genres you prefer (0-2)</HeaderLabel>
+            <MinNoOfSelections>0</MinNoOfSelections>
+            <MaxNoOfSelections>2</MaxNoOfSelections>
+            <Items>
+              <Item>
+                <Label>KPop</Label>
+                <Selected>0</Selected>
+                <Id>1</Id>
+              </Item>
+              <Item>
+                <Label>Classical</Label>
+                <Selected>0</Selected>
+                <Id>2</Id>
+              </Item>
+              <Item>
+                <Label>Latin</Label>
+                <Selected>0</Selected>
+                <Id>3</Id>
+              </Item>
+            </Items>
+            <Stimulus />
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Selections" Max="2" Min="0">
+              <SimpleValue Id="Id" Validation=".*" />
+            </MultiValue>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </CheckBoxGroup>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/bf09b99333c6d3f72484375a4ce25844.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/dc4cffa8e9548618aa7dd968038a8e85.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/a251c14fc851f89f3010684f9b2154cd.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/5ef43237073c4e869e736c405135d39f.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/bf09b99333c6d3f72484375a4ce25844.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/dc4cffa8e9548618aa7dd968038a8e85.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/a251c14fc851f89f3010684f9b2154cd.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="2">
+      <OneDScale Version="1">
+        <Inputs>
+          <Events />
+          <Instrument>
+            <HeaderLabel>Is this audio clip happy or sad ?</HeaderLabel>
+            <Position />
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Happy</Label>
+                <Position>1</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks />
+            <Y1AxisTicks />
+            <Y2AxisTicks />
+            <Stimulus>
+              <Type>audio/mpeg</Type>
+              <Label>This a copyright'ed audio clip - only for test</Label>
+              <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/5ef43237073c4e869e736c405135d39f.mp3</URI>
+            </Stimulus>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <SimpleValue Id="Position" Validation=".*" />
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </OneDScale>
+    </Trial>
+    <Trial TaskId="3">
+      <TwoDKScaleDD Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Id>.</Id>
+              <Type>Start,Stop</Type>
+              <Method />
+              <Data />
+            </Event>
+            <Event>
+              <Id>.InstrumentItemsStimulus</Id>
+              <Type>Start,Stop</Type>
+              <Method />
+              <Data />
+            </Event>
+            <Event>
+              <Id>.InstrumentItems*,.InstrumentItemsList*</Id>
+              <Type>Select</Type>
+              <Method>STAR</Method>
+              <Data />
+            </Event>
+            <Event>
+              <Id>.InstrumentItemsScale*</Id>
+              <Type>Change</Type>
+              <Method>*</Method>
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <HeaderLabel>Rate the following sound by arousal and valance</HeaderLabel>
+            <MinNoOfScalings>2</MinNoOfScalings>
+            <X1AxisLabel>Arousal</X1AxisLabel>
+            <X2AxisLabel />
+            <Y1AxisLabel>Valance</Y1AxisLabel>
+            <Y2AxisLabel />
+            <X1AxisTicks>
+              <X1AxisTick>
+                <Label>Sad, Annoyed</Label>
+                <Position>0</Position>
+              </X1AxisTick>
+            </X1AxisTicks>
+            <X2AxisTicks>
+              <X2AxisTick>
+                <Label>Happy, Pleased</Label>
+                <Position>0</Position>
+              </X2AxisTick>
+            </X2AxisTicks>
+            <Y1AxisTicks>
+              <Y1AxisTick>
+                <Label>Excited, Aroused</Label>
+                <Position>0</Position>
+              </Y1AxisTick>
+            </Y1AxisTicks>
+            <Y2AxisTicks>
+              <Y2AxisTick>
+                <Label>Passive, Calm</Label>
+                <Position>0</Position>
+              </Y2AxisTick>
+            </Y2AxisTicks>
+            <Items>
+              <Item>
+                <Id>4121</Id>
+                <List>
+                  <Label>Green</Label>
+                  <Position>1</Position>
+                </List>
+                <Scale>
+                  <Label>G</Label>
+                  <Position />
+                </Scale>
+                <Stimulus>
+                  <Type>audio/mpeg</Type>
+                  <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/0ef49ba29fecace261a40f3bf3d86910.mp3</URI>
+                </Stimulus>
+              </Item>
+              <Item>
+                <Id>1321</Id>
+                <List>
+                  <Label>Red</Label>
+                  <Position>2</Position>
+                </List>
+                <Scale>
+                  <Label>R</Label>
+                  <Position />
+                </Scale>
+                <Stimulus>
+                  <Type>audio/mpeg</Type>
+                  <Label />
+                  <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/5ef43237073c4e869e736c405135d39f.mp3</URI>
+                </Stimulus>
+              </Item>
+              <Item>
+                <Id>23431</Id>
+                <List>
+                  <Label>Blue</Label>
+                  <Position>3</Position>
+                </List>
+                <Scale>
+                  <Label>G</Label>
+                  <Position />
+                </Scale>
+                <Stimulus>
+                  <Type>audio/mpeg</Type>
+                  <Label />
+                  <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/a251c14fc851f89f3010684f9b2154cd.mp3</URI>
+                </Stimulus>
+              </Item>
+              <Item>
+                <Id>433431</Id>
+                <List>
+                  <Label>Purple</Label>
+                  <Position>4</Position>
+                </List>
+                <Scale>
+                  <Label>P</Label>
+                  <Position />
+                </Scale>
+                <Stimulus>
+                  <Type>audio/mpeg</Type>
+                  <Label />
+                  <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/bf09b99333c6d3f72484375a4ce25844.mp3</URI>
+                </Stimulus>
+              </Item>
+            </Items>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Scalings" Max="Inf" Min="2">
+              <ComplexValue Id="Scaling">
+                <SimpleValue Id="Position" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TwoDKScaleDD>
+    </Trial>
+    <Trial TaskId="1">
+      <TextBlock Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Text>Thank you for completing this experiment... bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</Text>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TextBlock>
+      <TextBlock Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Instrument>
+            <Text>(Textblock 2) ...which focuse on bla bla</Text>
+          </Instrument>
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </TextBlock>
+    </Trial>
+    <Trial TaskId="4">
+      <Monitor Version="1">
+        <Inputs>
+          <Events>
+            <Event>
+              <Type>Start</Type>
+              <Id>.</Id>
+              <Method />
+              <Data />
+            </Event>
+          </Events>
+          <Contexts />
+        </Inputs>
+        <Outputs>
+          <Validation>
+            <MultiValue Id="Events" Max="Inf" Min="0">
+              <ComplexValue Id="Event">
+                <SimpleValue Id="DateTime" Validation="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z" />
+                <SimpleValue Id="Type" Validation=".*" />
+                <SimpleValue Id="Id" Validation=".*" />
+                <SimpleValue Id="Data" Validation=".*" />
+                <SimpleValue Id="Method" Validation=".*" />
+              </ComplexValue>
+            </MultiValue>
+          </Validation>
+          <Value />
+        </Outputs>
+      </Monitor>
+    </Trial>
+  </Trials>
+</Experiment>

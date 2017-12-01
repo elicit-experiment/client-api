@@ -12,7 +12,7 @@ import pyelicit
 import examples_default
 
 # usage:
-# find . -iname "experiment_xml/*.xml" -exec python from_experiment_xml.py {} \;
+# find experiment_xml -iname "*.xml" -exec python3 from_experiment_xml.py --env local {} \;
 
 
 ##
@@ -86,6 +86,11 @@ tree = ET.ElementTree(file=args.file)
 root = tree.getroot() # experiment
 root_tags = list(map(lambda x: x.tag, root))
 
+def get_tag_or_default(tag, default=None):
+  if tag in root_tags:
+    return root[root_tags.index(tag)].text
+  else:
+    return default
 
 #
 # Login admin user to create study
@@ -112,14 +117,13 @@ registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data)
 # Create Study
 #
 title = root[root_tags.index('Name')].text
-description = root[root_tags.index('ExperimentDescription')].text
+description = args.file + " : " + get_tag_or_default('ExperimentDescription', 'No description provided')
 study_definition = dict(title=title,
                         description=description,
-                        version=root[root_tags.index('Version')].text,
-                        lock_question=root[root_tags.index('LockQuestion')].text,
-                        enable_previous=root[root_tags.index('EnablePrevious')].text,
-                        #no_of_trials=root[root_tags.index('NoOfTrials')].text,
-                        footer_label=root[root_tags.index('FooterLabel')].text,
+                        version=get_tag_or_default('Version', '1'),
+                        lock_question=get_tag_or_default('LockQuestion', '0'),
+                        enable_previous=get_tag_or_default('EnablePrevious', '1'),
+                        footer_label=get_tag_or_default('FooterLabel', "Footer " + lorem.sentence()),
                         redirect_close_on_url=elicit.api_url+"/participant",#root[root_tags.index('RedirectOnCloseUrl')].text,
                         data=root[root_tags.index('Id')].text,
                         principal_investigator_user_id=user.id)
@@ -140,7 +144,7 @@ new_study = resp.data
 
 new_protocol_definition = dict(protocol_definition=dict(name=title,
                                                         summary=title,
-                                                        description=description + lorem.paragraph(),
+                                                        description=description + " : " + lorem.paragraph(),
                                                         definition_data="foo",
                                                         active=args.active))
 resp = client.request(elicit['addProtocolDefinition'](
@@ -227,7 +231,8 @@ for trial in trials:
     # Add a new Component
     #
 
-    new_component = dict(component=dict(definition_data=component_data))
+    new_component = dict(component=dict(name='Newly created component definition from Python',
+                                        definition_data=component_data))
     resp = client.request(elicit['addComponent'](
                                                  component=new_component,
                                                  study_definition_id=new_study.id,
