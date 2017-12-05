@@ -26,6 +26,7 @@ client = elicit.login()
 # Double-check that we have the right user
 #
 
+user = examples_default.assert_admin(client, elicit)
 
 #
 # Get the list of Study Definitions
