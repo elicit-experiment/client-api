@@ -13,6 +13,7 @@ import examples_default
 
 # usage:
 # find experiment_xml -iname "*.xml" -exec python3 from_experiment_xml.py --env local {} \;
+# find experiment_xml_errors -iname "*.xml" -exec python3 from_experiment_xml.py --env local {} \;
 
 
 ##
