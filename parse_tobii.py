@@ -171,7 +171,7 @@ for idx, image in enumerate(list(images)):
   print("\n\nCreated new trial definition:\n")
   pp.pprint(new_trial_definition)
 
-  trial_map[image] = new_trial_definition.id
+  trial_map[image] = new_trial_definition
 
   component_definition={
     "Component": {
@@ -208,8 +208,24 @@ for idx, image in enumerate(list(images)):
 # Create StudyResults structures
 #
 
+# Gather markers for trial beginning/ending based on StudioEvent
+start_end_events=df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])]
 
 for idx, user in enumerate(study_participants):
+
+  user_events=start_end_events.loc[(start_end_events['ParticipantName'] == user.username)]
+
+  trial_starts={}
+  trial_ends={}
+  for media_name in df['MediaName'].unique():
+    se=user_events.loc[(user_events['MediaName'] == media_name)][['StudioEvent', 'LocalTime']]
+    trial_starts[media_name] = list(se.loc[se['StudioEvent'] == 'ImageStart']['LocalTime'])[0]
+    trial_ends[media_name] = list(se.loc[se['StudioEvent'] == 'ImageEnd']['LocalTime'])[0]  
+
+  stage_end=sorted([v for k,v in trial_ends.items()])[-1]
+  stage_start=sorted([v for k,v in trial_starts.items()])[0]
+
+
   study_result = dict(study_result=dict(study_definition_id=new_study.id,
                                         user_id=user.id))
   pp.pprint(study_result)
@@ -226,7 +242,7 @@ for idx, user in enumerate(study_participants):
                                     num_stages_completed=1,
                                     num_stages_remaining=0,
                                     study_result_id=study_result.id,
-                                    completed_at=""))
+                                    completed_at=stage_end))
   resp = client.request(elicit['addExperiment'](experiment=experiment,
                                                 study_result_id=study_result.id))
   print("\n\nCreated new Experiment for %s:\n"%user.username)
@@ -242,7 +258,7 @@ for idx, user in enumerate(study_participants):
                           experiment_id = experiment.id,
                           last_completed_trial=new_trial_definition.id,
                           current_trial=None,
-                          completed_at=""))
+                          completed_at=stage_end))
   resp = client.request(elicit['addStage'](stage=stage,
                                            study_result_id=study_result.id))
   print("\n\nCreated new Stage for %s:\n"%user.username)
@@ -250,17 +266,20 @@ for idx, user in enumerate(study_participants):
 
   stage = resp.data
 
-  pp.pprint(experiment)
+  pp.pprint(stage)
 
 
-  for trial in trials:
+  for media_name, trial in trial_map.items():
+    trial_start = trial_starts[media_name]
+    trial_end = trial_ends[media_name]
+
     trial_result = dict(trial_result=dict(protocol_user_id=protocol_users[idx].id,
                             phase_definition_id=new_phase_definition.id,
                             trial_definition_id=trial.id,
                             experiment_id = experiment.id,
-                            started_at="",
-                            completed_at=""))
-    pp.pprint(trial_result)
+                            started_at=trial_start,
+                            completed_at=trial_end))
+    #pp.pprint(trial_result)
     resp = client.request(elicit['addTrialResult'](trial_result=trial_result,
                                                    study_result_id=study_result.id))
     print("\n\nCreated new TrialResult for %s:\n"%user.username)
@@ -268,24 +287,16 @@ for idx, user in enumerate(study_participants):
 
     trial_result = resp.data
 
-    pp.pprint(experiment)
-
+    pp.pprint(trial_result)
 
   break
 
 
-# Generate Trials based on MediaNames
+# Upload TimeSeries
+#
 
-start_end_events=df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])]
 
-for user in df['ParticipantName'].unique():
-  print(user + ":")
-  user_events=start_end_events.loc[(start_end_events['ParticipantName'] == user)]
-  for k,v in trial_map.items():
-    print("\t%s"%k)
-    se=user_events.loc[(user_events['MediaName'] == k)][['StudioEvent', 'LocalTime']]
-    trial_start = list(se.loc[se['StudioEvent'] == 'ImageStart']['LocalTime'])[0]
-    trial_end = list(se.loc[se['StudioEvent'] == 'ImageEnd']['LocalTime'])[0]
+
 
     # Generate trial results
 
@@ -297,8 +308,4 @@ for user in df['ParticipantName'].unique():
 
 #print(json.dumps( {k: v for v, k in enumerate(list(df))} , indent=4))
 
-
-#
-# Upload TimeSeries
-#
 
