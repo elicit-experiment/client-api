@@ -9,6 +9,7 @@ import pyelicit
 import lorem
 
 import examples_default
+import example_helpers
 
 ##
 ## MAIN
@@ -100,7 +101,7 @@ resp = client.request(elicit['findUsers']())
 
 assert resp.status == 200
 
-registered_users = list(filter(lambda x: x.role == 'registered_user', resp.data))
+study_participants = list(filter(lambda x: x.role == 'registered_user', resp.data))
 
 #
 # Add a new Study Definition
@@ -144,25 +145,14 @@ pp.pprint(new_protocol_definition)
 
 
 #
-# Add user to protocol
+# Add users to protocol
 #
 
-for user in registered_users:
-  pp.pprint(user)
-  protocol_user = dict(protocol_user=dict(user_id=user.id,
-                                          study_definition_id=new_study.id,
-                                          protocol_definition_id=new_protocol_definition.id))
-  resp = client.request(elicit['addProtocolUser'](
-                                                  protocol_user=protocol_user,
-                                                  study_definition_id=new_study.id,
-                                                  protocol_definition_id=new_protocol_definition.id))
+example_helpers.addUsersToProtocol(client, elicit, new_study, new_protocol_definition, study_participants)
 
-  assert resp.status == 201
-
-
-phase_definitions = []
 
 # generate two phases for example
+phase_definitions = []
 for phase_idx in range(2):
       #
       # Add a new Phase Definition
@@ -239,7 +229,7 @@ for phase_idx in range(2):
       #
 
       new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                              user_id=registered_users[0].id))
+                                              user_id=study_participants[0].id))
       resp = client.request(elicit['addTrialOrder'](
                                                     trial_order=new_trial_order,
                                                     study_definition_id=new_study.id,
@@ -258,7 +248,7 @@ for phase_idx in range(2):
 #
 
 new_phase_order = dict(phase_order=dict(sequence_data=",".join([str(phase_definition.id) for phase_definition in phase_definitions]),
-                                        user_id=registered_users[0].id))
+                                        user_id=study_participants[0].id))
 resp = client.request(elicit['addPhaseOrder'](
                                               phase_order=new_phase_order,
                                               study_definition_id=new_study.id,
