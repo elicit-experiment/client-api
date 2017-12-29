@@ -10,10 +10,10 @@ tobiifile='/Users/iainbryson/Projects/DTUCogSci/elicit/client-api/tobii_markers.
 #parse_dates = {'LocalTime' : [colidx["RecordingDate"], colidx["LocalTimeStamp"]]}
 parse_dates = ['LocalTime']
 dtypes = {
-  'MouseEvent' : str,
-  'StudioEvent' : str,
-  'StudioEventData' : str,
-  'KeyPressEvent' : str,
+'MouseEvent' : str,
+'StudioEvent' : str,
+'StudioEventData' : str,
+'KeyPressEvent' : str,
 }
 df = pd.read_table(tobiifile, parse_dates=parse_dates, dtype=dtypes)
 df.dropna(axis=1, how='all')
@@ -49,7 +49,7 @@ def find_or_create_user(username, password, email = None, role = None):
                         password_confirmation=password)
     resp = client.request(elicit['addUser'](user=dict(user=user_details)))
     return(resp.data)
-  else:
+else:
     print("User already exists.")
     return(resp.data)
 
@@ -78,14 +78,14 @@ study_participants=[]
 for idx, participant in enumerate(list(participants)):
   participant_map[participant] = idx
   u = find_or_create_user(participant,
-                      "password",
-                      (participant+"@elicit.dtu.dk"),
-                      'registered_user')
+                          "password",
+                          (participant+"@elicit.dtu.dk"),
+                          'registered_user')
   pp.pprint(u)
   participant_map[participant] = u.id
   study_participants.append(u)
 
-print(participant_map)
+  print(participant_map)
 
 
 #
@@ -174,18 +174,18 @@ for idx, image in enumerate(list(images)):
   trial_map[image] = new_trial_definition
 
   component_definition={
-    "Component": {
-      "Inputs": {
-        "Instrument": None,
-        "Stimulus" : {
-            "Type": "image/png",
-            "URI": image,
-            "Label": "This is my stimuli Label"
-        }
-      },
-      "Outputs": {
-      }
-    }
+  "Component": {
+  "Inputs": {
+  "Instrument": None,
+  "Stimulus" : {
+  "Type": "image/png",
+  "URI": image,
+  "Label": "This is my stimuli Label"
+  }
+  },
+  "Outputs": {
+  }
+  }
   }
 
   new_component = dict(component=dict(name=image,
@@ -222,63 +222,63 @@ for idx, user in enumerate(study_participants):
     trial_starts[media_name] = list(se.loc[se['StudioEvent'] == 'ImageStart']['LocalTime'])[0]
     trial_ends[media_name] = list(se.loc[se['StudioEvent'] == 'ImageEnd']['LocalTime'])[0]  
 
-  stage_end=sorted([v for k,v in trial_ends.items()])[-1]
-  stage_start=sorted([v for k,v in trial_starts.items()])[0]
+    stage_end=sorted([v for k,v in trial_ends.items()])[-1]
+    stage_start=sorted([v for k,v in trial_starts.items()])[0]
 
 
-  study_result = dict(study_result=dict(study_definition_id=new_study.id,
-                                        user_id=user.id))
-  pp.pprint(study_result)
-  resp = client.request(elicit['addStudyResult'](study_result=study_result))
-  print("\n\nCreated new Study Result for %s:\n"%user.username)
-  assert resp.status == 201
+    study_result = dict(study_result=dict(study_definition_id=new_study.id,
+                                          user_id=user.id))
+    pp.pprint(study_result)
+    resp = client.request(elicit['addStudyResult'](study_result=study_result))
+    print("\n\nCreated new Study Result for %s:\n"%user.username)
+    assert resp.status == 201
 
-  study_result = resp.data
+    study_result = resp.data
 
-  pp.pprint(study_result)
+    pp.pprint(study_result)
 
-  experiment = dict(experiment=dict(protocol_user_id=protocol_users[idx].id,
-                                    current_stage_id=1,
-                                    num_stages_completed=1,
-                                    num_stages_remaining=0,
-                                    study_result_id=study_result.id,
-                                    completed_at=stage_end))
-  resp = client.request(elicit['addExperiment'](experiment=experiment,
-                                                study_result_id=study_result.id))
-  print("\n\nCreated new Experiment for %s:\n"%user.username)
-  assert resp.status == 201
+    experiment = dict(experiment=dict(protocol_user_id=protocol_users[idx].id,
+                                      current_stage_id=1,
+                                      num_stages_completed=1,
+                                      num_stages_remaining=0,
+                                      study_result_id=study_result.id,
+                                      completed_at=stage_end))
+    resp = client.request(elicit['addExperiment'](experiment=experiment,
+                                                  study_result_id=study_result.id))
+    print("\n\nCreated new Experiment for %s:\n"%user.username)
+    assert resp.status == 201
 
-  experiment = resp.data
+    experiment = resp.data
 
-  pp.pprint(experiment)
-
-
-  stage = dict(stage=dict(protocol_user_id=protocol_users[idx].id,
-                          phase_definition_id=new_phase_definition.id,
-                          experiment_id = experiment.id,
-                          last_completed_trial=new_trial_definition.id,
-                          current_trial=None,
-                          completed_at=stage_end))
-  resp = client.request(elicit['addStage'](stage=stage,
-                                           study_result_id=study_result.id))
-  print("\n\nCreated new Stage for %s:\n"%user.username)
-  assert resp.status == 201
-
-  stage = resp.data
-
-  pp.pprint(stage)
+    pp.pprint(experiment)
 
 
-  for media_name, trial in trial_map.items():
-    trial_start = trial_starts[media_name]
-    trial_end = trial_ends[media_name]
-
-    trial_result = dict(trial_result=dict(protocol_user_id=protocol_users[idx].id,
+    stage = dict(stage=dict(protocol_user_id=protocol_users[idx].id,
                             phase_definition_id=new_phase_definition.id,
-                            trial_definition_id=trial.id,
                             experiment_id = experiment.id,
-                            started_at=trial_start,
-                            completed_at=trial_end))
+                            last_completed_trial=new_trial_definition.id,
+                            current_trial=None,
+                            completed_at=stage_end))
+    resp = client.request(elicit['addStage'](stage=stage,
+                                             study_result_id=study_result.id))
+    print("\n\nCreated new Stage for %s:\n"%user.username)
+    assert resp.status == 201
+
+    stage = resp.data
+
+    pp.pprint(stage)
+
+
+    for media_name, trial in trial_map.items():
+        trial_start = trial_starts[media_name]
+        trial_end = trial_ends[media_name]
+
+        trial_result = dict(trial_result=dict(protocol_user_id=protocol_users[idx].id,
+                                              phase_definition_id=new_phase_definition.id,
+                                              trial_definition_id=trial.id,
+                                              experiment_id = experiment.id,
+                                              started_at=trial_start,
+                                              completed_at=trial_end))
     #pp.pprint(trial_result)
     resp = client.request(elicit['addTrialResult'](trial_result=trial_result,
                                                    study_result_id=study_result.id))
@@ -289,7 +289,7 @@ for idx, user in enumerate(study_participants):
 
     pp.pprint(trial_result)
 
-  break
+    break
 
 
 # Upload TimeSeries
