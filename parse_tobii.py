@@ -32,26 +32,8 @@ import sys
 import pyelicit
 
 import examples_default
-import example_helpers
+from example_helpers import *
 
-
-def find_or_create_user(username, password, email = None, role = None):
-  resp = client.request(elicit['findUser'](id=username))
-
-  if resp.status == 404:
-    pp.pprint(resp.data)
-    pp.pprint(resp.status)
-    print("Not found; Creating user:")
-    user_details = dict(username=username,
-                        password=password,
-                        email=email or (username+"@elicit.dtu.dk"),
-                        role=role or 'registered_user',
-                        password_confirmation=password)
-    resp = client.request(elicit['addUser'](user=dict(user=user_details)))
-    return(resp.data)
-else:
-    print("User already exists.")
-    return(resp.data)
 
 ##
 ## MAIN
@@ -68,6 +50,9 @@ elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.s
 client = elicit.login()
 investigator_user = examples_default.assert_admin(client, elicit)
 
+def add_obj(op, args):
+    return add_object(client, elicit, op, args)
+
 #
 # Create users
 #
@@ -76,16 +61,18 @@ participants=df['ParticipantName'].unique()
 participant_map={}
 study_participants=[]
 for idx, participant in enumerate(list(participants)):
-  participant_map[participant] = idx
-  u = find_or_create_user(participant,
+    participant_map[participant] = idx
+    u = find_or_create_user(client,
+                            elicit, 
+                            participant,
                           "password",
                           (participant+"@elicit.dtu.dk"),
                           'registered_user')
-  pp.pprint(u)
-  participant_map[participant] = u.id
-  study_participants.append(u)
+    pp.pprint(u)
+    participant_map[participant] = u.id
+    study_participants.append(u)
 
-  print(participant_map)
+print(participant_map)
 
 
 #
@@ -101,39 +88,32 @@ study_definition = dict(title='Newly created from Python: create_study_example.p
                         redirect_close_on_url=elicit.api_url+"/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=investigator_user.id)
-new_study = dict(study_definition=study_definition)
-resp = client.request(elicit['addStudy'](study=new_study))
-assert resp.status == 201
-
-new_study = resp.data
-print("\n\nCreated new study:\n")
-pp.pprint(new_study)
+new_study = add_obj("addStudy",
+                    dict(study=dict(study_definition=study_definition)))
 
 #
 # Add a new Protocol Definition
 #
 
-new_protocol_definition = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
-                                                        definition_data="foo",
-                                                        summary="Tobii protocol",
-                                                        description="Tobii protocol",
-                                                        active=True))
-resp = client.request(elicit['addProtocolDefinition'](protocol_definition=new_protocol_definition,
-                                                      study_definition_id=new_study.id))
-
-assert resp.status == 201
-
-
-new_protocol_definition = resp.data
-print("\n\nCreated new protocol:\n")
-pp.pprint(new_protocol_definition)
+protocol_def = dict(protocol_definition=dict(name='Newly created protocol definition from Python',
+                                             definition_data="foo",
+                                             summary="Tobii protocol",
+                                             description="Tobii protocol",
+                                             active=True))
+protocol_definition = add_obj("addProtocolDefinition",
+                                 dict(protocol_definition=protocol_def,
+                                      study_definition_id=new_study.id))
 
 
 #
 # Add users to protocol
 #
 
-protocol_users = example_helpers.addUsersToProtocol(client, elicit, new_study, new_protocol_definition, study_participants)
+protocol_users = addUsersToProtocol(client,
+                                    elicit,
+                                    new_study,
+                                    protocol_definition,
+                                    study_participants)
 
 
 
@@ -141,16 +121,11 @@ protocol_users = example_helpers.addUsersToProtocol(client, elicit, new_study, n
 # Add a new Phase Definition
 #
 
-new_phase_definition = dict(phase_definition=dict(definition_data="foo"))
-resp = client.request(elicit['addPhaseDefinition'](phase_definition=new_phase_definition,
-                                                   study_definition_id=new_study.id,
-                                                   protocol_definition_id=new_protocol_definition.id))
-
-assert resp.status == 201
-
-new_phase_definition = resp.data
-print("\n\nCreated new phase:\n")
-pp.pprint(new_phase_definition)
+new_phase = dict(phase_definition=dict(definition_data="foo"))
+new_phase = add_obj("addPhaseDefinition",
+                       dict(phase_definition=new_phase,
+                            study_definition_id=new_study.id,
+                            protocol_definition_id=protocol_definition.id))
 
 
 
@@ -159,49 +134,41 @@ trial_map={}
 trials=[]
 components=[]
 for idx, image in enumerate(list(images)):
-  trial_map[image] = idx
-  new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
-  resp = client.request(elicit['addTrialDefinition'](trial_definition=new_trial_definition,
-                                                     study_definition_id=new_study.id,
-                                                     protocol_definition_id=new_protocol_definition.id,
-                                                     phase_definition_id=new_phase_definition.id))
-  assert resp.status == 201
-  new_trial_definition = resp.data
-  trials.append(new_trial_definition)
-  print("\n\nCreated new trial definition:\n")
-  pp.pprint(new_trial_definition)
+    trial_map[image] = idx
+    new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
+    new_trial_definition = add_obj("addTrialDefinition",
+                                       dict(trial_definition=new_trial_definition,
+                                            study_definition_id=new_study.id,
+                                            protocol_definition_id=protocol_definition.id,
+                                            phase_definition_id=new_phase.id))
 
-  trial_map[image] = new_trial_definition
 
-  component_definition={
-  "Component": {
-  "Inputs": {
-  "Instrument": None,
-  "Stimulus" : {
-  "Type": "image/png",
-  "URI": image,
-  "Label": "This is my stimuli Label"
-  }
-  },
-  "Outputs": {
-  }
-  }
-  }
 
-  new_component = dict(component=dict(name=image,
-                                      definition_data=component_definition))
-  resp = client.request(elicit['addComponent'](component=new_component,
-                                               study_definition_id=new_study.id,
-                                               protocol_definition_id=new_protocol_definition.id,
-                                               phase_definition_id=new_phase_definition.id,
-                                               trial_definition_id=new_trial_definition.id))
-  print("\n\nCreated new component:\n")
-  assert resp.status == 201
+    trial_map[image] = new_trial_definition
 
-  new_component = resp.data
-  components.append(new_component)
+    component_definition={
+    "Component": {
+    "Inputs": {
+    "Instrument": None,
+    "Stimulus" : {
+    "Type": "image/png",
+    "URI": image,
+    "Label": "This is my stimuli Label"
+    }
+    },
+    "Outputs": {
+    }
+    }
+    }
 
-  pp.pprint(new_component)
+    new_component = dict(component=dict(name=image,
+                                        definition_data=component_definition))
+    new_component = add_obj("addComponent",
+                               dict(component=new_component,
+                                    study_definition_id=new_study.id,
+                                    protocol_definition_id=protocol_definition.id,
+                                    phase_definition_id=new_phase.id,
+                                    trial_definition_id=new_trial_definition.id))
 
 
 #
@@ -213,14 +180,14 @@ start_end_events=df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])]
 
 for idx, user in enumerate(study_participants):
 
-  user_events=start_end_events.loc[(start_end_events['ParticipantName'] == user.username)]
+    user_events=start_end_events.loc[(start_end_events['ParticipantName'] == user.username)]
 
-  trial_starts={}
-  trial_ends={}
-  for media_name in df['MediaName'].unique():
-    se=user_events.loc[(user_events['MediaName'] == media_name)][['StudioEvent', 'LocalTime']]
-    trial_starts[media_name] = list(se.loc[se['StudioEvent'] == 'ImageStart']['LocalTime'])[0]
-    trial_ends[media_name] = list(se.loc[se['StudioEvent'] == 'ImageEnd']['LocalTime'])[0]  
+    trial_starts={}
+    trial_ends={}
+    for media_name in start_end_events['MediaName'].unique():
+        se=user_events.loc[(user_events['MediaName'] == media_name)][['StudioEvent', 'LocalTime']]
+        trial_starts[media_name] = list(se.loc[se['StudioEvent'] == 'ImageStart']['LocalTime'])[0]
+        trial_ends[media_name] = list(se.loc[se['StudioEvent'] == 'ImageEnd']['LocalTime'])[0]  
 
     stage_end=sorted([v for k,v in trial_ends.items()])[-1]
     stage_start=sorted([v for k,v in trial_starts.items()])[0]
@@ -228,14 +195,8 @@ for idx, user in enumerate(study_participants):
 
     study_result = dict(study_result=dict(study_definition_id=new_study.id,
                                           user_id=user.id))
-    pp.pprint(study_result)
-    resp = client.request(elicit['addStudyResult'](study_result=study_result))
-    print("\n\nCreated new Study Result for %s:\n"%user.username)
-    assert resp.status == 201
-
-    study_result = resp.data
-
-    pp.pprint(study_result)
+    study_result = add_obj("addStudyResult",
+                              dict(study_result=study_result))
 
     experiment = dict(experiment=dict(protocol_user_id=protocol_users[idx].id,
                                       current_stage_id=1,
@@ -243,30 +204,20 @@ for idx, user in enumerate(study_participants):
                                       num_stages_remaining=0,
                                       study_result_id=study_result.id,
                                       completed_at=stage_end))
-    resp = client.request(elicit['addExperiment'](experiment=experiment,
-                                                  study_result_id=study_result.id))
-    print("\n\nCreated new Experiment for %s:\n"%user.username)
-    assert resp.status == 201
-
-    experiment = resp.data
-
-    pp.pprint(experiment)
+    experiment = add_obj("addExperiment",
+                            dict(experiment=experiment,
+                                 study_result_id=study_result.id))
 
 
     stage = dict(stage=dict(protocol_user_id=protocol_users[idx].id,
-                            phase_definition_id=new_phase_definition.id,
+                            phase_definition_id=new_phase.id,
                             experiment_id = experiment.id,
                             last_completed_trial=new_trial_definition.id,
                             current_trial=None,
                             completed_at=stage_end))
-    resp = client.request(elicit['addStage'](stage=stage,
-                                             study_result_id=study_result.id))
-    print("\n\nCreated new Stage for %s:\n"%user.username)
-    assert resp.status == 201
-
-    stage = resp.data
-
-    pp.pprint(stage)
+    stage = add_obj("addStage",
+                       dict(stage=stage,
+                            study_result_id=study_result.id))
 
 
     for media_name, trial in trial_map.items():
@@ -274,20 +225,15 @@ for idx, user in enumerate(study_participants):
         trial_end = trial_ends[media_name]
 
         trial_result = dict(trial_result=dict(protocol_user_id=protocol_users[idx].id,
-                                              phase_definition_id=new_phase_definition.id,
+                                              phase_definition_id=new_phase.id,
                                               trial_definition_id=trial.id,
                                               experiment_id = experiment.id,
                                               started_at=trial_start,
                                               completed_at=trial_end))
-    #pp.pprint(trial_result)
-    resp = client.request(elicit['addTrialResult'](trial_result=trial_result,
-                                                   study_result_id=study_result.id))
-    print("\n\nCreated new TrialResult for %s:\n"%user.username)
-    assert resp.status == 201
 
-    trial_result = resp.data
-
-    pp.pprint(trial_result)
+        trial_result = add_obj("addTrialResult",
+                                  dict(trial_result=trial_result,
+                                       study_result_id=study_result.id))
 
     break
 
