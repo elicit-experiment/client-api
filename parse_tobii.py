@@ -1,4 +1,5 @@
 import csv
+import json
 import pandas as pd
 import tobii_utils
 from os.path import basename
@@ -107,8 +108,7 @@ protocol_def = dict(name="Import from %s" % tobii_filename,
                     active=True)
 args = dict(protocol_definition=dict(protocol_definition=protocol_def),
             study_definition_id=new_study.id)
-protocol_definition = add_obj("addProtocolDefinition",
-                              args)
+new_protocol = add_obj("addProtocolDefinition", args)
 
 
 #
@@ -118,7 +118,7 @@ protocol_definition = add_obj("addProtocolDefinition",
 protocol_users = addUsersToProtocol(client,
                                     elicit,
                                     new_study,
-                                    protocol_definition,
+                                    new_protocol,
                                     study_participants)
 
 
@@ -130,7 +130,7 @@ new_phase = dict(phase_definition=dict(definition_data="foo"))
 new_phase = add_obj("addPhaseDefinition",
                     dict(phase_definition=new_phase,
                          study_definition_id=new_study.id,
-                         protocol_definition_id=protocol_definition.id))
+                         protocol_definition_id=new_protocol.id))
 
 
 images = df['MediaName'].unique()
@@ -142,7 +142,7 @@ for idx, image in enumerate(list(images)):
     new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
     args = dict(trial_definition=new_trial_definition,
                 study_definition_id=new_study.id,
-                protocol_definition_id=protocol_definition.id,
+                protocol_definition_id=new_protocol.id,
                 phase_definition_id=new_phase.id)
     new_trial_definition = add_obj("addTrialDefinition",
                                    args)
@@ -169,7 +169,7 @@ for idx, image in enumerate(list(images)):
     new_component = add_obj("addComponent",
                             dict(component=new_component,
                                  study_definition_id=new_study.id,
-                                 protocol_definition_id=protocol_definition.id,
+                                 protocol_definition_id=new_protocol.id,
                                  phase_definition_id=new_phase.id,
                                  trial_definition_id=new_trial_definition.id))
 
@@ -266,7 +266,7 @@ file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values', {'Expires
 multipart_data = {
     'time_series[file]': file,
     'time_series[study_definition_id]': (None, new_study.id),
-    'time_series[protocol_definition_id]': (None, protocol_definition.id),
+    'time_series[protocol_definition_id]': (None, new_protocol.id),
     'time_series[phase_definition_id]': (None, new_phase.id)
 }
 
@@ -289,7 +289,20 @@ headers = {
 pp.pprint(headers)
 pp.pprint(multipart_data)
 response = requests.post(url, data=multipart_data, headers=headers)
-pp.pprint(response)
+time_series = json.loads(response.content)
+
+#TODO: check response OK
+
+pp.pprint(time_series)
+args = dict(id=time_series["id"])
+pp.pprint(args)
+resp = client.request(elicit['getTimeSeries'](**args))
+pp.pprint(resp.status)
+pp.pprint(resp.data)
+
+resp = client.request(elicit['getTimeSeriesContent'](**args))
+pp.pprint(resp.status)
+pp.pprint(resp.data)
 
 #response = requests.post(elicit.api_url + "/api/v1/media_files", files=multipart_data, headers=headers)
 #pp.pprint(response)
