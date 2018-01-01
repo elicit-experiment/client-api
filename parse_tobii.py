@@ -236,8 +236,7 @@ for idx, user in enumerate(study_participants):
                             completed_at=trial_end)
         args = dict(trial_result=dict(trial_result=trial_result),
                     study_result_id=study_result.id)
-        trial_result = add_obj("addTrialResult",
-                               args)
+        trial_result = add_obj("addTrialResult", args)
 
     break
 
@@ -247,51 +246,43 @@ for idx, user in enumerate(study_participants):
 #
 
 import requests
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-#from requests_toolbelt.multipart.encoder import MultipartEncoder
-
-file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values', {'Expires': '0'})
+file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values')#, {'Expires': '0'})
 #file = (tobiifile+".gz", open(tobiifile+".gz", 'rb'), 'text/tab-separated-values+gzip', {'Expires': '0'})
 
-#multipart_data = MultipartEncoder(
-#    fields={
-            # a file upload field
-#            'file': file
-            # plain text fields
-#            'study_definition_id': new_study.id, 
-#            'protocol_definition_id': new_protocol.id,
-#            'phase_definition_id': new_phase.id,
-#           }
-#    )
-multipart_data = {
-    'time_series[file]': file,
-    'time_series[study_definition_id]': (None, new_study.id),
-    'time_series[protocol_definition_id]': (None, new_protocol.id),
-    'time_series[phase_definition_id]': (None, new_phase.id)
+metadata = {
+    "time_field": "LocalTime",
+    "user_field": "ParticipantName"
 }
+multipart_data = MultipartEncoder(
+    fields={
+            # a file upload field
+            'time_series[file]': file,
+            # plain text fields
+            'time_series[study_definition_id]': str(new_study.id),
+            'time_series[protocol_definition_id]': str(new_protocol.id),
+            'time_series[phase_definition_id]': str(new_phase.id),
+            'time_series[schema]': "tobii_tsv",
+            'time_series[schema_metadata]': json.dumps(metadata)
+           }
+    )
 
 url = elicit.api_url + "/api/v1/study_results/time_series"
 
-#curl  \
-# -F "time_series[file]=@./tobii/allMediaBPMDS_slice.tsv.gz;type=text/tab-separated-values+gzip" \
-# -F "time_series[stage_id]=1" \
-#localhost:3000/api/v1/study_results/1/time_series \
-# -H 'Accept-Encoding: gzip, deflate, br' \
-# -H 'Accept: text/tab-separated-values' \
-# -H 'Authorization: Bearer 2b3918fbde187e3948fdcc8e78695e80237bb1490d1ba3e69e530d9d131477a3' 
-
 headers = {
-#    'Content-Type': multipart_data.content_type,
+    'Content-Type': multipart_data.content_type,
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept': 'text/tab-separated-values',
     'Authorization':  elicit.auth_header,
+#    'Content-Type': 'multipart/form-data',
 }
 pp.pprint(headers)
 pp.pprint(multipart_data)
 response = requests.post(url, data=multipart_data, headers=headers)
 time_series = json.loads(response.content)
 
-#TODO: check response OK
+# TODO: check response OK
 
 pp.pprint(time_series)
 args = dict(id=time_series["id"])
@@ -300,21 +291,22 @@ resp = client.request(elicit['getTimeSeries'](**args))
 pp.pprint(resp.status)
 pp.pprint(resp.data)
 
-resp = client.request(elicit['getTimeSeriesContent'](**args))
-pp.pprint(resp.status)
-pp.pprint(resp.data)
+#resp = client.request(elicit['getTimeSeriesContent'](**args))
+#pp.pprint(resp.status)
+#pp.pprint(resp.data)
+
+
+headers = {
+    'Content-Type': "text/tab-separated-values",
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept': 'text/tab-separated-values',
+#    'Accept': 'text/csv',
+    'Authorization':  elicit.auth_header,
+}
+response = requests.get(elicit.api_url + "/api/v1/study_results/time_series/%d/content"%time_series["id"],
+                        headers=headers)
+pp.pprint(response.content)
 
 #response = requests.post(elicit.api_url + "/api/v1/media_files", files=multipart_data, headers=headers)
 #pp.pprint(response)
 
-
-    # Generate trial results
-
-# and (df['StudioEvent'] == 'ImageStart') and df['StudioEvent'] ==
-# 'ImageStart'] and df['MediaName'] == k
-
-# for user in df['ParticipantName'].unique():
-#  print(user + ":")
-#  df.loc[df['ParticipantName'] == user].to_csv(user + ".tsv", sep='\t')
-
-#print(json.dumps( {k: v for v, k in enumerate(list(df))} , indent=4))
