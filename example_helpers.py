@@ -2,7 +2,7 @@ import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
-def addUsersToProtocol(client, elicit, new_study, new_protocol_definition, study_participants):
+def add_users_to_protocol(client, elicit, new_study, new_protocol_definition, study_participants):
   protocol_users = []
   for user in study_participants:
     protocol_user = dict(protocol_user=dict(user_id=user.id,

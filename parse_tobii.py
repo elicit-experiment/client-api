@@ -8,23 +8,30 @@ colidx = tobii_utils.colidx
 
 root = "/Users/iainbryson/Projects/DTUCogSci/"
 tobiifile = root+'elicit/client-api/tobii/allMediaBPMDS_slice.tsv'
-tobiifile = root+'/Physiological/allMediaBPMDS.tsv'
+#tobiifile = root+'/Physiological/allMediaBPMDS.tsv'
 tobiifile = root+'/elicit/client-api/tobii_markers.tsv'
-#parse_dates = {'LocalTime' : [colidx["RecordingDate"], colidx["LocalTimeStamp"]]}
-parse_dates = ['LocalTime']
+parse_dates = []
+parse_dates = {'LocalTime' : [colidx["RecordingDate"], colidx["LocalTimeStamp"]]}
+#parse_dates = ['LocalTime']
 dtypes = {
     'MouseEvent': str,
     'StudioEvent': str,
     'StudioEventData': str,
     'KeyPressEvent': str,
+#    'RecordingDate': str,
+#    'LocalTimeStamp': str
 }
 tobii_filename = basename(tobiifile)
 df = pd.read_table(tobiifile, parse_dates=parse_dates, dtype=dtypes)
-df.dropna(axis=1, how='all')
+#df.dropna(axis=1, how='all')
 
-#df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime')
+#print(df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
 
-#df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])].to_csv("tobii_markers.tsv", sep='\t')
+#df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])].to_csv("tobii_markers.tsv", sep='\t', index=False)
+
+#exit()
+#quit()
+#raise "foo"
 
 #
 # Create StudyDefinition structure
@@ -115,11 +122,11 @@ new_protocol = add_obj("addProtocolDefinition", args)
 # Add users to protocol
 #
 
-protocol_users = addUsersToProtocol(client,
-                                    elicit,
-                                    new_study,
-                                    new_protocol,
-                                    study_participants)
+protocol_users = add_users_to_protocol(client,
+                                       elicit,
+                                       new_study,
+                                       new_protocol,
+                                       study_participants)
 
 
 #
@@ -199,6 +206,8 @@ for idx, user in enumerate(study_participants):
     stage_end = sorted([v for k, v in trial_ends.items()])[-1]
     stage_start = sorted([v for k, v in trial_starts.items()])[0]
 
+    print(trial_starts)
+
     study_result = dict(study_result=dict(study_definition_id=new_study.id,
                                           user_id=user.id))
     study_result = add_obj("addStudyResult",
@@ -209,6 +218,7 @@ for idx, user in enumerate(study_participants):
                                       num_stages_completed=1,
                                       num_stages_remaining=0,
                                       study_result_id=study_result.id,
+                                      started_at=stage_start,
                                       completed_at=stage_end))
     experiment = add_obj("addExperiment",
                          dict(experiment=experiment,
@@ -219,6 +229,7 @@ for idx, user in enumerate(study_participants):
                             experiment_id=experiment.id,
                             last_completed_trial=new_trial_definition.id,
                             current_trial=None,
+                            started_at=stage_start,
                             completed_at=stage_end))
     stage = add_obj("addStage",
                     dict(stage=stage,
@@ -238,8 +249,6 @@ for idx, user in enumerate(study_participants):
                     study_result_id=study_result.id)
         trial_result = add_obj("addTrialResult", args)
 
-    break
-
 
 #
 # Upload TimeSeries
@@ -248,11 +257,12 @@ for idx, user in enumerate(study_participants):
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values')#, {'Expires': '0'})
+file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values', {'Expires': '0'})
 #file = (tobiifile+".gz", open(tobiifile+".gz", 'rb'), 'text/tab-separated-values+gzip', {'Expires': '0'})
 
 metadata = {
-    "time_field": "LocalTime",
+    "time_field": "RecordingDate",
+    "date_field": "LocalTimeStamp",
     "user_field": "ParticipantName"
 }
 multipart_data = MultipartEncoder(
@@ -275,7 +285,6 @@ headers = {
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept': 'text/tab-separated-values',
     'Authorization':  elicit.auth_header,
-#    'Content-Type': 'multipart/form-data',
 }
 pp.pprint(headers)
 pp.pprint(multipart_data)

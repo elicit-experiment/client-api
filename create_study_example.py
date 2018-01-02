@@ -148,7 +148,7 @@ pp.pprint(new_protocol_definition)
 # Add users to protocol
 #
 
-example_helpers.addUsersToProtocol(client, elicit, new_study, new_protocol_definition, study_participants)
+example_helpers.add_users_to_protocol(client, elicit, new_study, new_protocol_definition, study_participants)
 
 
 # generate two phases for example
