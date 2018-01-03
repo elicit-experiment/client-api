@@ -8,6 +8,7 @@ This is the client API access code for Elicit.  It lets you write (Python) code 
 ```
 sudo pip install pyswagger
 sudo pip install requests
+sudp pip install requests_toolbelt
 ```
 
 ## Examples
@@ -53,5 +54,50 @@ python dump_participation.py
 
 ```
 python list_users.py
+```
+
+
+# Time Series
+
+
+```
+
+curl  -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Authorization: Bearer c048ac8a5f4a7807b85b6cbef9d6e8968871d1e60f8fd30df25cbdded5dc2b5d' 
+
+
+curl \
+-F "item[document_data][]=@./tobii/allMediaBPMDS_slice.tsv;type=text/csv" \
+localhost:3000/api/v1/study_results/1/time_series
+
+
+curl 'http://localhost:3000/api/v1/oauth/token' -H 'Pragma: no-cache' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.9,fr;q=0.8' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Cache-Control: no-cache' -H 'Referer: http://localhost:3000/login' -H 'Connection: keep-alive' --data-binary '{"client_id":"admin_public","client_secret":"czZCaGRSa3F0MzpnWDFmQmF0M2JW","grant_type":"password","email":"admin@elicit.dk","password":"password"}' --compressed
+
+
+curl  \
+ -F "time_series[file]=@./tobii/allMediaBPMDS_slice.tsv;type=text/tab-separated-values" \
+ -F "time_series[study_definition_id]=49" \
+ -F "time_series[protocol_definition_id]=49" \
+ -F "time_series[phase_definition_id]=49" \
+ -F "time_series[schema]=tobii_tsv" \
+ -F "time_series[schema_metadata]={'time_field': 'LocalTime', 'user_field': 'ParticipantName'}" \
+localhost:3000/api/v1/study_results/time_series \
+ -H 'Accept-Encoding: gzip, deflate, br' \
+ -H 'Accept: text/tab-separated-values' \
+ -H 'Authorization: Bearer 9aa479382e46ced8fc90b9f233d53d665236c53ba0cad8d9fc2a04ce19500ed1' 
+
+
+
+
+curl  \
+ -F "time_series[file]=@./tobii/allMediaBPMDS_slice.tsv.gz;type=text/tab-separated-values+gzip" \
+ -F "time_series[stage_id]=1" \
+localhost:3000/api/v1/study_results/1/time_series \
+ -H 'Accept-Encoding: gzip, deflate, br' \
+ -H 'Accept: text/tab-separated-values' \
+ -H 'Authorization: Bearer 2b3918fbde187e3948fdcc8e78695e80237bb1490d1ba3e69e530d9d131477a3' 
+
+
+
+
 ```
 

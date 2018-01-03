@@ -155,6 +155,7 @@ for idx, image in enumerate(list(images)):
                                    args)
 
     trial_map[image] = new_trial_definition
+    trials.append(new_trial_definition)
 
     component_definition = {
         "Component": {
@@ -255,14 +256,15 @@ for idx, user in enumerate(study_participants):
 #
 
 import requests
+import cgi
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values', {'Expires': '0'})
 #file = (tobiifile+".gz", open(tobiifile+".gz", 'rb'), 'text/tab-separated-values+gzip', {'Expires': '0'})
 
 metadata = {
-    "time_field": "RecordingDate",
-    "date_field": "LocalTimeStamp",
+    "date_field": "RecordingDate",
+    "time_field": "LocalTimeStamp",
     "user_field": "ParticipantName"
 }
 multipart_data = MultipartEncoder(
@@ -304,18 +306,40 @@ pp.pprint(resp.data)
 #pp.pprint(resp.status)
 #pp.pprint(resp.data)
 
+def query_time_series(id, query_params):
 
-headers = {
-    'Content-Type': "text/tab-separated-values",
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept': 'text/tab-separated-values',
-#    'Accept': 'text/csv',
-    'Authorization':  elicit.auth_header,
-}
-response = requests.get(elicit.api_url + "/api/v1/study_results/time_series/%d/content"%time_series["id"],
-                        headers=headers)
-pp.pprint(response.content)
+    query = "&".join([("%s=%s"%(k,v)) for k,v in query_params.items()])
+
+    url = elicit.api_url + "/api/v1/study_results/time_series/%d/content?%s"%(time_series["id"], query)
+
+    headers = {
+        'Content-Type': "text/tab-separated-values",
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept': 'text/tab-separated-values',
+    #    'Accept': 'text/csv',
+        'Authorization':  elicit.auth_header,
+    }
+    with requests.get(url, headers=headers, stream=True) as r:
+
+        pp.pprint(r.status_code)
+        pp.pprint(r.headers)
+        value, params = cgi.parse_header(r.headers['Content-Disposition'])
+        query_filename=params['filename']
+        with open(query_filename, 'wb') as fd:
+            for chunk in r.iter_content(chunk_size=128):
+                fd.write(chunk)
+
+        query_df=pd.read_table(query_filename, parse_dates=parse_dates, dtype=dtypes)
+
+        print(query_df.loc[query_df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
+
+query_time_series(time_series["id"], {'username': 'P01'})
+
+query_time_series(time_series["id"], {'username': 'P01', "trial_definition_id":str(trial_map['q4.2.png'].id)})
+
+query_time_series(time_series["id"], {"trial_definition_id":str(trial_map['q4.2.png'].id)})
 
 #response = requests.post(elicit.api_url + "/api/v1/media_files", files=multipart_data, headers=headers)
 #pp.pprint(response)
+
 
