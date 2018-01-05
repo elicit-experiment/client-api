@@ -2,42 +2,7 @@ import csv
 import json
 import pandas as pd
 import tobii_utils
-from os.path import basename
-
-colidx = tobii_utils.colidx
-
-root = "/Users/iainbryson/Projects/DTUCogSci/"
-tobiifile = root+'elicit/client-api/tobii/allMediaBPMDS_slice.tsv'
-#tobiifile = root+'/Physiological/allMediaBPMDS.tsv'
-tobiifile = root+'/elicit/client-api/tobii_markers.tsv'
-parse_dates = []
-parse_dates = {'LocalTime' : [colidx["RecordingDate"], colidx["LocalTimeStamp"]]}
-#parse_dates = ['LocalTime']
-dtypes = {
-    'MouseEvent': str,
-    'StudioEvent': str,
-    'StudioEventData': str,
-    'KeyPressEvent': str,
-#    'RecordingDate': str,
-#    'LocalTimeStamp': str
-}
-tobii_filename = basename(tobiifile)
-df = pd.read_table(tobiifile, parse_dates=parse_dates, dtype=dtypes)
-#df.dropna(axis=1, how='all')
-
-#print(df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
-
-#df.loc[df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])].to_csv("tobii_markers.tsv", sep='\t', index=False)
-
-#exit()
-#quit()
-#raise "foo"
-
-#
-# Create StudyDefinition structure
-#
-
-
+import os
 import pprint
 import sys
 import pyelicit
@@ -51,10 +16,34 @@ from example_helpers import *
 ##
 
 pp = pprint.PrettyPrinter(indent=4)
+examples_default.parser.add_argument(
+    '--tobii_filename', default="tobii/tobii_resample.tsv", help="The Tobii file to load")
 args = examples_default.parse_command_line_args()
 args.apiurl = "http://localhost:3000"
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(),
                          args.apiurl, examples_default.send_opt)
+
+#
+# Load Tobii file
+#
+
+colidx = tobii_utils.colidx
+
+tobiifile = os.path.abspath(args.tobii_filename)
+parse_dates = {'LocalTime' : [colidx["RecordingDate"], colidx["LocalTimeStamp"]]}
+dtypes = {
+    'MouseEvent': str,
+    'StudioEvent': str,
+    'StudioEventData': str,
+    'KeyPressEvent': str,
+}
+tobii_filename = os.path.basename(tobiifile)
+df = pd.read_table(tobiifile, parse_dates=parse_dates, dtype=dtypes)
+
+#
+# Create StudyDefinition structure
+#
+
 
 #
 # Login admin user
@@ -258,8 +247,13 @@ for idx, user in enumerate(study_participants):
 import requests
 import cgi
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+import gzip
 
-file = (tobiifile, open(tobiifile, 'rb'), 'text/tab-separated-values', {'Expires': '0'})
+
+with open(tobiifile, 'rb') as f_in, gzip.open(tobiifile+'.gz', 'wb') as f_out:
+    f_out.writelines(f_in)
+
+file = (tobiifile+".gz", open(tobiifile+".gz", 'rb'), 'text/tab-separated-values+gzip', {'Expires': '0'})
 #file = (tobiifile+".gz", open(tobiifile+".gz", 'rb'), 'text/tab-separated-values+gzip', {'Expires': '0'})
 
 metadata = {
@@ -316,7 +310,6 @@ def query_time_series(id, query_params):
         'Content-Type': "text/tab-separated-values",
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept': 'text/tab-separated-values',
-    #    'Accept': 'text/csv',
         'Authorization':  elicit.auth_header,
     }
     with requests.get(url, headers=headers, stream=True) as r:
@@ -331,7 +324,8 @@ def query_time_series(id, query_params):
 
         query_df=pd.read_table(query_filename, parse_dates=parse_dates, dtype=dtypes)
 
-        print(query_df.loc[query_df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
+        #print(query_df.loc[query_df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
+        print(query_df[['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
 
 query_time_series(time_series["id"], {'username': 'P01'})
 
