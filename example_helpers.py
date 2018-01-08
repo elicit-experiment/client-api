@@ -2,11 +2,13 @@ import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
-def add_users_to_protocol(client, elicit, new_study, new_protocol_definition, study_participants):
+def add_users_to_protocol(client, elicit, new_study, new_protocol_definition, study_participants, group_name_map = None):
   protocol_users = []
   for user in study_participants:
+    group_name = group_name_map[user.username] if group_name_map else None
     protocol_user = dict(protocol_user=dict(user_id=user.id,
                                             study_definition_id=new_study.id,
+                                            group_name=group_name,
                                             protocol_definition_id=new_protocol_definition.id))
     resp = client.request(elicit['addProtocolUser'](
                                                     protocol_user=protocol_user,
