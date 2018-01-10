@@ -19,7 +19,6 @@ pp = pprint.PrettyPrinter(indent=4)
 examples_default.parser.add_argument(
     '--tobii_filename', default="tobii/tobii_resample.tsv", help="The Tobii file to load")
 args = examples_default.parse_command_line_args()
-args.apiurl = "http://localhost:3000"
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(),
                          args.apiurl, examples_default.send_opt)
 
@@ -61,6 +60,7 @@ def add_obj(op, args):
 
 participants = df['ParticipantName'].unique()
 participant_map = {}
+group_name_map = {}
 study_participants = []
 for idx, participant in enumerate(list(participants)):
     participant_map[participant] = idx
@@ -71,6 +71,7 @@ for idx, participant in enumerate(list(participants)):
                             (participant+"@elicit.dtu.dk"),
                             'registered_user')
     pp.pprint(u)
+    group_name_map[participant] = "control" if (idx < 8) else "signal"
     participant_map[participant] = u.id
     study_participants.append(u)
 
@@ -115,7 +116,8 @@ protocol_users = add_users_to_protocol(client,
                                        elicit,
                                        new_study,
                                        new_protocol,
-                                       study_participants)
+                                       study_participants,
+                                       group_name_map)
 
 
 #
@@ -204,7 +206,7 @@ for idx, user in enumerate(study_participants):
                            dict(study_result=study_result))
 
     experiment = dict(experiment=dict(protocol_user_id=protocol_users[idx].id,
-                                      current_stage_id=1,
+                                      current_stage_id=None,
                                       num_stages_completed=1,
                                       num_stages_remaining=0,
                                       study_result_id=study_result.id,
@@ -229,11 +231,14 @@ for idx, user in enumerate(study_participants):
         trial_start = trial_starts[media_name]
         trial_end = trial_ends[media_name]
 
+        session_name = "session" + str(trial.id%2)
+
         trial_result = dict(protocol_user_id=protocol_users[idx].id,
                             phase_definition_id=new_phase.id,
                             trial_definition_id=trial.id,
                             experiment_id=experiment.id,
                             started_at=trial_start,
+                            session_name=session_name,
                             completed_at=trial_end)
         args = dict(trial_result=dict(trial_result=trial_result),
                     study_result_id=study_result.id)
@@ -326,12 +331,26 @@ def query_time_series(id, query_params):
 
         #print(query_df.loc[query_df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
         print(query_df[['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
+        print(query_df['ParticipantName'].unique())
+        print(query_df['MediaName'].unique())
 
-query_time_series(time_series["id"], {'username': 'P01'})
+print("\n\n User P01 only \n\n")
+query_time_series(time_series["id"], {'user_name': 'P01'})
 
-query_time_series(time_series["id"], {'username': 'P01', "trial_definition_id":str(trial_map['q4.2.png'].id)})
+print("\n\n User P01 AND trial q4.2.png only \n\n")
+query_time_series(time_series["id"], {'user_name': 'P01', "trial_definition_id":str(trial_map['q4.2.png'].id)})
 
+print("\n\n Trial q4.2.png only \n\n")
 query_time_series(time_series["id"], {"trial_definition_id":str(trial_map['q4.2.png'].id)})
+
+print("\n\n Group signal only \n\n")
+query_time_series(time_series["id"], {'group_name': 'signal'})
+
+print("\n\n Session session0 only \n\n")
+query_time_series(time_series["id"], {'session_name': 'session0'})
+
+print("\n\n Session session1 only \n\n")
+query_time_series(time_series["id"], {'session_name': 'session1'})
 
 #response = requests.post(elicit.api_url + "/api/v1/media_files", files=multipart_data, headers=headers)
 #pp.pprint(response)
