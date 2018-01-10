@@ -19,7 +19,6 @@ pp = pprint.PrettyPrinter(indent=4)
 examples_default.parser.add_argument(
     '--tobii_filename', default="tobii/tobii_resample.tsv", help="The Tobii file to load")
 args = examples_default.parse_command_line_args()
-#args.apiurl = "http://localhost:3000"
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(),
                          args.apiurl, examples_default.send_opt)
 
@@ -232,7 +231,7 @@ for idx, user in enumerate(study_participants):
         trial_start = trial_starts[media_name]
         trial_end = trial_ends[media_name]
 
-        session_name = "session1"
+        session_name = "session" + str(trial.id%2)
 
         trial_result = dict(protocol_user_id=protocol_users[idx].id,
                             phase_definition_id=new_phase.id,
@@ -332,12 +331,26 @@ def query_time_series(id, query_params):
 
         #print(query_df.loc[query_df['StudioEvent'].isin(['ImageStart', 'ImageEnd'])][['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
         print(query_df[['StudioEvent', 'ParticipantName', 'MediaName', 'LocalTime']].sort_values('LocalTime'))
+        print(query_df['ParticipantName'].unique())
+        print(query_df['MediaName'].unique())
 
-query_time_series(time_series["id"], {'username': 'P01'})
+print("\n\n User P01 only \n\n")
+query_time_series(time_series["id"], {'user_name': 'P01'})
 
-query_time_series(time_series["id"], {'username': 'P01', "trial_definition_id":str(trial_map['q4.2.png'].id)})
+print("\n\n User P01 AND trial q4.2.png only \n\n")
+query_time_series(time_series["id"], {'user_name': 'P01', "trial_definition_id":str(trial_map['q4.2.png'].id)})
 
+print("\n\n Trial q4.2.png only \n\n")
 query_time_series(time_series["id"], {"trial_definition_id":str(trial_map['q4.2.png'].id)})
+
+print("\n\n Group signal only \n\n")
+query_time_series(time_series["id"], {'group_name': 'signal'})
+
+print("\n\n Session session0 only \n\n")
+query_time_series(time_series["id"], {'session_name': 'session0'})
+
+print("\n\n Session session1 only \n\n")
+query_time_series(time_series["id"], {'session_name': 'session1'})
 
 #response = requests.post(elicit.api_url + "/api/v1/media_files", files=multipart_data, headers=headers)
 #pp.pprint(response)
