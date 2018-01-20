@@ -107,4 +107,8 @@ Parse the Tobii file, create the StudyDefinition and StudyResults and post the T
 python3 parse_tobii.py
 ```
 
+##
+
+for f in likertscaletest.xml_c*; do (cat "${f}"; echo) >> x.jsonl; done
+
 
