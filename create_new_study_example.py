@@ -9,6 +9,7 @@ import sys
 import json
 import pyelicit
 import lorem
+import re
 
 import examples_default
 from example_helpers import *
@@ -26,14 +27,14 @@ examples_default.parser.add_argument(
     'file', type=str,  nargs='?', default='likertscaletest.xml.py', help='python trial format filename')
 examples_default.parser.add_argument(
     '--outfile', type=str,  nargs='?', default='likertscaletest.xml.full.py', help='python trial format filename')
-args = examples_default.parse_command_line_args()
-elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)
+script_args = examples_default.parse_command_line_args()
+elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), script_args.apiurl, examples_default.send_opt)
 
-fullfd = open(args.outfile, "w")
+fullfd = open(script_args.outfile, "w")
 
 def out_obj(obj, var_name):
   fullfd.write("%s="%var_name)
-  fullfd.write(pdprint.pformat(obj, indent=2))
+  fullfd.write(re.sub(r"'json.dumps\((.+)\)'","json.dumps(\\1)",pdprint.pformat(obj, indent=2)))
   fullfd.write("\n\n")
 
 def add_obj(op, args):
@@ -43,7 +44,7 @@ def add_obj(op, args):
 # Load trial definitions
 #
 
-with open(args.file, 'r') as tdfd:
+with open(script_args.file, 'r') as tdfd:
   lines = tdfd.readlines()
   td = "\n".join(lines)
   fullfd.write("".join(lines))
@@ -85,9 +86,9 @@ study_definition = dict(title='Newly created from Python: create_study_example.p
                         redirect_close_on_url=elicit.api_url+"/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user.id)
-new_study = add_obj("addStudy",
-                    dict(study=dict(study_definition=study_definition)))
-out_obj(new_study, "study_definition")
+args = dict(study=dict(study_definition=study_definition))
+new_study = add_obj("addStudy", args)
+out_obj(args, "study_definition")
 
 
 
@@ -96,14 +97,14 @@ out_obj(new_study, "study_definition")
 #
 
 new_protocol_definition = dict(name='Newly created protocol definition from Python',
-                                                        definition_data="foo",
-                                                        summary=lorem.sentence(),
-                                                        description=lorem.paragraph(),
-                                                        active=args.active)
+                               definition_data="foo",
+                               summary=lorem.sentence(),
+                               description=lorem.paragraph(),
+                               active=script_args.active)
 args = dict(protocol_definition=dict(protocol_definition=new_protocol_definition),
             study_definition_id=new_study.id)
 new_protocol = add_obj("addProtocolDefinition", args)
-out_obj(new_protocol, "protocol_definition")
+out_obj(args, "protocol_definition")
 
 
 #
@@ -126,7 +127,7 @@ for phase_idx in range(2):
                   protocol_definition_id=new_protocol.id)
 
       new_phase = add_obj("addPhaseDefinition", args)
-      out_obj(new_phase, ("phase_definition_%d"%phase_idx))
+      out_obj(args, ("phase_definition_%d"%phase_idx))
       phase_definitions = [new_phase]
 
       trials = []
@@ -144,7 +145,7 @@ for phase_idx in range(2):
                         phase_definition_id=new_phase.id)
             new_trial_definition=add_obj("addTrialDefinition", args)
             trials.append(new_trial_definition)
-            out_obj(new_trial_definition, ("trial_definition_%d"%phase_idx))
+            out_obj(args, ("trial_definition_%d"%phase_idx))
 
             #
             # Add a new Component
@@ -159,9 +160,11 @@ for phase_idx in range(2):
                             protocol_definition_id = new_protocol.id,
                             phase_definition_id = new_phase.id,
                             trial_definition_id = new_trial_definition.id)
+                  ex_args = args
+                  args['component']['component']['definition_data'] = ("json.dumps(trial_components[%d][%d])"%(trial_idx, idx))
                   new_component=add_obj("addComponent", args)
                   new_component.definition_data = ("json.dumps(trial_components[%d][%d])"%(trial_idx, idx))
-                  out_obj(new_component, ("component_%d"%new_phase.id))
+                  out_obj(args, ("component_%d"%new_phase.id))
 
 
       #
@@ -175,7 +178,7 @@ for phase_idx in range(2):
                 protocol_definition_id=new_protocol.id,
                 phase_definition_id=new_phase.id)
       new_trial_order=add_obj("addTrialOrder", args)
-      out_obj(new_trial_order, ("trial_order_%d"%phase_idx))
+      out_obj(args, ("trial_order_%d"%phase_idx))
 
 
 #
@@ -190,7 +193,7 @@ args = dict(phase_order=new_phase_order,
           study_definition_id=new_study.id,
           protocol_definition_id=new_protocol.id)
 new_phase_order = add_obj("addPhaseOrder", args)
-out_obj(new_trial_order, ("phase_order_%s"%new_protocol.id))
+out_obj(args, ("phase_order_%s"%new_protocol.id))
 
 
 

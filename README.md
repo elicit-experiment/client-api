@@ -108,7 +108,10 @@ python3 parse_tobii.py
 ```
 
 ##
+python3 extract_component_definitions.py experiment_xml/likertscaletest.xml 
 
 for f in likertscaletest.xml_c*; do (cat "${f}"; echo) >> x.jsonl; done
+skinfer --jsonlines x.json
+
 
 

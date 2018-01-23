@@ -65,7 +65,7 @@ class ComponentParser:
       if "Instrument" in d[element.tag] and isinstance(d[element.tag]["Instrument"], dict):
         if "Stimulus" in d[element.tag]["Instrument"]:
           if  isinstance(d[element.tag]["Instrument"]["Stimulus"], dict):
-            d["Stimulus"] = d[element.tag]["Instrument"]["Stimulus"]
+            d["Stimuli"] = [d[element.tag]["Instrument"]["Stimulus"]]
           del d[element.tag]["Instrument"]["Stimulus"]
         d["Instruments"] = [ { "Instrument": { element.tag: d[element.tag]["Instrument"] } } ]
         del d[element.tag]
@@ -136,12 +136,15 @@ with open(os.path.basename(args.file)+".json", 'w') as fd:
       for component_idx, component in enumerate(trial_component):
         component_ref = ("component_%d_%d"%(trial_idx, component_idx))
         component_refs.append(component_ref)
+        pyfd.write("\n# Trial %d, component: %d\n"%(trial_idx, component_idx))
+        pyfd.write("\n\n")
         pyfd.write("%s="%component_ref)
         c = pdprint.pformat(component, indent=2)
         pyfd.write(c)
         pyfd.write("\n\n")
       pyfd.write("%s=[ %s]"%(trial_component_ref , ", ".join(component_refs)))
       pyfd.write("\n\n")
+    pyfd.write("\n# Trials %d\n"%(trial_idx))
     pyfd.write("trial_components=[ %s]"%(", ".join(trial_component_refs)))
     pyfd.write("\n\n")
   fd.write("[\n" + ",".join(json_components) + "\n]\n")
