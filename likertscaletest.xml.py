@@ -142,10 +142,10 @@ component_0_3 = dict(
                      Selected='0')]),
                 MaxNoOfScalings='1',
                 MinNoOfScalings='1')))],
-    Stimulus=dict(
+    Stimuli=[dict(
         Label='Music excerpt',
         Type='audio/mpeg',
-        URI='https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3'))
+        URI='https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3')])
 
 trial_components_0 = [component_0_0,
                       component_0_1, component_0_2, component_0_3]
@@ -448,10 +448,10 @@ component_2_3 = dict(
                      Selected='0')]),
                 MaxNoOfScalings='1',
                 MinNoOfScalings='1')))],
-    Stimulus=dict(
+    Stimuli=[dict(
         Label='Music excerpt',
         Type='audio/mpeg',
-        URI='https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3'))
+        URI='https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/100.mp3')])
 
 trial_components_2 = [component_2_0,
                       component_2_1, component_2_2, component_2_3]

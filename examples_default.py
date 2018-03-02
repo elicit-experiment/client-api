@@ -1,4 +1,7 @@
 import argparse
+from http import HTTPStatus
+import pyelicit
+from example_helpers import *
 
 ENVIRONMENTS = {
   'local' : 'http://localhost:3000',
@@ -28,7 +31,7 @@ def parse_command_line_args():
 def assert_admin(client, elicit):
   resp = client.request(elicit['getCurrentUser']())
 
-  assert resp.status == 200
+  assert resp.status == HTTPStatus.OK
 
   print("Current User:")
   print(resp.data)
@@ -38,3 +41,30 @@ def assert_admin(client, elicit):
   assert(resp.data.role == 'admin') # must be admin!
 
   return user
+
+def load_trial_definitions(file_name):
+  with open(file_name, 'r') as tdfd:
+    lines = tdfd.readlines()
+    td = "\n".join(lines)
+    _locals = locals()
+    exec(td, globals(), _locals)
+    return _locals['trial_components']
+
+
+class ElicitClientApi:
+  def __init__(self):
+    self.script_args = parse_command_line_args()
+    self.elicit_api = pyelicit.Elicit(pyelicit.ElicitCreds(), self.script_args.apiurl, send_opt)
+    self.client = self.elicit_api.login()
+
+  def add_obj(self, op, args):
+      return add_object(self.client, self.elicit_api, op, args)
+
+  def get_all_users(self):
+    resp = self.client.request(self.elicit_api['findUsers']())
+    assert resp.status == HTTPStatus.OK
+    return resp.data
+
+  def add_users_to_protocol(self, new_study, new_protocol, study_participants):
+    add_users_to_protocol(self.client, self.elicit_api, new_study, new_protocol, study_participants)
+

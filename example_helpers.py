@@ -1,4 +1,5 @@
 import pprint
+from http import HTTPStatus
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -15,14 +16,14 @@ def add_users_to_protocol(client, elicit, new_study, new_protocol_definition, st
                                                     study_definition_id=new_study.id,
                                                     protocol_definition_id=new_protocol_definition.id))
 
-    assert resp.status == 201
+    assert resp.status == HTTPStatus.CREATED
     protocol_users.append(resp.data)
   return protocol_users
 
 def find_or_create_user(client, elicit, username, password, email = None, role = None):
     resp = client.request(elicit['findUser'](id=username))
 
-    if resp.status == 404:
+    if resp.status == HTTPStatus.NOT_FOUND:
         pp.pprint(resp.data)
         pp.pprint(resp.status)
         print("Not found; Creating user:")
@@ -40,8 +41,8 @@ def find_or_create_user(client, elicit, username, password, email = None, role =
 
 def add_object(client, elicit, operation, args):
     resp = client.request(elicit[operation](**args))
-    assert resp.status == 201
-    if resp.status != 201:
+    assert resp.status == HTTPStatus.CREATED
+    if resp.status != HTTPStatus.CREATED:
         return(None)
 
     created_object = resp.data
@@ -49,3 +50,4 @@ def add_object(client, elicit, operation, args):
     pp.pprint(created_object)
 
     return(created_object)
+
