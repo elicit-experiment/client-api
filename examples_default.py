@@ -15,6 +15,7 @@ parser.add_argument('--ignore_https', type=str, default=False)
 
 send_opt = dict(verify=True)
 
+
 def parse_command_line_args():
   args = parser.parse_args()
 
@@ -27,6 +28,7 @@ def parse_command_line_args():
   send_opt = dict(verify=args.ignore_https)
 
   return args
+
 
 def assert_admin(client, elicit):
   resp = client.request(elicit['getCurrentUser']())
@@ -41,6 +43,7 @@ def assert_admin(client, elicit):
   assert(resp.data.role == 'admin') # must be admin!
 
   return user
+
 
 def load_trial_definitions(file_name):
   with open(file_name, 'r') as tdfd:
