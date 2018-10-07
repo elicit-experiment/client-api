@@ -44,7 +44,7 @@ yt_urls = {
     'Lightbulbs': 'https://youtu.be/AK0fLfdTSWA',
     'Immune': 'https://youtu.be/CHTRmZiS1dU',
     'Internet': 'https://youtu.be/7jhFkqgCKDE',
-    'Boys and Girls':'https://youtu.be/7qcii8BScIc'
+    'Boys and Girls': 'https://youtu.be/7qcii8BScIc'
 }
 
 question = dict(
@@ -109,7 +109,8 @@ for video_no in videos:
             Label=video_name,
             Type='video/youtube',
             URI=yt_url)])
-    trial_components.append([yt_video])
+    pre_questions = []
+    post_questions = []
     for video_row in video_rows:
         question = dict(
             Instruments=[dict(
@@ -138,10 +139,19 @@ for video_no in videos:
                                     Selected='0')]),
                         MaxNoOfScalings='1',
                         MinNoOfScalings='1')))])
-        trial_components.append([question])
+
+        if video_row['Position'] == 'Pre':
+            pre_questions.append([question])
+        else:
+            post_questions.append([question])
+
+    print("%s: %d pre questions, %d post questions"%(video_name, len(pre_questions), len(post_questions)))
+    trial_components += pre_questions
+    trial_components.append([yt_video])
+    trial_components += post_questions
 
 
-print(trial_components)
+#print(trial_components)
 
 #trial_components = [[yt_video],[video],[question]]
 
