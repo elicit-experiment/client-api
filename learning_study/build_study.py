@@ -24,8 +24,6 @@ pp = pprint.PrettyPrinter(indent=4)
 #
 # Load trial definitions
 #
-#trial_definitions_file = 'likertscaletest.xml.py'
-#trial_components = load_trial_definitions(trial_definitions_file)
 
 video = dict(
     Stimuli=[dict(
@@ -92,13 +90,10 @@ with open('./learning_study/questions.csv') as csv_file:
     print(f'Processed {line_count} lines.')
 
 
-print(question_rows)
-print([r['Video_no'] for r in question_rows])
 videos = list(set([r['Video_no'] for r in question_rows]))
 
-print(videos)
-
 trial_components = []
+trial_definition_data = []
 
 for video_no in videos:
     video_rows = [r for r in question_rows if r['Video_no'] == video_no]
@@ -108,6 +103,7 @@ for video_no in videos:
         Stimuli=[dict(
             Label=video_name,
             Type='video/youtube',
+            IsPausable=False,
             URI=yt_url)])
     pre_questions = []
     post_questions = []
@@ -146,10 +142,18 @@ for video_no in videos:
             post_questions.append([question])
 
     print("%s: %d pre questions, %d post questions"%(video_name, len(pre_questions), len(post_questions)))
-    trial_components += pre_questions
-    trial_components.append([yt_video])
-    trial_components += post_questions
 
+    trial_components.append([dict()])
+    trial_definition_data.append('{ "type": "NewComponent::WebGazerCalibrate" }')
+
+    trial_components.append([yt_video])
+    trial_definition_data.append("{}")
+
+    trial_components += pre_questions
+    trial_definition_data += ["{}" for _ in range(len(pre_questions))]
+
+    trial_components += post_questions
+    trial_definition_data += ["{}" for _ in range(len(post_questions))]
 
 #print(trial_components)
 
@@ -172,12 +176,12 @@ user = assert_admin(elicit.client, elicit.elicit_api)
 
 users = elicit.get_all_users()
 
-study_participants = list(filter(lambda user: user.role == 'registered_user', users))
+study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
 
 #
 # Add a new Study Definition
 #
-study_definition = dict(title='Learning Study',
+study_definition = dict(title='Learning Study - WebGazer',
                         description='Fun study created with Python ' + lorem.paragraph(),
                         version=1,
                         lock_question=1,
@@ -233,7 +237,7 @@ for phase_idx in range(2):
             # Add a new Trial Definition
             #
 
-            new_trial_definition = dict(trial_definition=dict(definition_data="foo"))
+            new_trial_definition = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
             args = dict(trial_definition=new_trial_definition,
                         study_definition_id=new_study.id,
                         protocol_definition_id=new_protocol.id,
