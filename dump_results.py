@@ -7,7 +7,12 @@ import sys
 import pyelicit
 
 import examples_default
-
+import requests
+import cgi
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+import gzip
+import json
+import os
 ##
 # MAIN
 ##
@@ -15,11 +20,11 @@ import examples_default
 pp = pprint.PrettyPrinter(indent=4)
 
 examples_default.parser.add_argument(
-    '--study_id', default=1, help="The study ID to dump")
+    '--study_id', default=1, help="The study ID to dump", type=int)
 examples_default.parser.add_argument(
-    '--user_id', default=None, help="The study ID to dump")
+    '--user_id', default=None, help="The user ID to dump", type=int)
 examples_default.parser.add_argument(
-    '--user_name', default=None, help="The study ID to dump")
+    '--user_name', default=None, help="The user name to dump")
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(),
                          args.apiurl, examples_default.send_opt)
@@ -45,9 +50,11 @@ pp.pprint(study_results)
 
 
 if not user_id:
-  user_id = study_result[0].user_id
+  user_id = study_results[0].user_id
 
-study_result = next((x for x in study_results if x.user_id == user_id), None)
+users_studies = (study_result for study_result in study_results if study_result.user_id == user_id)
+#print(list(users_studies))
+study_result = next(users_studies, None)
 assert study_result != None
 
 protocol_id = 1
@@ -82,6 +89,42 @@ resp = client.request(elicit['findStages'](study_result_id=study_result.id,
 assert resp.status == 200
 print("\n\nSTAGES:\n")
 pp.pprint(resp.data)
+
+stage_ids = list((stage.id for stage in resp.data))
+
+pp.pprint(stage_ids)
+
+for stage_id in stage_ids:
+    resp = client.request(elicit['findTimeSeries'](study_result_id=study_result.id, stage_id=stage_id))
+    assert resp.status == 200
+    print("\n\nTime Series for Stage %d:\n"%stage_id)
+    pp.pprint(resp.data)
+
+    time_series = resp.data[0]
+
+    #url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
+    url =  elicit.api_url + "/" + json.loads(time_series.file.replace("'", '"'))['url']
+
+    headers = {
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept': 'text/tab-separated-values',
+        'Authorization':  elicit.auth_header,
+    }
+    with requests.get(url, headers=headers, stream=True) as r:
+
+        pp.pprint(r.status_code)
+        pp.pprint(r.headers)
+        content_disposition = r.headers.get('Content-Disposition')
+        query_filename = os.path.basename(url)
+        if content_disposition:
+            value, params = cgi.parse_header(content_disposition)
+            query_filename=params['filename']
+        with open(query_filename, 'wb') as fd:
+            for chunk in r.iter_content(chunk_size=128):
+                fd.write(chunk)
+
+
+exit()
 
 resp = client.request(elicit['findTrialResults'](study_result_id=study_result.id,
                                                  experiment_id=experiment.id))

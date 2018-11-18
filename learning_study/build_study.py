@@ -3,12 +3,12 @@ Example for dumping the results of a study.
 """
 
 import pprint
-#import pdprint
+# import pdprint
 
 import sys
 import csv
 import json
-import lorem    # generate boilerplate text to make sure the website renders correctly
+import lorem  # generate boilerplate text to make sure the website renders correctly
 import re
 
 from examples_default import *
@@ -45,50 +45,21 @@ yt_urls = {
     'Boys and Girls': 'https://youtu.be/7qcii8BScIc'
 }
 
-question = dict(
-    Instruments=[dict(
-        Instrument=dict(
-            RadioButtonGroup=dict(
-                AlignForStimuli='0',
-                QuestionsPerRow=1,
-                HeaderLabel='How is it possible to determine the temperature of a star?',
-                Items=dict(
-                 Item=[dict(
-                     Id='0',
-                     Label='By its color',
-                     Selected='0'),
-                     dict(
-                     Id='1',
-                     Label='By its size',
-                     Selected='0'),
-                     dict(
-                     Id='1',
-                     Label='By its shape',
-                     Selected='0'),
-                     dict(
-                     Id='2',
-                     Label='All options are correct',
-                     Selected='0')]),
-                MaxNoOfScalings='1',
-                MinNoOfScalings='1')))])
-
 question_rows = []
 with open('./learning_study/questions.csv') as csv_file:
     csv_reader = csv.DictReader(csv_file, delimiter=',')
     line_count = 0
     for row in csv_reader:
         if line_count == 0:
-            #print(f'Column names are {", ".join(row)}')
+            # print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
-            #print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
             line_count += 1
             if row['Video_no'] == '1':
-                for col in ['Video_no',	'Question_no', 'Trigger_value']:
+                for col in ['Video_no', 'Question_no', 'Trigger_value']:
                     row[col] = int(row[col])
                 question_rows.append(row)
     print(f'Processed {line_count} lines.')
-
 
 videos = list(set([r['Video_no'] for r in question_rows]))
 
@@ -141,26 +112,43 @@ for video_no in videos:
         else:
             post_questions.append([question])
 
-    print("%s: %d pre questions, %d post questions"%(video_name, len(pre_questions), len(post_questions)))
+    print("%s: %d pre questions, %d post questions" % (video_name, len(pre_questions), len(post_questions)))
 
-    trial_components.append([dict()])
-    trial_definition_data.append('{ "type": "NewComponent::WebGazerCalibrate" }')
+    # trial_components.append([dict()])
+    # trial_definition_data.append('{ "type": "NewComponent::WebGazerCalibrate" }')
 
     trial_components.append([yt_video])
     trial_definition_data.append("{}")
 
-    trial_components += pre_questions
-    trial_definition_data += ["{}" for _ in range(len(pre_questions))]
+    # trial_components += pre_questions
+    # trial_definition_data += ["{}" for _ in range(len(pre_questions))]
 
-    trial_components += post_questions
+    trial_components += post_questions[-5:]
     trial_definition_data += ["{}" for _ in range(len(post_questions))]
 
-#print(trial_components)
+    trial_components += [ [
+        dict(
+            Instruments=[dict(
+                Instrument=dict(
+                    Header=dict(
+                        HeaderLabel='Thank you')))]
+        ),
+        dict(
+            Instruments=[dict(
+                Instrument=dict(
+                    EndOfExperiment=dict()))]
+        )
+    ] ]
 
-#trial_components = [[yt_video],[video],[question]]
+    trial_definition_data += [ "{}" ]
 
-#exit()
-#quit()
+
+# print(trial_components)
+
+# trial_components = [[yt_video],[video],[question]]
+
+# exit()
+# quit()
 
 elicit = ElicitClientApi()
 
@@ -182,12 +170,14 @@ study_participants = list(filter(lambda usr: usr.role == 'registered_user', user
 # Add a new Study Definition
 #
 study_definition = dict(title='Learning Study - WebGazer',
-                        description='Fun study created with Python ' + lorem.paragraph(),
+                        description="""Study of learning, using eye gaze tracking from WebGazer
+                        
+                        This version calibrates on the video page""",
                         version=1,
                         lock_question=1,
                         enable_previous=1,
                         footer_label="This is the footer of the study",
-                        redirect_close_on_url=elicit.elicit_api.api_url+"/participant",
+                        redirect_close_on_url=elicit.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user.id)
 args = dict(study=dict(study_definition=study_definition))
@@ -206,73 +196,68 @@ args = dict(protocol_definition=dict(protocol_definition=new_protocol_definition
             study_definition_id=new_study.id)
 new_protocol = elicit.add_obj("addProtocolDefinition", args)
 
-
 #
 # Add users to protocol
 #
 
 elicit.add_users_to_protocol(new_study, new_protocol, study_participants)
 
-
 # generate two phases for example
 phase_definitions = []
 for phase_idx in range(2):
-      #
-      # Add a new Phase Definition
-      #
+    #
+    # Add a new Phase Definition
+    #
 
-      new_phase_definition = dict(phase_definition=dict(definition_data="foo"))
-      args = dict(phase_definition=new_phase_definition,
-                  study_definition_id=new_study.id,
-                  protocol_definition_id=new_protocol.id)
+    new_phase_definition = dict(phase_definition=dict(definition_data="foo"))
+    args = dict(phase_definition=new_phase_definition,
+                study_definition_id=new_study.id,
+                protocol_definition_id=new_protocol.id)
 
-      new_phase = elicit.add_obj("addPhaseDefinition", args)
-      phase_definitions = [new_phase]
+    new_phase = elicit.add_obj("addPhaseDefinition", args)
+    phase_definitions = [new_phase]
 
-      trials = []
+    trials = []
 
-      # generate two trials for example
-      for trial_idx in range(len(trial_components)):
-            #
-            # Add a new Trial Definition
-            #
+    # generate two trials for example
+    for trial_idx in range(len(trial_components)):
+        #
+        # Add a new Trial Definition
+        #
 
-            new_trial_definition = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
-            args = dict(trial_definition=new_trial_definition,
+        new_trial_definition = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
+        args = dict(trial_definition=new_trial_definition,
+                    study_definition_id=new_study.id,
+                    protocol_definition_id=new_protocol.id,
+                    phase_definition_id=new_phase.id)
+        new_trial_definition = elicit.add_obj("addTrialDefinition", args)
+        trials.append(new_trial_definition)
+
+        #
+        # Add a new Component
+        #
+
+        for idx, component_definition in enumerate(trial_components[trial_idx]):
+            new_component = dict(name='Newly created component definition from Python',
+                                 definition_data=json.dumps(component_definition))
+            args = dict(component=dict(component=new_component),
                         study_definition_id=new_study.id,
                         protocol_definition_id=new_protocol.id,
-                        phase_definition_id=new_phase.id)
-            new_trial_definition=elicit.add_obj("addTrialDefinition", args)
-            trials.append(new_trial_definition)
+                        phase_definition_id=new_phase.id,
+                        trial_definition_id=new_trial_definition.id)
+            new_component = elicit.add_obj("addComponent", args)
 
-            #
-            # Add a new Component
-            #
+    #
+    # Add a new Trial Order
+    #
 
-            for idx, component_definition in enumerate(trial_components[trial_idx]):
-
-                  new_component = dict(name='Newly created component definition from Python',
-                                       definition_data=json.dumps(component_definition))
-                  args=dict(component = dict(component = new_component),
-                            study_definition_id = new_study.id,
-                            protocol_definition_id = new_protocol.id,
-                            phase_definition_id = new_phase.id,
-                            trial_definition_id = new_trial_definition.id)
-                  new_component=elicit.add_obj("addComponent", args)
-
-
-      #
-      # Add a new Trial Order
-      #
-
-      new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                              user_id=study_participants[0].id))
-      args=dict(trial_order=new_trial_order,
+    new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
+                                            user_id=study_participants[0].id))
+    args = dict(trial_order=new_trial_order,
                 study_definition_id=new_study.id,
                 protocol_definition_id=new_protocol.id,
                 phase_definition_id=new_phase.id)
-      new_trial_order=elicit.add_obj("addTrialOrder", args)
-
+    new_trial_order = elicit.add_obj("addTrialOrder", args)
 
 #
 # Add a new Phase Order
@@ -283,11 +268,6 @@ phase_sequence_data = ",".join(
 new_phase_order = dict(phase_order=dict(sequence_data=phase_sequence_data,
                                         user_id=user.id))
 args = dict(phase_order=new_phase_order,
-          study_definition_id=new_study.id,
-          protocol_definition_id=new_protocol.id)
+            study_definition_id=new_study.id,
+            protocol_definition_id=new_protocol.id)
 new_phase_order = elicit.add_obj("addPhaseOrder", args)
-
-
-
-
-

@@ -21,6 +21,3 @@ pipenv run python3 create_new_study_example.py --env local --outfile likertscale
 pipenv run python3 create_new_study_example2.py --env local
 ```
 
-```bash
-PYTHONPATH=`pwd` pipenv run python3 learning_study/build_study.py --env local
-```
