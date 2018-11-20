@@ -61,13 +61,17 @@ class Elicit:
                  api_url=PRODUCTION_URL,
                  send_opt=dict(verify=True)):
         print("Initialize Elicit client library for %s" % api_url)
+        print(send_opt)
+
+        if ((not send_opt['verify']) and api_url.startswith("https")):
+            print('WARNING: not checking SSL')
+            dont_check_ssl()
+
+
         self.api_url = api_url
         self.app = App._create_(self.api_url + '/apidocs/v1/swagger.json')
         self.auth = Security(self.app)
         self.creds = creds
-
-        if ((not send_opt['verify']) and api_url.startswith("https")):
-            dont_check_ssl()
 
         # init swagger client
         self.client = Client(self.auth,

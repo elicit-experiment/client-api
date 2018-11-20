@@ -38,7 +38,8 @@ yt_video = dict(
         URI='https://youtu.be/soTEnpcn0ig')])
 
 yt_urls = {
-    'Stars': 'https://youtu.be/soTEnpcn0ig',
+    'Stars': 'https://youtu.be/zr9leP_Dcm8',
+    'Stars2':'https://youtu.be/soTEnpcn0ig',
     'Lightbulbs': 'https://youtu.be/AK0fLfdTSWA',
     'Immune': 'https://youtu.be/CHTRmZiS1dU',
     'Internet': 'https://youtu.be/7jhFkqgCKDE',
@@ -65,6 +66,8 @@ videos = list(set([r['Video_no'] for r in question_rows]))
 
 trial_components = []
 trial_definition_data = []
+
+study_description="This study proceeds as follows:\n"
 
 for video_no in videos:
     video_rows = [r for r in question_rows if r['Video_no'] == video_no]
@@ -114,17 +117,21 @@ for video_no in videos:
 
     print("%s: %d pre questions, %d post questions" % (video_name, len(pre_questions), len(post_questions)))
 
-    # trial_components.append([dict()])
-    # trial_definition_data.append('{ "type": "NewComponent::WebGazerCalibrate" }')
+    trial_components.append([dict()])
+    trial_definition_data.append('{ "type": "NewComponent::WebGazerCalibrate" }')
+    study_description += "First, you'll calibrate your gaze to the webcam of your computer.\n"
+
+    trial_components += pre_questions[-5:]
+    trial_definition_data += ["{}" for _ in range(len(pre_questions))]
+    study_description += "Then you'll answer some questions.\n"
 
     trial_components.append([yt_video])
     trial_definition_data.append("{}")
-
-    # trial_components += pre_questions
-    # trial_definition_data += ["{}" for _ in range(len(pre_questions))]
+    study_description += "Then you'll watch a cool video.\n"
 
     trial_components += post_questions[-5:]
     trial_definition_data += ["{}" for _ in range(len(post_questions))]
+    study_description += "Then another set of questions to answer.\n"
 
     trial_components += [ [
         dict(
@@ -139,8 +146,9 @@ for video_no in videos:
                     EndOfExperiment=dict()))]
         )
     ] ]
-
     trial_definition_data += [ "{}" ]
+
+    study_description += "Then, done!.\n"
 
 
 # print(trial_components)
@@ -189,8 +197,8 @@ new_study = elicit.add_obj("addStudy", args)
 
 new_protocol_definition = dict(name='Learning Study Protocol',
                                definition_data="foo",
-                               summary=lorem.sentence(),
-                               description=lorem.paragraph(),
+                               summary="Video Learning",
+                               description=study_description,
                                active=True)
 args = dict(protocol_definition=dict(protocol_definition=new_protocol_definition),
             study_definition_id=new_study.id)
@@ -204,7 +212,7 @@ elicit.add_users_to_protocol(new_study, new_protocol, study_participants)
 
 # generate two phases for example
 phase_definitions = []
-for phase_idx in range(2):
+for phase_idx in range(1):
     #
     # Add a new Phase Definition
     #

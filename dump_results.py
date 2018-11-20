@@ -27,7 +27,7 @@ examples_default.parser.add_argument(
     '--user_name', default=None, help="The user name to dump")
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(),
-                         args.apiurl, examples_default.send_opt)
+                         args.apiurl, args.send_opt)
 
 #
 # Login admin user to get study results
@@ -103,7 +103,7 @@ for stage_id in stage_ids:
     time_series = resp.data[0]
 
     #url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
-    url =  elicit.api_url + "/" + json.loads(time_series.file.replace("'", '"'))['url']
+    url =  elicit.api_url + "/public/" + json.loads(time_series.file.replace("'", '"'))['url']
 
     headers = {
         'Accept-Encoding': 'gzip, deflate, br',
@@ -123,8 +123,6 @@ for stage_id in stage_ids:
             for chunk in r.iter_content(chunk_size=128):
                 fd.write(chunk)
 
-
-exit()
 
 resp = client.request(elicit['findTrialResults'](study_result_id=study_result.id,
                                                  experiment_id=experiment.id))
