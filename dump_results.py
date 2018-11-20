@@ -100,17 +100,21 @@ for stage_id in stage_ids:
     print("\n\nTime Series for Stage %d:\n"%stage_id)
     pp.pprint(resp.data)
 
+    if len(resp.data) == 0:
+        print("No time series for stage %d\n"%stage_id)
+        continue
+        
     time_series = resp.data[0]
 
     #url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
-    url =  elicit.api_url + "/public/" + json.loads(time_series.file.replace("'", '"'))['url']
+    url =  elicit.api_url + json.loads(time_series.file.replace("'", '"'))['url']
 
     headers = {
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept': 'text/tab-separated-values',
         'Authorization':  elicit.auth_header,
     }
-    with requests.get(url, headers=headers, stream=True) as r:
+    with requests.get(url, headers=headers, stream=True, verify=args.send_opt['verify']) as r:
 
         pp.pprint(r.status_code)
         pp.pprint(r.headers)

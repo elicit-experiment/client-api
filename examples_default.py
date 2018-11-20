@@ -53,7 +53,7 @@ def load_trial_definitions(file_name):
 class ElicitClientApi:
   def __init__(self):
     self.script_args = parse_command_line_args()
-    print(send_opt)
+    print(self.script_args.send_opt)
     self.elicit_api = pyelicit.Elicit(pyelicit.ElicitCreds(), self.script_args.apiurl, self.script_args.send_opt)
     self.client = self.elicit_api.login()
 
