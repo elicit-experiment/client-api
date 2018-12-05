@@ -13,6 +13,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 import gzip
 import json
 import os
+
 ##
 # MAIN
 ##
@@ -103,7 +104,7 @@ for stage_id in stage_ids:
     if len(resp.data) == 0:
         print("No time series for stage %d\n"%stage_id)
         continue
-        
+
     time_series = resp.data[0]
 
     #url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])

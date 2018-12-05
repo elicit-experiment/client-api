@@ -11,15 +11,15 @@ import json
 import lorem  # generate boilerplate text to make sure the website renders correctly
 import re
 
-from examples_default import *
-
-from http import HTTPStatus
+from examples_base import *
 
 ##
 ## MAIN
 ##
 
 pp = pprint.PrettyPrinter(indent=4)
+
+answer_key = dict()
 
 #
 # Load trial definitions
@@ -89,24 +89,29 @@ for video_no in videos:
                         AlignForStimuli='0',
                         QuestionsPerRow=1,
                         HeaderLabel=video_row['Question'],
+                        # todo_permute these
                         Items=dict(
                             Item=[
                                 dict(
                                     Id='0',
                                     Label=video_row['Correct'],
-                                    Selected='0'),
+                                    Selected='0',
+                                    Correct=True),
                                 dict(
                                     Id='1',
                                     Label=video_row['Wrong_1'],
-                                    Selected='0'),
+                                    Selected='0',
+                                    Correct=False),
                                 dict(
                                     Id='2',
                                     Label=video_row['Wrong_2'],
-                                    Selected='0'),
+                                    Selected='0',
+                                    Correct=False),
                                 dict(
                                     Id='3',
                                     Label=video_row['Wrong_3'],
-                                    Selected='0')]),
+                                    Selected='0',
+                                    Correct=False)]),
                         MaxNoOfScalings='1',
                         MinNoOfScalings='1')))])
 
@@ -158,19 +163,21 @@ for video_no in videos:
 # exit()
 # quit()
 
-elicit = ElicitClientApi()
+args = parse_command_line_args()
+
+el = elicit.Elicit(args)
 
 #
 # Double-check that we have the right user
 #
 
-user = assert_admin(elicit.client, elicit.elicit_api)
+user = el.assert_admin()
 
 #
 # Get list of users who will use the study
 #
 
-users = elicit.get_all_users()
+users = el.get_all_users()
 
 study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
 
@@ -178,18 +185,17 @@ study_participants = list(filter(lambda usr: usr.role == 'registered_user', user
 # Add a new Study Definition
 #
 study_definition = dict(title='Learning Study - WebGazer',
-                        description="""Study of learning, using eye gaze tracking from WebGazer
-                        
+                        description="""Study of learning, using eye gaze tracking from WebGazer 
                         This version calibrates on the video page""",
                         version=1,
                         lock_question=1,
                         enable_previous=1,
                         footer_label="This is the footer of the study",
-                        redirect_close_on_url=elicit.elicit_api.api_url + "/participant",
+                        redirect_close_on_url=el.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user.id)
 args = dict(study=dict(study_definition=study_definition))
-new_study = elicit.add_obj("addStudy", args)
+new_study = el.add_obj("addStudy", args)
 
 #
 # Add a new Protocol Definition
@@ -202,15 +208,15 @@ new_protocol_definition = dict(name='Learning Study Protocol',
                                active=True)
 args = dict(protocol_definition=dict(protocol_definition=new_protocol_definition),
             study_definition_id=new_study.id)
-new_protocol = elicit.add_obj("addProtocolDefinition", args)
+new_protocol = el.add_obj("addProtocolDefinition", args)
 
 #
 # Add users to protocol
 #
 
-elicit.add_users_to_protocol(new_study, new_protocol, study_participants)
+el.add_users_to_protocol(new_study, new_protocol, study_participants)
 
-# generate two phases for example
+# generate N phases for example
 phase_definitions = []
 for phase_idx in range(1):
     #
@@ -222,7 +228,7 @@ for phase_idx in range(1):
                 study_definition_id=new_study.id,
                 protocol_definition_id=new_protocol.id)
 
-    new_phase = elicit.add_obj("addPhaseDefinition", args)
+    new_phase = el.add_obj("addPhaseDefinition", args)
     phase_definitions = [new_phase]
 
     trials = []
@@ -238,7 +244,7 @@ for phase_idx in range(1):
                     study_definition_id=new_study.id,
                     protocol_definition_id=new_protocol.id,
                     phase_definition_id=new_phase.id)
-        new_trial_definition = elicit.add_obj("addTrialDefinition", args)
+        new_trial_definition = el.add_obj("addTrialDefinition", args)
         trials.append(new_trial_definition)
 
         #
@@ -253,7 +259,13 @@ for phase_idx in range(1):
                         protocol_definition_id=new_protocol.id,
                         phase_definition_id=new_phase.id,
                         trial_definition_id=new_trial_definition.id)
-            new_component = elicit.add_obj("addComponent", args)
+            new_component = el.add_obj("addComponent", args)
+
+            if 'Instruments' in component_definition:
+                if 'RadioButtonGroup' in component_definition['Instruments'][0]['Instrument']:
+                    radio = component_definition['Instruments'][0]['Instrument']['RadioButtonGroup']
+                    answer_key[new_component.id] = dict(question = radio['HeaderLabel'],
+                                                        items = radio['Items'])
 
     #
     # Add a new Trial Order
@@ -265,7 +277,7 @@ for phase_idx in range(1):
                 study_definition_id=new_study.id,
                 protocol_definition_id=new_protocol.id,
                 phase_definition_id=new_phase.id)
-    new_trial_order = elicit.add_obj("addTrialOrder", args)
+    new_trial_order = el.add_obj("addTrialOrder", args)
 
 #
 # Add a new Phase Order
@@ -278,4 +290,10 @@ new_phase_order = dict(phase_order=dict(sequence_data=phase_sequence_data,
 args = dict(phase_order=new_phase_order,
             study_definition_id=new_study.id,
             protocol_definition_id=new_protocol.id)
-new_phase_order = elicit.add_obj("addPhaseOrder", args)
+new_phase_order = el.add_obj("addPhaseOrder", args)
+
+
+answer_key_json = json.dumps(answer_key, indent=4)
+print(answer_key_json)
+with open('data.txt', 'w') as outfile:
+    json.dump(answer_key, outfile)
