@@ -11,6 +11,9 @@ from examples_base import *
 ## MAIN
 ##
 
+with open('questions.json', 'r') as questionsfd:
+    questions = json.load(questionsfd)
+
 pp = pprint.PrettyPrinter(indent=4)
 
 parser.add_argument(
@@ -32,6 +35,7 @@ user = el.assert_admin()
 study_results = el.find_study_results(study_definition_id=args.study_id)
 
 all_answers = []
+raw_questions = dict()
 
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
@@ -45,6 +49,7 @@ for study_result in study_results:
         data_points = el.find_data_points(study_result_id=study_result.id, protocol_user_id=protocol_user_id)
 
         states = filter(lambda x: x['point_type'] == 'State', data_points)
+
         def fetch_answer(state):
             out = state.copy()
             out['value'] = json.loads(state['value'])
@@ -60,8 +65,39 @@ for study_result in study_results:
 
         all_answers += answers
 
-pp.pprint(answers)
+        for answer in answers:
+            if not (answer[3] in raw_questions):
+                component = el.get_component(component_id = answer[3])
+                raw_questions[answer[3]] = component
 
+pp.pprint(raw_questions)
 
+with open('answer.csv', 'w', newline='') as csvfile:
+    answerwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    answerwriter.writerow(['user_id', 'answer_id', 'datetime', 'component_id', 'question', 'correct'])
+    for answer in all_answers:
+        id = answer[1]
+        if id == None:
+            continue
+        question = 'unknown'
+        correct = False
+        if str(answer[3]) in questions:
+            item = questions[str(answer[3])]['items']['Item']
+            question = questions[str(answer[3])]['question']
+            answered_option = next((x for x in item if x['Id'] == str(id)))
+            pp.pprint(answered_option)
+            correct = answered_option['Correct']
+        elif answer[3] in raw_questions:
+            component_def = json.loads(component['definition_data'])
+            pp.pprint(component_def)
+            radio_button_def = component_def['Instruments'][0]['Instrument']['RadioButtonGroup']
+            items = radio_button_def['Items']['Item']
+            question = radio_button_def['HeaderLabel']
+            print(question)
+            print(answer[1])
+            answered_option = next((x for x in items if x['Id'] == str(id)))
+            correct = answered_option['Correct']
+
+        answerwriter.writerow(answer + (question, correct))
 
 

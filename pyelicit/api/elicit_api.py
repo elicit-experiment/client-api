@@ -29,7 +29,6 @@ class ElicitApi:
             print('WARNING: not checking SSL')
             dont_check_ssl()
 
-
         self.api_url = api_url
         self.app = App._create_(self.api_url + '/apidocs/v1/swagger.json')
         self.auth = Security(self.app)

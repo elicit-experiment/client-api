@@ -295,5 +295,5 @@ new_phase_order = el.add_obj("addPhaseOrder", args)
 
 answer_key_json = json.dumps(answer_key, indent=4)
 print(answer_key_json)
-with open('data.txt', 'w') as outfile:
+with open('questions.json', 'w') as outfile:
     json.dump(answer_key, outfile)

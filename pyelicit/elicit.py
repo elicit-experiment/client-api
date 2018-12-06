@@ -70,6 +70,8 @@ def find_or_create_user(client, elicit, username, password, email=None, role=Non
 
 
 def add_object(client, elicit, operation, pp = _pp, **args):
+    _pp.pprint(args)
+    print(operation)
     resp = client.request(elicit[operation](**args))
     assert resp.status == HTTPStatus.CREATED
     if resp.status != HTTPStatus.CREATED:
@@ -94,6 +96,20 @@ def find_objects(client, elicit, operation, pp = _pp, **args):
         pp.pprint(found_objects)
 
     return (found_objects)
+
+
+def get_object(client, elicit, operation, pp = _pp, **args):
+    resp = client.request(elicit[operation](**args))
+    assert resp.status == HTTPStatus.OK
+    if resp.status != HTTPStatus.OK:
+        return (None)
+
+    found_object = resp.data
+    if pp != None:
+        pp.print("\n\nGot object with %s(%s):\n" %(operation, args))
+        pp.pprint(found_object)
+
+    return (found_object)
 
 
 def load_trial_definitions(file_name):
@@ -141,6 +157,14 @@ def add_find_api_fn(api_name):
 
     setattr(Elicit, fn_name, fn)
 
+def add_get_api_fn(api_name):
+    fn_name = camel_to_snake(api_name)
+
+    def fn(self, **kwargs):
+        return get_object(self.client, self.elicit_api, api_name, self.pp(), **kwargs)
+
+    setattr(Elicit, fn_name, fn)
+
 def add_add_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
 
@@ -155,3 +179,6 @@ for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataP
 
 for api_name in []:
     add_add_api_fn(api_name)
+
+for api_name in ['getComponent']:
+    add_get_api_fn(api_name)
