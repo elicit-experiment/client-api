@@ -128,6 +128,12 @@ class Elicit:
         self.elicit_api = api.ElicitApi(api.ElicitCreds(), self.script_args.apiurl, self.script_args.send_opt)
         self.client = self.elicit_api.login()
 
+    def api_url(self):
+        return self.script_args.apiurl
+
+    def auth_header(self):
+        return self.elicit_api.auth_header
+
     def add_obj(self, op, args):
         return add_object(self.client, self.elicit_api, op, self.pp(), **args)
 
@@ -174,7 +180,7 @@ def add_add_api_fn(api_name):
     setattr(Elicit, fn_name, fn)
 
 for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries', 'findTrialResults',
-                 'findComponents']:
+                 'findComponents', 'findTimeSeries']:
     add_find_api_fn(api_name)
 
 for api_name in []:

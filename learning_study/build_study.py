@@ -268,16 +268,17 @@ for phase_idx in range(1):
                                                         items = radio['Items'])
 
     #
-    # Add a new Trial Order
+    # Add a new Trial Orders
     #
 
-    new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                            user_id=study_participants[0].id))
-    args = dict(trial_order=new_trial_order,
-                study_definition_id=new_study.id,
-                protocol_definition_id=new_protocol.id,
-                phase_definition_id=new_phase.id)
-    new_trial_order = el.add_obj("addTrialOrder", args)
+    for study_participant in study_participants:
+        new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
+                                                user_id=study_participant.id))
+        args = dict(trial_order=new_trial_order,
+                    study_definition_id=new_study.id,
+                    protocol_definition_id=new_protocol.id,
+                    phase_definition_id=new_phase.id)
+        new_trial_order = el.add_obj("addTrialOrder", args)
 
 #
 # Add a new Phase Order
