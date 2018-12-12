@@ -23,8 +23,11 @@ def parse_datetime(field, state):
 ## MAIN
 ##
 
-with open('questions.json', 'r') as questionsfd:
-    questions = json.load(questionsfd)
+questions_filename = 'questions.json'
+questions = dict()
+if os.path.isfile(questions_filename):
+    with open(questions_filename, 'r') as questionsfd:
+        questions = json.load(questionsfd)
 
 pp = pprint.PrettyPrinter(indent=4)
 
