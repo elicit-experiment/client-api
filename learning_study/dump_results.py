@@ -52,7 +52,7 @@ study_results = el.find_study_results(study_definition_id=args.study_id)
 
 all_answers = []
 raw_questions = dict()
-video_events = []
+all_video_events = []
 
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
@@ -66,11 +66,13 @@ for study_result in study_results:
         data_points = el.find_data_points(study_result_id=study_result.id, protocol_user_id=protocol_user_id)
 
         states = filter(lambda x: x['point_type'] == 'State', data_points)
-        video_states = filter(lambda x: (x['method'] != None) and ((x['method'].find('audio') != -1) or (x['method'].find('video') != -1)), data_points)
+        video_events = filter(lambda x: (x['point_type'] != 'State') and (x['method'] != None) and ((x['method'].find('audio') != -1) or (x['method'].find('video') != -1)), data_points)
+        video_events = list(video_events)
+        pp.pprint(list(video_events))
 
-        video_states = filter(partial(parse_datetime, 'datetime'), video_states)
+        video_events = filter(partial(parse_datetime, 'datetime'), video_events)
 
-        video_events += map(lambda x: (x['datetime'], x['point_type'], protocol_user_id), video_states)
+        all_video_events += map(lambda x: (x['protocol_user']['user_id'], x['datetime'], x['point_type']), video_events)
 
         def fetch_answer(state):
             out = state.copy()
@@ -136,8 +138,8 @@ for study_result in study_results:
 
 with open('video.csv', 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    videowriter.writerow(['datetime', 'event', 'user_id'])
-    for video_event in video_events:
+    videowriter.writerow(['user_id', 'datetime', 'event'])
+    for video_event in all_video_events:
         videowriter.writerow(video_event)
 
 with open('answer.csv', 'w', newline='') as csvfile:
@@ -158,6 +160,7 @@ with open('answer.csv', 'w', newline='') as csvfile:
             correct = answered_option['Correct']
         elif answer[3] in raw_questions:
             #print("FROM RAWQUESTIONS %s"%answer[3])
+            component = raw_questions[answer[3]]
             component_def = component['parsed_definition_data']
             radio_button_def = component_def['Instruments'][0]['Instrument']['RadioButtonGroup']
             items = radio_button_def['Items']['Item']
