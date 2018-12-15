@@ -89,7 +89,6 @@ for study_result in study_results:
             layouts = list(filter(lambda x: x['point_type'] == 'Layout', data_points))
             if len(layouts) > 0:
                 video_layout = json.loads(layouts[0]['value'])
-                user_id = layouts[0]['protocol_user']['user_id']
                 layout_filename = ("user_%d_layout.json" % (user_id))
                 with open(layout_filename, 'w') as fd:
                     fd.write(layouts[0]['value'])
