@@ -183,7 +183,7 @@ for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataP
                  'findComponents', 'findTimeSeries']:
     add_find_api_fn(api_name)
 
-for api_name in []:
+for api_name in ['addStudy']:
     add_add_api_fn(api_name)
 
 for api_name in ['getComponent']:

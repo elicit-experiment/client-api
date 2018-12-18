@@ -190,19 +190,20 @@ study_definition = dict(title='Learning Study - WebGazer',
                         version=1,
                         lock_question=1,
                         enable_previous=1,
+                        allow_anonymous_users=True,# allow taking the study without login
+                        show_in_study_list=True,   # show in the (public) study list for anonymous protocols
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=el.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user.id)
-args = dict(study=dict(study_definition=study_definition))
-new_study = el.add_obj("addStudy", args)
+new_study = el.add_study(study=dict(study_definition=study_definition))
 
 #
 # Add a new Protocol Definition
 #
 
 new_protocol_definition = dict(name='Learning Study Protocol',
-                               definition_data="foo",
+                               definition_data="whatever you want here",
                                summary="Video Learning",
                                description=study_description,
                                active=True)
