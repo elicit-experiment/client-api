@@ -167,7 +167,7 @@ args = parse_command_line_args()
 el = elicit.Elicit(args)
 
 #
-# Double-check that we have the right user
+# Double-check that we have the right user: we need to be admin to create a study
 #
 
 user = el.assert_admin()
