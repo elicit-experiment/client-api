@@ -62,6 +62,9 @@ for study_result in study_results:
         user_id = experiment['protocol_user']['user_id']
         user_name = experiment['protocol_user']['user']['username']
 
+        if args.user_id and args.user_id != user_id:
+            continue
+
         protocol_user_id = experiment['protocol_user_id']
         stages = el.find_stages(study_result_id=study_result.id, experiment_id=experiment.id)
 
@@ -72,7 +75,8 @@ for study_result in study_results:
         for trial_result in trial_results:
             data_points = el.find_data_points(study_result_id=study_result.id,
                                               trial_definition_id=trial_result.trial_definition_id,
-                                              protocol_user_id=protocol_user_id, page_size=50)
+                                              protocol_user_id=protocol_user_id,
+                                              page_size=50)
 
             print("Got %d datapoints for study result %d, trial result %d protocol user %d"%(len(data_points), study_result.id, trial_result.id, protocol_user_id))
 

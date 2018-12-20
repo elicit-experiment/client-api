@@ -39,7 +39,7 @@ yt_video = dict(
 
 yt_urls = {
     'Stars': 'https://youtu.be/zr9leP_Dcm8',
-    'Stars2':'https://youtu.be/soTEnpcn0ig',
+    'Stars2': 'https://youtu.be/soTEnpcn0ig',
     'Lightbulbs': 'https://youtu.be/AK0fLfdTSWA',
     'Immune': 'https://youtu.be/CHTRmZiS1dU',
     'Internet': 'https://youtu.be/7jhFkqgCKDE',
@@ -67,7 +67,7 @@ videos = list(set([r['Video_no'] for r in question_rows]))
 trial_components = []
 trial_definition_data = []
 
-study_description="This study proceeds as follows:\n"
+study_description = "This study proceeds as follows:\n"
 
 for video_no in videos:
     video_rows = [r for r in question_rows if r['Video_no'] == video_no]
@@ -138,7 +138,7 @@ for video_no in videos:
     trial_definition_data += ["{}" for _ in range(len(post_questions))]
     study_description += "Then another set of questions to answer.\n"
 
-    trial_components += [ [
+    trial_components += [[
         dict(
             Instruments=[dict(
                 Instrument=dict(
@@ -150,11 +150,10 @@ for video_no in videos:
                 Instrument=dict(
                     EndOfExperiment=dict()))]
         )
-    ] ]
-    trial_definition_data += [ "{}" ]
+    ]]
+    trial_definition_data += ["{}"]
 
     study_description += "Then, done!.\n"
-
 
 # print(trial_components)
 
@@ -190,8 +189,8 @@ study_definition = dict(title='Learning Study - WebGazer',
                         version=1,
                         lock_question=1,
                         enable_previous=1,
-                        allow_anonymous_users=True,# allow taking the study without login
-                        show_in_study_list=True,   # show in the (public) study list for anonymous protocols
+                        allow_anonymous_users=True,  # allow taking the study without login
+                        show_in_study_list=True,  # show in the (public) study list for anonymous protocols
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=el.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
@@ -207,9 +206,8 @@ new_protocol_definition = dict(name='Learning Study Protocol',
                                summary="Video Learning",
                                description=study_description,
                                active=True)
-args = dict(protocol_definition=dict(protocol_definition=new_protocol_definition),
-            study_definition_id=new_study.id)
-new_protocol = el.add_obj("addProtocolDefinition", args)
+new_protocol = el.add_protocol_definition(protocol_definition=dict(protocol_definition=new_protocol_definition),
+                                          study_definition_id=new_study.id)
 
 #
 # Add users to protocol
@@ -225,11 +223,10 @@ for phase_idx in range(1):
     #
 
     new_phase_definition = dict(phase_definition=dict(definition_data="foo"))
-    args = dict(phase_definition=new_phase_definition,
-                study_definition_id=new_study.id,
-                protocol_definition_id=new_protocol.id)
 
-    new_phase = el.add_obj("addPhaseDefinition", args)
+    new_phase = el.add_phase_definition(phase_definition=new_phase_definition,
+                                        study_definition_id=new_study.id,
+                                        protocol_definition_id=new_protocol.id)
     phase_definitions = [new_phase]
 
     trials = []
@@ -240,12 +237,11 @@ for phase_idx in range(1):
         # Add a new Trial Definition
         #
 
-        new_trial_definition = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
-        args = dict(trial_definition=new_trial_definition,
-                    study_definition_id=new_study.id,
-                    protocol_definition_id=new_protocol.id,
-                    phase_definition_id=new_phase.id)
-        new_trial_definition = el.add_obj("addTrialDefinition", args)
+        new_trial_definition_config = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
+        new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
+                                                       study_definition_id=new_study.id,
+                                                       protocol_definition_id=new_protocol.id,
+                                                       phase_definition_id=new_phase.id)
         trials.append(new_trial_definition)
 
         #
@@ -253,33 +249,31 @@ for phase_idx in range(1):
         #
 
         for idx, component_definition in enumerate(trial_components[trial_idx]):
-            new_component = dict(name='Newly created component definition from Python',
-                                 definition_data=json.dumps(component_definition))
-            args = dict(component=dict(component=new_component),
-                        study_definition_id=new_study.id,
-                        protocol_definition_id=new_protocol.id,
-                        phase_definition_id=new_phase.id,
-                        trial_definition_id=new_trial_definition.id)
-            new_component = el.add_obj("addComponent", args)
+            new_component_config = dict(name='Newly created component definition from Python',
+                                        definition_data=json.dumps(component_definition))
+            new_component = el.add_component(component=dict(component=new_component_config),
+                                             study_definition_id=new_study.id,
+                                             protocol_definition_id=new_protocol.id,
+                                             phase_definition_id=new_phase.id,
+                                             trial_definition_id=new_trial_definition.id)
 
             if 'Instruments' in component_definition:
                 if 'RadioButtonGroup' in component_definition['Instruments'][0]['Instrument']:
                     radio = component_definition['Instruments'][0]['Instrument']['RadioButtonGroup']
-                    answer_key[new_component.id] = dict(question = radio['HeaderLabel'],
-                                                        items = radio['Items'])
+                    answer_key[new_component.id] = dict(question=radio['HeaderLabel'],
+                                                        items=radio['Items'])
 
     #
     # Add a new Trial Orders
     #
 
     for study_participant in study_participants:
-        new_trial_order = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                user_id=study_participant.id))
-        args = dict(trial_order=new_trial_order,
-                    study_definition_id=new_study.id,
-                    protocol_definition_id=new_protocol.id,
-                    phase_definition_id=new_phase.id)
-        new_trial_order = el.add_obj("addTrialOrder", args)
+        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
+                                                       user_id=study_participant.id))
+        new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
+                                             study_definition_id=new_study.id,
+                                             protocol_definition_id=new_protocol.id,
+                                             phase_definition_id=new_phase.id)
 
 #
 # Add a new Phase Order
@@ -287,13 +281,11 @@ for phase_idx in range(1):
 
 phase_sequence_data = ",".join(
     [str(phase_definition.id) for phase_definition in phase_definitions])
-new_phase_order = dict(phase_order=dict(sequence_data=phase_sequence_data,
-                                        user_id=user.id))
-args = dict(phase_order=new_phase_order,
-            study_definition_id=new_study.id,
-            protocol_definition_id=new_protocol.id)
-new_phase_order = el.add_obj("addPhaseOrder", args)
-
+new_phase_order_config = dict(phase_order=dict(sequence_data=phase_sequence_data,
+                                               user_id=user.id))
+new_phase_order = el.add_phase_order(phase_order=new_phase_order_config,
+                                     study_definition_id=new_study.id,
+                                     protocol_definition_id=new_protocol.id)
 
 answer_key_json = json.dumps(answer_key, indent=4)
 print(answer_key_json)

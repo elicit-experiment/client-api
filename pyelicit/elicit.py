@@ -179,11 +179,12 @@ def add_add_api_fn(api_name):
 
     setattr(Elicit, fn_name, fn)
 
-for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries', 'findTrialResults',
-                 'findComponents', 'findTimeSeries']:
+for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries',
+                 'findTrialResults', 'findComponents', 'findTimeSeries']:
     add_find_api_fn(api_name)
 
-for api_name in ['addStudy']:
+for api_name in ['addStudy', 'addProtocolDefinition', 'addPhaseDefinition', 'addTrialDefinition', 'addTrialOrder',
+                 'addPhaseOrder', 'addProtocolUser', 'addComponent']:
     add_add_api_fn(api_name)
 
 for api_name in ['getComponent']:
