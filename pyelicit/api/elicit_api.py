@@ -22,7 +22,7 @@ class ElicitApi:
                  creds=elicit_creds.ElicitCreds(),
                  api_url=PRODUCTION_URL,
                  send_opt=dict(verify=True)):
-        print("Initialize Elicit client library for %s" % api_url)
+        print("Initialize Elicit client library for %s options:" % api_url)
         print(send_opt)
 
         if ((not send_opt['verify']) and api_url.startswith("https")):
@@ -45,7 +45,6 @@ class ElicitApi:
         Login to Elicit using credentials specified in init
         :return: client with auth header added.
         """
-        print('login')
         auth_request = dict(client_id=self.creds.public_client_id,
                             client_secret=self.creds.public_client_secret,
                             grant_type='password',

@@ -16,7 +16,6 @@ from examples_base import *
 
 pp = pprint.PrettyPrinter(indent=4)
 
-
 args = parse_command_line_args()
 
 el = elicit.Elicit(args)
@@ -89,7 +88,8 @@ trials = []
 
 # WebGazer Configuration
 
-new_trial_definition_config = dict(trial_definition=dict(definition_data='{ "type": "NewComponent::WebGazerCalibrate" }'))
+new_trial_definition_config = dict(
+    trial_definition=dict(definition_data=dict(type="NewComponent::WebGazerCalibrate")))
 new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
                                                study_definition_id=new_study.id,
                                                protocol_definition_id=new_protocol.id,
@@ -97,17 +97,17 @@ new_trial_definition = el.add_trial_definition(trial_definition=new_trial_defini
 trials.append(new_trial_definition)
 
 new_component_config = dict(name='Empty component',
-                            definition_data='{}')
-new_component = el.add_component(component=dict(component=new_component_config),
+                            definition_data=dict())
+new_component = el.add_component(component=dict(component=dict(name='Empty component',
+                                                               definition_data=dict())),
                                  study_definition_id=new_study.id,
                                  protocol_definition_id=new_protocol.id,
                                  phase_definition_id=new_phase.id,
                                  trial_definition_id=new_trial_definition.id)
 
-
 # Video page
 
-new_trial_definition_config = dict(trial_definition=dict(definition_data='{}'))
+new_trial_definition_config = dict(trial_definition=dict(definition_data=dict()))
 new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
                                                study_definition_id=new_study.id,
                                                protocol_definition_id=new_protocol.id,
@@ -116,12 +116,11 @@ trials.append(new_trial_definition)
 
 butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 video_component_definition = dict(
-        Stimuli=[dict(
-            Label='Video Label',
-            Type='video/youtube',
-            IsPausable=False,
-            URI=butterfly_video_url)])
-
+    Stimuli=[dict(
+        Label='Video Label',
+        Type='video/youtube',
+        IsPausable=False,
+        URI=butterfly_video_url)])
 
 new_component_config = dict(name='Video page component',
                             definition_data=json.dumps(video_component_definition))
@@ -173,7 +172,7 @@ component_definition = dict(
                 MaxNoOfScalings='1',
                 MinNoOfScalings='1')))])
 
-new_component_config = dict(name='Empty component',
+new_component_config = dict(name='Radio button component',
                             definition_data=json.dumps(component_definition))
 new_component = el.add_component(component=dict(component=new_component_config),
                                  study_definition_id=new_study.id,
@@ -204,7 +203,6 @@ new_component = el.add_component(component=dict(component=new_component_config),
                                  protocol_definition_id=new_protocol.id,
                                  phase_definition_id=new_phase.id,
                                  trial_definition_id=new_trial_definition.id)
-
 
 eoe_component = dict(
     Instruments=[dict(
@@ -243,4 +241,3 @@ new_phase_order_config = dict(phase_order=dict(sequence_data=phase_sequence_data
 new_phase_order = el.add_phase_order(phase_order=new_phase_order_config,
                                      study_definition_id=new_study.id,
                                      protocol_definition_id=new_protocol.id)
-

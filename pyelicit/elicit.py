@@ -2,6 +2,7 @@ from http import HTTPStatus
 from . import api
 import pprint
 import re
+import json
 
 _pp = pp = pprint.PrettyPrinter(indent=4)
 
@@ -10,7 +11,22 @@ def proxy_print(fmt, **args):
 
 setattr(pp, 'print', proxy_print)
 
-dir(api)
+def search(d, key, default=None):
+    """Return a dict containing to the specified key in the (possibly
+    nested) within dictionary d. If there is no item with that key, return
+    default.
+    """
+    stack = [d]
+    while stack:
+        cur_d = stack[-1]
+        stack.pop()
+        for k, v in cur_d.items():
+            if k == key:
+                return cur_d
+            elif isinstance(v, dict):
+                stack.append(v)
+    return default
+
 
 # camelCase to snake_case
 def camel_to_snake(name):
@@ -23,7 +39,7 @@ def assert_admin(client, elicit):
     assert resp.status == HTTPStatus.OK
 
     print("Current User:")
-    print(resp.data)
+    pp.pprint(resp.data)
 
     user = resp.data
 
@@ -70,8 +86,10 @@ def find_or_create_user(client, elicit, username, password, email=None, role=Non
 
 
 def add_object(client, elicit, operation, pp = _pp, **args):
-    _pp.pprint(args)
-    print(operation)
+    definition_data_parent = search(args, 'definition_data')
+    if definition_data_parent:
+        if isinstance(definition_data_parent['definition_data'], dict):
+            definition_data_parent['definition_data'] = json.dumps(definition_data_parent['definition_data'])
     resp = client.request(elicit[operation](**args))
     assert resp.status == HTTPStatus.CREATED
     if resp.status != HTTPStatus.CREATED:
@@ -124,7 +142,6 @@ def load_trial_definitions(file_name):
 class Elicit:
     def __init__(self, script_args):
         self.script_args = script_args  # parse_command_line_args()
-        print(self.script_args.send_opt)
         self.elicit_api = api.ElicitApi(api.ElicitCreds(), self.script_args.apiurl, self.script_args.send_opt)
         self.client = self.elicit_api.login()
 
