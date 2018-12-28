@@ -61,6 +61,7 @@ all_answers = []
 raw_questions = dict()
 all_video_events = []
 all_video_layout_events = []
+all_trial_results = []
 
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
@@ -78,6 +79,15 @@ for study_result in study_results:
         trial_results = el.find_trial_results(study_result_id=study_result.id, experiment_id=experiment.id)
 
         video_layout = None
+
+        #pp.pprint(trial_results)
+
+        all_trial_results += [ [ user_id,
+                                              x.started_at,
+                                              x.completed_at,
+                                              experiment.id,
+                                              x.phase_definition_id,
+                                              x.trial_definition_id ] for x in trial_results]
 
         for trial_result in trial_results:
             data_points = el.find_data_points(study_result_id=study_result.id,
@@ -194,6 +204,14 @@ with open('video_layouts.csv', 'w', newline='') as csvfile:
     videowriter.writerow(header)
     for video_layout_event in all_video_layout_events:
         videowriter.writerow(video_layout_event)
+
+with open('trial_events.csv', 'w', newline='') as csvfile:
+    videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    header = ['user_id', 'created_at', 'completed_at',
+              'experiment_id', 'phase_definition_id', 'trial_definition_id', 'component_id']
+    videowriter.writerow(header)
+    for trial_event in all_trial_results:
+        videowriter.writerow(trial_event)
 
 with open('answer.csv', 'w', newline='') as csvfile:
     answerwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
