@@ -250,7 +250,7 @@ for phase_idx in range(1):
 
         for idx, component_definition in enumerate(trial_components[trial_idx]):
             new_component_config = dict(name='Newly created component definition from Python',
-                                        definition_data(component_definition))
+                                        definition_data = component_definition)
             new_component = el.add_component(component=dict(component=new_component_config),
                                              study_definition_id=new_study.id,
                                              protocol_definition_id=new_protocol.id,

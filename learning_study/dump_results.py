@@ -228,7 +228,7 @@ with open('trial_events.csv', 'w', newline='') as csvfile:
 
 with open('experiment_events.csv', 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    header = ['user_id', 'created_at', 'completed_at',
+    header = ['user_id', 'started_at', 'completed_at',
               'experiment_id']
     videowriter.writerow(header)
     for experiment_event in all_experiment_results:
