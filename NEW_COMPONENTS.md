@@ -1,23 +1,13 @@
-# New Component Definitions
+# Creating New Definitions for Components
 
 ```bash
-pipenv install
+PYTHONPATH=`pwd` pipenv run python3 extract_component_definitions.py --output_folder new_components_test --file experiment_xml/freetexttest.xml
 ```
 
-```
-python3 extract_component_definitions.py experiment_xml/likertscaletest.xml
-```
+This will generate the new component structures -- including the `.py` Python code -- for the given input XML.  In this case we're creating the freetext question.
 
-Generates `likertscaletest.xml.py`, Python code to create component definitions for the Likert scale.
-
-```
-python3 create_new_study_example.py --env local --outfile likertscaletest.xml.full.py likertscaletest.xml.py
-
-pipenv run python3 create_new_study_example.py --env local --outfile likertscaletest.xml.full.py likertscaletest.xml.py
-```
-
+You can then create a study based on these with:
 
 ```bash
-pipenv run python3 create_new_study_example2.py --env local
+PYTHONPATH=`pwd` pipenv run python3 create_new_component_study.py --env local --trial_definitions_file new_components_test/freetexttest.xml.py
 ```
-

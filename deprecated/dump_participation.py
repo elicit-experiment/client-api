@@ -2,10 +2,9 @@
 Example for dumping the protocols a given user is eligeable to take.
 """
 import pprint
-import sys
 import pyelicit
 
-import examples_default
+from deprecated import examples_default
 
 pp = pprint.PrettyPrinter(indent=4)
 

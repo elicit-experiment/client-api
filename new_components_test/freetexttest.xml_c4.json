@@ -1,0 +1,1 @@
+{"Instruments": [{"Instrument": {"Freetext": {"Label": "This wants an email (LabelPosition=left)", "LabelPosition": "left", "Validation": "[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}", "BoxWidth": null, "BoxHeight": null, "Resizable": null}}}]}

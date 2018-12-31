@@ -1,14 +1,11 @@
-import csv
 import json
 import pandas as pd
 import tobii_utils
 import os
-import pprint
-import sys
 import pyelicit
 
-import examples_default
-from example_helpers import *
+from deprecated import examples_default
+from deprecated.example_helpers import *
 
 
 ##

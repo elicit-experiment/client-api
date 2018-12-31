@@ -1,7 +1,4 @@
 import argparse
-from http import HTTPStatus
-import pyelicit
-from example_helpers import *
 
 ENVIRONMENTS = {
   'local' : 'http://localhost:3000',

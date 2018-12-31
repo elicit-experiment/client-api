@@ -3,10 +3,9 @@ Example for deleting all study definitions belonging to a given user.
 """
 
 import pprint
-import sys
 import pyelicit
 
-import examples_default
+from deprecated import examples_default
 
 ##
 ## MAIN

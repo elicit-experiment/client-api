@@ -123,7 +123,7 @@ video_component_definition = dict(
         URI=butterfly_video_url)])
 
 new_component_config = dict(name='Video page component',
-                            definition_data=json.dumps(video_component_definition))
+                            definition_data=video_component_definition)
 new_component = el.add_component(component=dict(component=new_component_config),
                                  study_definition_id=new_study.id,
                                  protocol_definition_id=new_protocol.id,
@@ -132,7 +132,7 @@ new_component = el.add_component(component=dict(component=new_component_config),
 
 # Radio button page
 
-new_trial_definition_config = dict(trial_definition=dict(definition_data='{}'))
+new_trial_definition_config = dict(trial_definition=dict(definition_data=dict()))
 new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
                                                study_definition_id=new_study.id,
                                                protocol_definition_id=new_protocol.id,
@@ -173,7 +173,7 @@ component_definition = dict(
                 MinNoOfScalings='1')))])
 
 new_component_config = dict(name='Radio button component',
-                            definition_data=json.dumps(component_definition))
+                            definition_data=component_definition)
 new_component = el.add_component(component=dict(component=new_component_config),
                                  study_definition_id=new_study.id,
                                  protocol_definition_id=new_protocol.id,

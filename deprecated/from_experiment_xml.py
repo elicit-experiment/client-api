@@ -1,16 +1,11 @@
 import xml.etree.cElementTree as ET
 import json
 from collections import defaultdict
-import pprint
-from pyswagger import App, Security
-from pyswagger.contrib.client.requests import Client
-from pyswagger.utils import jp_compose
-import sys
 import lorem
 import pyelicit
 
-import examples_default
-from example_helpers import *
+from deprecated import examples_default
+from deprecated.example_helpers import *
 
 # usage:
 # find experiment_xml -iname "*.xml" -exec python3 from_experiment_xml.py --env local {} \;

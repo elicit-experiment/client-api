@@ -2,3 +2,7 @@
 *.tsv
 *.tsv.gz
 
+.idea
+/*.csv
+/questions.json
+*.csv

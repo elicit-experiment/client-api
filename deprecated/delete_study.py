@@ -3,10 +3,9 @@ Example for deleting all study definitions belonging to a given user.
 """
 
 import pprint
-import sys
 import pyelicit
 
-import examples_default
+from deprecated import examples_default
 
 ##
 ## MAIN
@@ -14,7 +13,7 @@ import examples_default
 
 pp = pprint.PrettyPrinter(indent=4)
 
-examples_default.parser.add_argument('--study_id', type=int,  required=True)
+examples_default.parser.add_argument('--study_id', type=int, required=True)
 
 args = examples_default.parse_command_line_args()
 elicit = pyelicit.Elicit(pyelicit.ElicitCreds(), args.apiurl, examples_default.send_opt)

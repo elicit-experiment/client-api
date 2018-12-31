@@ -3,10 +3,9 @@ Example for dumping the results of a study.
 """
 
 import pprint
-import sys
 import pyelicit
 
-import examples_default
+from deprecated import examples_default
 
 ##
 ## MAIN
