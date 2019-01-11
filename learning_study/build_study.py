@@ -3,15 +3,11 @@ Example for dumping the results of a study.
 """
 
 import pprint
-# import pdprint
-
-import sys
 import csv
 import json
-import lorem  # generate boilerplate text to make sure the website renders correctly
-import re
 
 from examples_base import *
+from pyelicit import elicit
 
 ##
 ## MAIN
@@ -69,6 +65,144 @@ trial_definition_data = []
 
 study_description = "This study proceeds as follows:\n"
 
+demographics_questions = [
+    dict(
+        Instruments=[dict(
+            Instrument=dict(Header=dict(HeaderLabel='Questions about you')))]),
+    dict(
+        Instruments=[dict(
+            Instrument=dict(
+                Freetext=dict(
+                    BoxHeight=None,
+                    BoxWidth=None,
+                    Label="Mechanical Turk ID",
+                    LabelPosition='center',
+                    Resizable=None,
+                    Validation='.+')))]),
+    dict(
+        Instruments=[dict(
+            Instrument=dict(
+                RadioButtonGroup=dict(
+                    AlignForStimuli='0',
+                    QuestionsPerRow=1,
+                    HeaderLabel='Sex',
+                    Items=dict(
+                        Item=[
+                            dict(
+                                Id='M',
+                                Label='Male',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='F',
+                                Label='Female',
+                                Selected='0',
+                                Correct=False)]),
+                    MaxNoOfScalings='1',
+                    MinNoOfScalings='1')))]),
+    dict(
+        Instruments=[dict(
+            Instrument=dict(
+                RadioButtonGroup=dict(
+                    AlignForStimuli='0',
+                    QuestionsPerRow=1,
+                    HeaderLabel="What's the highest level of education you've attained?",
+                    Items=dict(
+                        Item=[
+                            dict(
+                                Id='Primary',
+                                Label='Below High School',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='HS',
+                                Label='High school',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='B',
+                                Label="Bachelor's Degree",
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='M',
+                                Label="Master's Degree",
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='P',
+                                Label="PhD",
+                                Selected='0',
+                                Correct=False)
+                        ]),
+                    MaxNoOfScalings='1',
+                    MinNoOfScalings='1')))]),
+    dict(
+        Instruments=[dict(
+            Instrument=dict(
+                RadioButtonGroup=dict(
+                    AlignForStimuli='0',
+                    QuestionsPerRow=1,
+                    HeaderLabel="What device are you using for this survey?",
+                    Items=dict(
+                        Item=[
+                            dict(
+                                Id='Phone',
+                                Label='Smartphone',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='Tablet',
+                                Label='Tablet',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='Laptop',
+                                Label="Laptop Computer",
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='Desktop',
+                                Label="Desktop Computer",
+                                Selected='0',
+                                Correct=False),
+                        ]),
+                    MaxNoOfScalings='1',
+                    MinNoOfScalings='1')))]),
+    dict(
+        Instruments=[dict(
+            Instrument=dict(
+                RadioButtonGroup=dict(
+                    AlignForStimuli='0',
+                    QuestionsPerRow=1,
+                    HeaderLabel="What size is your display?",
+                    Items=dict(
+                        Item=[
+                            dict(
+                                Id='S',
+                                Label='< 6 inches (15cm)',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='M',
+                                Label='6 to 12.9 inches (15cm - 33cm)',
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='L',
+                                Label="13 to 15 inches (33cm - 38cm)",
+                                Selected='0',
+                                Correct=False),
+                            dict(
+                                Id='XL',
+                                Label="larger than 15 inches (38cm)",
+                                Selected='0',
+                                Correct=False),
+                        ]),
+                    MaxNoOfScalings='1',
+                    MinNoOfScalings='1')))]),
+]
+
 for video_no in videos:
     video_rows = [r for r in question_rows if r['Video_no'] == video_no]
     video_name = video_rows[0]['Video_name']
@@ -122,21 +256,25 @@ for video_no in videos:
 
     print("%s: %d pre questions, %d post questions" % (video_name, len(pre_questions), len(post_questions)))
 
+    trial_components += [demographics_questions]
+    trial_definition_data += [dict(TrialType='Demographics') for _ in range(len(demographics_questions))]
+    study_description += "First you'll answer some questions about yourself.<br/>"
+
     trial_components.append([dict()])
-    trial_definition_data.append(dict(type="NewComponent::WebGazerCalibrate"))
-    study_description += "First, you'll calibrate your gaze to the webcam of your computer.\n"
+    trial_definition_data.append(dict(TrialType='Calibration', type="NewComponent::WebGazerCalibrate"))
+    study_description += "Then, you'll calibrate your gaze to the webcam of your computer.<br/>"
 
     trial_components += pre_questions[-5:]
-    trial_definition_data += [dict() for _ in range(len(pre_questions))]
-    study_description += "Then you'll answer some questions.\n"
+    trial_definition_data += [dict(TrialType='Questions') for _ in range(len(pre_questions))]
+    study_description += "Then you'll answer some questions.<br/>"
 
     trial_components.append([yt_video])
-    trial_definition_data.append(dict())
-    study_description += "Then you'll watch a cool video.\n"
+    trial_definition_data.append(dict(TrialType='Video'))
+    study_description += "Then you'll watch a cool video.<br/>"
 
     trial_components += post_questions[-5:]
-    trial_definition_data += [dict() for _ in range(len(post_questions))]
-    study_description += "Then another set of questions to answer.\n"
+    trial_definition_data += [dict(TrialType='Questions') for _ in range(len(post_questions))]
+    study_description += "Then another set of questions to answer.<br/>"
 
     trial_components += [[
         dict(
@@ -200,9 +338,11 @@ new_study = el.add_study(study=dict(study_definition=study_definition))
 #
 # Add a new Protocol Definition
 #
-
+new_protocol_definition_data = dict(
+    instructionsHtml = "<h3>instructions</h3>"
+)
 new_protocol_definition = dict(name='Learning Study Protocol',
-                               definition_data="whatever you want here",
+                               definition_data=new_protocol_definition_data,
                                summary="Video Learning",
                                description=study_description,
                                active=True)
@@ -250,18 +390,20 @@ for phase_idx in range(1):
 
         for idx, component_definition in enumerate(trial_components[trial_idx]):
             new_component_config = dict(name='Newly created component definition from Python',
-                                        definition_data = component_definition)
+                                        definition_data=component_definition)
             new_component = el.add_component(component=dict(component=new_component_config),
                                              study_definition_id=new_study.id,
                                              protocol_definition_id=new_protocol.id,
                                              phase_definition_id=new_phase.id,
                                              trial_definition_id=new_trial_definition.id)
 
-            if 'Instruments' in component_definition:
-                if 'RadioButtonGroup' in component_definition['Instruments'][0]['Instrument']:
-                    radio = component_definition['Instruments'][0]['Instrument']['RadioButtonGroup']
-                    answer_key[new_component.id] = dict(question=radio['HeaderLabel'],
-                                                        items=radio['Items'])
+            pp.pprint(trial_definition_data[trial_idx])
+            if 'TrialType' in trial_definition_data[trial_idx] and trial_definition_data[trial_idx]['TrialType'] == 'Questions':
+                if 'Instruments' in component_definition:
+                    if 'RadioButtonGroup' in component_definition['Instruments'][0]['Instrument']:
+                        radio = component_definition['Instruments'][0]['Instrument']['RadioButtonGroup']
+                        answer_key[new_component.id] = dict(question=radio['HeaderLabel'],
+                                                            items=radio['Items'])
 
     #
     # Add a new Trial Orders
