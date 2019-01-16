@@ -257,7 +257,7 @@ for video_no in videos:
     print("%s: %d pre questions, %d post questions" % (video_name, len(pre_questions), len(post_questions)))
 
     trial_components += [demographics_questions]
-    trial_definition_data += [dict(TrialType='Demographics') for _ in range(len(demographics_questions))]
+    trial_definition_data += [dict(TrialType='Demographics')]
     study_description += "First you'll answer some questions about yourself.<br/>"
 
     trial_components.append([dict()])
@@ -397,7 +397,6 @@ for phase_idx in range(1):
                                              phase_definition_id=new_phase.id,
                                              trial_definition_id=new_trial_definition.id)
 
-            pp.pprint(trial_definition_data[trial_idx])
             if 'TrialType' in trial_definition_data[trial_idx] and trial_definition_data[trial_idx]['TrialType'] == 'Questions':
                 if 'Instruments' in component_definition:
                     if 'RadioButtonGroup' in component_definition['Instruments'][0]['Instrument']:
