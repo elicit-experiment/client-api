@@ -246,11 +246,11 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
 # print some basic details about the experiment
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
-print('Phase ids: ', end='')
+print('Phase ids: ' , end='')
 for trial_id in range(0, len(trials)):
     print(str(trials[trial_id].id) + ', ', end='')
-print('')
-print('Trial ids: ', end='')
+print('')    
+print('Trial ids: ' , end='')
 for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
 print('')
@@ -258,7 +258,9 @@ print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
-
 print('')
+#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
+
+print('Study link: ', end='')
 print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
 
