@@ -130,9 +130,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='1',
-                                                            HeaderLabel='MinNoOfScalings=1 {{n}} (i.e. has to be answered to proceed)',
-                                                            MaxNoOfScalings='1',
-                                                            MinNoOfScalings='1',                                                            
+                                                            HeaderLabel='IsOptional=1 {{n}} (i.e. has to be answered to proceed)',
+                                                            IsOptional='1',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -163,9 +162,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='3',
-                                                            HeaderLabel='MinNoOfScalings=0 (i.e. does not have to be answered) {{n}} 3 options per row',
-                                                            MaxNoOfScalings='1',
-                                                            MinNoOfScalings='0',                                                            
+                                                            HeaderLabel='IsOptional=0 (i.e. does not have to be answered) {{n}} 3 options per row',
+                                                            IsOptional='0',                                                            
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -197,9 +195,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='3',
-                                                            HeaderLabel='MinNoOfScalings=4 max=7 {{n}} (i.e. 4 answers are required) 3 options per row',
-                                                            MaxNoOfScalings='7',
-                                                            MinNoOfScalings='4',                                                            
+                                                            HeaderLabel='IsOptional=1 {{n}} 3 options per row',
+                                                            IsOptional='1',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -264,8 +261,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='{{style|font-size: 100px;| {{b|What do you think of this image}}}}{{n}}{{n}}{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}',
-                                                            MaxNoOfScalings='1',
-                                                            MinNoOfScalings='1',                                                            
+                                                            IsOptional='0',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='{{mark|Neutral}}',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='{{style|color: red;font-size: 20px;|Super}}',Selected='0',Correct=True),
@@ -275,7 +271,6 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='6',Label='Unpleasant{{n}}{{b|Unpleasant}}{{n}}{{color|red|Unpleasant}}{{n}}{{color|blue|Unpleasant}}{{n}}{{color|yellow|Unpleasant}}',Selected='0',Correct=True), 
                                                                           dict(Id='7',Label='{{link|http://www.google.com|Link}}',Selected='0',Correct=True),
                                                                           dict(Id='8',Label='{{style|color: green;font-size: 20px;|Unpleasant is the options here}}{{n}}{{i|Negative}}{{n}} Bad',Selected='0',Correct=True),
-                                                                          
                                                                           ]))))]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
@@ -306,8 +301,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of pre selected options {{n}}(first options should be selected)',
-                                                            MaxNoOfScalings='1',
-                                                            MinNoOfScalings='1',                                                            
+                                                            IsOptional='0',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='1',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -407,12 +401,11 @@ for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
-print('Study link: ')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
 print('')
 #print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
-
+print('Study link: ', end='')
 print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
 
