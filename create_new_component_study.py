@@ -5,11 +5,8 @@ Example for dumping the results of a study.
 import pprint
 #import pdprint
 
-import sys
-import json
-import re
-
 from examples_base import *
+from pyelicit import elicit
 
 ##
 ## MAIN

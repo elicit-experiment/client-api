@@ -62,6 +62,7 @@ videos = list(set([r['Video_no'] for r in question_rows]))
 
 trial_components = []
 trial_definition_data = []
+trial_names = []
 
 study_description = "This study proceeds as follows:\n"
 
@@ -76,7 +77,7 @@ demographics_questions = [
                     BoxHeight=None,
                     BoxWidth=None,
                     Label="Mechanical Turk ID",
-                    LabelPosition='center',
+                    LabelPosition='left',
                     Resizable=None,
                     Validation='.+')))]),
     dict(
@@ -257,31 +258,37 @@ for video_no in videos:
     print("%s: %d pre questions, %d post questions" % (video_name, len(pre_questions), len(post_questions)))
 
     trial_components += [demographics_questions]
+    trial_names += ['Demographics']
     trial_definition_data += [dict(TrialType='Demographics')]
     study_description += "First you'll answer some questions about yourself.<br/>"
 
     trial_components.append([dict()])
-    trial_definition_data.append(dict(TrialType='Calibration', type="NewComponent::WebGazerCalibrate"))
+    trial_names += ['Webcam Calibration']
+    trial_definition_data.append(dict(TrialType='Calibration'))
     study_description += "Then, you'll calibrate your gaze to the webcam of your computer.<br/>"
 
     trial_components += pre_questions[-5:]
-    trial_definition_data += [dict(TrialType='Questions') for _ in range(len(pre_questions))]
+    trial_names += [("Pre-question %d"%(i+1)) for i in range(5)]
+    trial_definition_data += [dict(TrialType='Questions') for i in range(len(pre_questions))]
     study_description += "Then you'll answer some questions.<br/>"
 
     trial_components.append([yt_video])
+    trial_names += ['Video']
     trial_definition_data.append(dict(TrialType='Video'))
     study_description += "Then you'll watch a cool video.<br/>"
 
     trial_components += post_questions[-5:]
+    trial_names += [("Post-question %d"%(i+1)) for i in range(5)]
     trial_definition_data += [dict(TrialType='Questions') for _ in range(len(post_questions))]
     study_description += "Then another set of questions to answer.<br/>"
 
+    trial_names += ['End of Experiment']
     trial_components += [[
         dict(
             Instruments=[dict(
                 Instrument=dict(
                     Header=dict(
-                        HeaderLabel='Thank you')))]
+                        HeaderLabel='{{center|Thank {{b|you}}}}')))]
         ),
         dict(
             Instruments=[dict(
@@ -377,7 +384,8 @@ for phase_idx in range(1):
         # Add a new Trial Definition
         #
 
-        new_trial_definition_config = dict(trial_definition=dict(definition_data=trial_definition_data[trial_idx]))
+        new_trial_definition_config = dict(trial_definition=dict(name=trial_names[trial_idx], definition_data=trial_definition_data[trial_idx]))
+        pp.pprint(new_trial_definition_config)
         new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
                                                        study_definition_id=new_study.id,
                                                        protocol_definition_id=new_protocol.id,
