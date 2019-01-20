@@ -262,9 +262,9 @@ for video_no in videos:
     trial_definition_data += [dict(TrialType='Demographics')]
     study_description += "First you'll answer some questions about yourself.<br/>"
 
-    trial_components.append([dict()])
+    trial_components.append([dict(MaxNoOfAttempts=2, MinCalibrationAccuracyPct=80.0)])
     trial_names += ['Webcam Calibration']
-    trial_definition_data.append(dict(TrialType='Calibration'))
+    trial_definition_data.append(dict(TrialType='Calibration', type="NewComponent::WebGazerCalibrate"))
     study_description += "Then, you'll calibrate your gaze to the webcam of your computer.<br/>"
 
     trial_components += pre_questions[-5:]
