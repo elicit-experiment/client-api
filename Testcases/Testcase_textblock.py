@@ -31,14 +31,14 @@ user_admin = elicit_object.assert_admin()
 #
 
 # Define study
-study_definition_description = dict(title='This is a basic study',
-                                    description="""This study attempts to display basic functionalities of the Elicit framework""",
+study_definition_description = dict(title='TextBlock component test',
+                                    description="""This study tests the TextBlock component""",
                                     version=1,
                                     lock_question=1,
                                     enable_previous=1,
                                     allow_anonymous_users=True,  # allow taking the study without login
                                     show_in_study_list=True,  # show in the (public) study list for anonymous protocols
-                                    footer_label="If you have any questions, you can email {{link|neuroccny@gmail.com}}",
+                                    footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                                     redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                                     data="Put some data here, we don't really care about it.",
                                     principal_investigator_user_id=user_admin.id)
@@ -96,7 +96,7 @@ trials = []
 #
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='Welcome page'))
+trial_definition_specification = dict(trial_definition=dict(definition_data='This is a TextBlock test'))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
@@ -104,13 +104,17 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 # save trial to later define trial orders
 trials.append(trial_object)
 
-# Component definition: Header Label
-component_definition_description = dict(name='HeaderLabel',
+# Component definition: Text Block
+component_definition_description = dict(name='TextBlock',
                                         definition_data=dict(
                                             Instruments=[dict(
                                                 Instrument=dict(
                                                     TextBlock=dict(
-                                                        Text="TextBlockExample")))]))
+                                                        Text=("{{center|Some centered text here}}{{n}}{{n}}{{n}}" + 
+                                                              "{{right|{{b|Some right justified bold text after some next lines}}}}{{n}}{{n}}{{n}}" + 
+                                                              "{{left|{{b|Some left justified bold text after some next lines}}}}{{n}}{{n}}{{n}}"  +                                                            
+                                                              "{{center|{{b|Some centered bold text after some next lines}}}}{{n}}{{n}}{{n}}" 
+                                                              ))))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -119,26 +123,23 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-#
-# Trial 2: Demographic slide
-#
 
-# Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='Demographic page'))
-trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
-                                                  study_definition_id=study_object.id,
-                                                  protocol_definition_id=protocol_object.id,
-                                                  phase_definition_id=phase_object.id)
 
-# save trial to later define trial orders
-trials.append(trial_object)
-
-# Component definition: Header Label
-component_definition_description = dict(name='HeaderLabel',
+component_definition_description = dict(name='TextBlock',
                                         definition_data=dict(
                                             Instruments=[dict(
                                                 Instrument=dict(
-                                                    Header=dict(HeaderLabel='{{center|Demographics}}')))]))
+                                                    TextBlock=dict(
+                                                        Text=("{{mark|Neutral}}{{n}}" + 
+                                                              "{{style|color: red;font-size: 20px;|Red with fontsize 20}}{{n}}" +
+                                                              "{{style|color: green;font-size: 100px;|Green with fontsize 100}}{{n}}" +
+                                                              "Subscript{{sub|Subscript}}{{n}}" +
+                                                              "Superscript{{super|Superscript}}{{n}}" +
+                                                              "{{b|Bold}}{{n}}" +
+                                                              "{{i|Italic}}{{n}}" +
+                                                              "Different colors: {{color|red|Red}}, {{color|blue|Blue}}, {{color|yellow|Yellow}}{{n}}" +
+                                                              "{{link|http://www.google.com|Link}}{{n}}"
+                                                              ))))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -147,8 +148,35 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-#
-# Trial 3: End of experiment page
+
+
+
+component_definition_description = dict(name='TextBlock',
+                                        definition_data=dict(
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    TextBlock=dict(
+                                                        Text=("{{style|color: black;font-size: 50px;|Large centered 800x400 google image}}{{n}}{{n}}" +
+                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}{{n}}{{n}}" +
+                                                              "{{style|color: black;font-size: 40px;|Smaller left 400x200 google image}}{{n}}{{n}}" +
+                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|400|200|left}}{{n}}{{n}}" +
+                                                              "{{style|color: black;font-size: 30px;|Smaller left 200x100 google image}}{{n}}{{n}}" +
+                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|200|100|right}}{{n}}{{n}}"
+                                                              ))))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
+
+
+
+
+
+# Trial 2: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(definition_data='End of Experiment page'))
@@ -169,7 +197,7 @@ component_definition_description = dict(name='HeaderLabel',
                                                         HeaderLabel='{{center|Thank you for your participation}}')))]))
 
 # Component addition: add the component to the trial
-new_component = elicit_object.add_component(component=dict(component=component_definition_description),
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                             study_definition_id=study_object.id,
                                             protocol_definition_id=protocol_object.id,
                                             phase_definition_id=phase_object.id,
@@ -218,18 +246,21 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
 # print some basic details about the experiment
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
-print('Phase ids: ', end='')
+print('Phase ids: ' , end='')
 for trial_id in range(0, len(trials)):
     print(str(trials[trial_id].id) + ', ', end='')
-print('')
-print('Trial ids: ', end='')
+print('')    
+print('Trial ids: ' , end='')
 for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
+print('')
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
+print('')
+#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
-print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(
-    study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id=' + str(
-    phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))
+print('Study link: ', end='')
+print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
+

@@ -38,7 +38,7 @@ study_definition_description = dict(title='This is a basic study',
                         enable_previous=1,
                         allow_anonymous_users=True,  # allow taking the study without login
                         show_in_study_list=True,  # show in the (public) study list for anonymous protocols
-                        footer_label="If you have any questions, you can email {{link|neuroccny@gmail.com}}",
+                        footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                         redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user_admin.id)
@@ -232,12 +232,16 @@ print('')
 print('Trial ids: ' , end='')
 for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
+print('')
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
+print('')
+#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
-print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
+print('Study link: ', end='')
+print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))  
 
 
 
