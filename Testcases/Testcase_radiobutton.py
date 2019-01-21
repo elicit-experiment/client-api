@@ -97,7 +97,8 @@ trials = []
 #
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='This is a test of the RadiobuttonGroup component'))
+trial_definition_specification = dict(trial_definition=dict(name='IsOptional test', definition_data=dict(TrialType='RadiobuttonGroup page')))
+
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -223,7 +224,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='This is a test of the RadiobuttonGroup with wierd options'))
+trial_definition_specification = dict(trial_definition=dict(name='Options formatting', definition_data=dict(TrialType='RadiobuttonGroup page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -268,7 +269,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='3',Label='It{{sub|Neutral}}',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='It{{super|Sleepy}}',Selected='0',Correct=True),
                                                                           dict(Id='5',Label='{{b|Something}}',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='Unpleasant{{n}}{{b|Unpleasant}}{{n}}{{color|red|Unpleasant}}{{n}}{{color|blue|Unpleasant}}{{n}}{{color|yellow|Unpleasant}}',Selected='0',Correct=True), 
+                                                                          dict(Id='6',Label='Multiline{{n}}{{b|Multiline}}{{n}}{{color|red|Multiline}}{{n}}{{color|blue|Multiline}}{{n}}{{color|yellow|Multiline}}',Selected='0',Correct=True), 
                                                                           dict(Id='7',Label='{{link|http://www.google.com|Link}}',Selected='0',Correct=True),
                                                                           dict(Id='8',Label='{{style|color: green;font-size: 20px;|Unpleasant is the options here}}{{n}}{{i|Negative}}{{n}} Bad',Selected='0',Correct=True),
                                                                           ]))))]))
@@ -283,7 +284,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='This is a test of the Radiobutton component'))
+trial_definition_specification = dict(trial_definition=dict(name='Pre-selection', definition_data=dict(TrialType='RadiobuttonGroup page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -323,7 +324,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # Trial 5: End of experiment page
 #
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='End of Experiment page'))
+trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -393,13 +394,14 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
-for trial_id in range(0, len(trials)):
-    print(str(trials[trial_id].id) + ', ', end='')
-print('')    
-print('Trial ids: ' , end='')
 for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
 print('')
+print('Trial ids: ' , end='')
+for trial_id in range(0, len(trials)):
+    print(str(trials[trial_id].id) + ', ', end='')
+print('')    
+
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
