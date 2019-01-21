@@ -96,7 +96,7 @@ trials = []
 #
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='This is a TextBlock test'))
+trial_definition_specification = dict(trial_definition=dict(name='Justified TextBlock', definition_data=dict(TrialType='TextBlock page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
@@ -124,6 +124,14 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 
+trial_definition_specification = dict(trial_definition=dict(name='Multiformat TextBlock', definition_data=dict(TrialType='TextBlock page')))
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
 
 component_definition_description = dict(name='TextBlock',
                                         definition_data=dict(
@@ -150,6 +158,13 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
+trial_definition_specification = dict(trial_definition=dict(name='Image TextBlock', definition_data=dict(TrialType='TextBlock page')))
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
 
 component_definition_description = dict(name='TextBlock',
                                         definition_data=dict(
@@ -175,11 +190,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
-
 # Trial 2: End of experiment page
 #
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='End of Experiment page'))
+trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
@@ -247,13 +261,14 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
-for trial_id in range(0, len(trials)):
-    print(str(trials[trial_id].id) + ', ', end='')
-print('')    
-print('Trial ids: ' , end='')
 for phase_id in range(0, len(phases)):
     print(str(phases[phase_id].id) + ', ', end='')
 print('')
+print('Trial ids: ' , end='')
+for trial_id in range(0, len(trials)):
+    print(str(trials[trial_id].id) + ', ', end='')
+print('')    
+
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
