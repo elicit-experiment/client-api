@@ -39,7 +39,7 @@ study_definition_description = dict(title='Video player test',
                         enable_previous=1,
                         allow_anonymous_users=True,  # allow taking the study without login
                         show_in_study_list=False,  # show in the (public) study list for anonymous protocols
-                        footer_label="If you have any questions, you can email {{link|neuroccny@gmail.com|here}}",
+                        footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                         redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user_admin.id)
@@ -99,7 +99,7 @@ trials = []
 #
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='This is a test of the video player'))
+trial_definition_specification = dict(trial_definition=dict(name='Multi-video page', definition_data=dict(TrialType='Video page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -130,9 +130,9 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 video_component_definition = dict(name='This video is pausable',
                             definition_data=dict(
                                     Stimuli=[dict(
-                                            Label='Video Label',
+                                            Label='This video is pausable',
                                             Type='video/youtube',
-                                            IsPausable=False,
+                                            IsPausable=True,
                                             URI=butterfly_video_url)]))
 
 component_object = elicit_object.add_component(component=dict(component=video_component_definition),
@@ -146,7 +146,7 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 video_component_definition = dict(name='This video is NOT pausable',
                             definition_data=dict(
                                     Stimuli=[dict(
-                                            Label='Video Label',
+                                            Label='This video is NOT pausable',
                                             Type='video/youtube',
                                             IsPausable=False,
                                             URI=butterfly_video_url)]))
@@ -163,7 +163,7 @@ component_object = elicit_object.add_component(component=dict(component=video_co
 # Trial 2: Single pausable video
 #
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='Pausable video page'))
+trial_definition_specification = dict(trial_definition=dict(name='Pausable video page', definition_data=dict(TrialType='Video page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -192,7 +192,7 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 video_component_definition = dict(name='This video is pausable',
                             definition_data=dict(
                                     Stimuli=[dict(
-                                            Label='Video Label',
+                                            Label='This video is pausable',
                                             Type='video/youtube',
                                             IsPausable=True,
                                             URI=butterfly_video_url)]))
@@ -209,7 +209,7 @@ component_object = elicit_object.add_component(component=dict(component=video_co
 # Trial 3: Single non pausable video
 #
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='Pausable video page'))
+trial_definition_specification = dict(trial_definition=dict(name='Non-Pausable video page', definition_data=dict(TrialType='Video page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -223,7 +223,7 @@ component_definition_description = dict(name='HeaderLabel',
                                         definition_data=dict(
                                                 Instruments=[dict(
                                                         Instrument=dict(
-                                                                Header=dict(HeaderLabel='{{center|Pausable video page}}')))]))
+                                                                Header=dict(HeaderLabel='{{center|Non-Pausable video page}}')))]))
 
 
 
@@ -240,7 +240,7 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 video_component_definition = dict(name='This video is NOT pausable',
                             definition_data=dict(
                                     Stimuli=[dict(
-                                            Label='Video Label',
+                                            Label='This video is NOT pausable',
                                             Type='video/youtube',
                                             IsPausable=False,
                                             URI=butterfly_video_url)]))
@@ -250,59 +250,12 @@ component_object = elicit_object.add_component(component=dict(component=video_co
                                  protocol_definition_id=protocol_object.id,
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
-
-#
-# Trial 4: End of experiment page
-#
-# Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='Pausable video page'))
-trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
-                                               study_definition_id=study_object.id,
-                                               protocol_definition_id=protocol_object.id,
-                                               phase_definition_id=phase_object.id)
-
-# save trial to later define trial orders
-trials.append(trial_object)
-
-# Component definition: Header Label
-component_definition_description = dict(name='HeaderLabel',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Header=dict(HeaderLabel='{{center|NOT Pausable video page}}')))]))
-
-
-
-# Component addition: add the component to the trial
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
-# Define video component (NOT pausable)
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
-video_component_definition = dict(name='This video is NOT pausable',
-                            definition_data=dict(
-                                    Stimuli=[dict(
-                                            Label='Video Label',
-                                            Type='video/youtube',
-                                            IsPausable=False,
-                                            URI=butterfly_video_url)]))
-
-component_object = elicit_object.add_component(component=dict(component=video_component_definition),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
 
 #
 # Trial 5: End of experiment page
 #
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(definition_data='End of Experiment page'))
+trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -340,7 +293,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
 #
 # Add a Trial Orders to the study
 #
@@ -372,15 +324,20 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
+for phase_id in range(0, len(phases)):
+    print(str(phases[phase_id].id) + ', ', end='')
+print('')
+print('Trial ids: ' , end='')
 for trial_id in range(0, len(trials)):
     print(str(trials[trial_id].id) + ', ', end='')
 print('')    
-print('Trial ids: ' , end='')
-for phase_id in range(0, len(phases)):
-    print(str(phases[phase_id].id) + ', ', end='')
+
 print('Added ' + str(len(study_participants)) + ' users to the protocol')
 print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
+print('')
+#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
-print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
+print('Study link: ', end='')
+print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
