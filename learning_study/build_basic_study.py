@@ -9,6 +9,7 @@ import csv
 import json
 
 from examples_base import *
+from pyelicit import elicit
 
 ##
 ## MAIN

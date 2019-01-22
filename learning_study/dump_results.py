@@ -3,6 +3,7 @@ Example for dumping the results of a study.
 """
 
 import csv
+import pprint
 import json
 import os
 import cgi
@@ -11,6 +12,7 @@ from functools import partial
 import requests
 from examples_base import *
 import functools
+from pyelicit import elicit
 
 
 ##
@@ -65,6 +67,112 @@ all_video_events = []
 all_video_layout_events = []
 all_trial_results = []
 all_experiment_results = []
+all_mturk_infos = []
+all_demographics = []
+MTURK_FIELDS = ['assignmentId', 'hitId', 'workerId']
+
+
+def fetch_answer(state):
+    out = state.copy()
+    value = out['value'] = json.loads(state['value'])
+    if 'Id' in value:
+        out['answer_id'] = value['Id']
+    elif 'Text' in out['value']:
+        out['answer_id'] = value['Text']
+    else:
+        out['answer_id'] = None
+    return out
+
+
+def extract_answers(states):
+    global raw_questions
+
+    states = map(fetch_answer, states)
+    answers = list(
+        map(lambda x: (user_id, user_name, x['answer_id'], x['datetime'], x['component_id']), states))
+    for answer in answers:
+        if not (answer[4] in raw_questions):
+            component = el.get_component(component_id=answer[4])
+            component_def = json.loads(component['definition_data'])
+            component['parsed_definition_data'] = component_def
+            is_radio_button = False
+            if 'Instruments' in component_def:
+                instrument = component_def['Instruments'][0]['Instrument']
+                if 'RadioButtonGroup' in instrument:
+                    raw_questions[answer[4]] = component
+                    is_radio_button = True
+            # if not is_radio_button:
+            #    pp.pprint(answer)
+    return answers
+
+
+def extract_demographics(states):
+    answer_states = map(fetch_answer, states)
+
+    return list(map(lambda x: (user_id, user_name, x['answer_id'], x['datetime'], x['component_id']), answer_states))
+
+
+def extract_video_events(data_points):
+    video_events_rows = []
+    video_layout_events = []
+    video_events = filter(lambda x: is_video_event, data_points)
+    video_events = list(video_events)
+    video_events = filter(partial(parse_datetime, 'datetime'), video_events)
+    make_video_event_row = lambda x: (user_id,
+                                      x['datetime'],
+                                      x['point_type'],
+                                      experiment.id,
+                                      trial_result.phase_definition_id,
+                                      trial_result.trial_definition_id,
+                                      x['component_id'])
+    video_events_rows += map(make_video_event_row, video_events)
+    layouts = list(filter(lambda x: x['point_type'] == 'Layout', data_points))
+    if len(layouts) > 0:
+        layout = layouts[0]
+        video_layout = json.loads(layout['value'])
+        video_layout_event = [video_layout['x'],
+                              video_layout['y'],
+                              video_layout['width'],
+                              video_layout['height'],
+                              video_layout['top'],
+                              video_layout['right'],
+                              video_layout['bottom'],
+                              video_layout['left'],
+                              layout['datetime'],
+                              user_id,
+                              experiment.id,
+                              trial_result.phase_definition_id,
+                              trial_result.trial_definition_id,
+                              layout['component_id']]
+        video_layout_events += [video_layout_event]
+    return video_layout_events, video_events_rows
+
+
+def process_trial_result(trial_result):
+    global all_video_events, all_video_layout_events, all_answers, all_answers, all_demographics
+    data_points = el.find_data_points(study_result_id=study_result.id,
+                                      trial_definition_id=trial_result.trial_definition_id,
+                                      protocol_user_id=protocol_user_id,
+                                      page_size=50)
+    print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
+        len(data_points), study_result.id, trial_result.id, protocol_user_id))
+    # pp.pprint(trial_result)
+    # pp.pprint(data_points)
+    trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
+    pp.pprint(trial_definition_data)
+    trial_type = trial_definition_data['TrialType']
+    print(trial_type)
+    video_layout_events, video_events = extract_video_events(data_points)
+    all_video_events += video_events
+    all_video_layout_events += video_layout_events
+    states = list(filter(lambda x: x['point_type'] == 'State', data_points))
+    if trial_type == 'Questions':
+        print('EXTRACTING QUESTIONS')
+        all_answers += extract_answers(states)
+    if trial_type == 'Demographics':
+        print('EXTRACTING DEMOGRAPHICS')
+        all_demographics += extract_demographics(states)
+
 
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
@@ -78,8 +186,18 @@ for study_result in study_results:
         user_id = experiment['protocol_user']['user_id']
         user_name = experiment['protocol_user']['user']['username']
 
+        pp.pprint(experiment)
+
         if args.user_id and args.user_id != user_id:
             continue
+
+        custom_parameters = experiment['custom_parameters']
+        if custom_parameters and custom_parameters.strip():
+            mturk_info = json.loads(custom_parameters)
+            missing = [i for i in MTURK_FIELDS if not i in mturk_info.keys()]
+            if len(missing) == 0:
+                row = [user_id] + [mturk_info[field] for field in MTURK_FIELDS]
+                all_mturk_infos += [row]
 
         protocol_user_id = experiment['protocol_user_id']
         stages = el.find_stages(study_result_id=study_result.id, experiment_id=experiment.id)
@@ -98,84 +216,8 @@ for study_result in study_results:
                                x.trial_definition_id] for x in trial_results]
 
         for trial_result in trial_results:
-            data_points = el.find_data_points(study_result_id=study_result.id,
-                                              trial_definition_id=trial_result.trial_definition_id,
-                                              protocol_user_id=protocol_user_id,
-                                              page_size=50)
+            process_trial_result(trial_result)
 
-            print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
-                len(data_points), study_result.id, trial_result.id, protocol_user_id))
-
-            # pp.pprint(data_points)
-
-            states = filter(lambda x: x['point_type'] == 'State', data_points)
-            video_events = filter(lambda x: is_video_event, data_points)
-            video_events = list(video_events)
-
-            video_events = filter(partial(parse_datetime, 'datetime'), video_events)
-
-            make_video_event_row = lambda x: (user_id,
-                                              x['datetime'],
-                                              x['point_type'],
-                                              experiment.id,
-                                              trial_result.phase_definition_id,
-                                              trial_result.trial_definition_id,
-                                              x['component_id'])
-            all_video_events += map(make_video_event_row, video_events)
-
-            layouts = list(filter(lambda x: x['point_type'] == 'Layout', data_points))
-            if len(layouts) > 0:
-                layout = layouts[0]
-                video_layout = json.loads(layout['value'])
-                video_layout_event = [video_layout['x'],
-                                      video_layout['y'],
-                                      video_layout['width'],
-                                      video_layout['height'],
-                                      video_layout['top'],
-                                      video_layout['right'],
-                                      video_layout['bottom'],
-                                      video_layout['left'],
-                                      layout['datetime'],
-                                      user_id,
-                                      experiment.id,
-                                      trial_result.phase_definition_id,
-                                      trial_result.trial_definition_id,
-                                      layout['component_id']]
-                all_video_layout_events += [video_layout_event]
-
-
-            def fetch_answer(state):
-                out = state.copy()
-                out['value'] = json.loads(state['value'])
-                if 'Id' in out['value']:
-                    out['answer_id'] = out['value']['Id']
-                else:
-                    out['answer_id'] = None
-                return out
-
-
-            states = map(fetch_answer, states)
-
-            answers = list(
-                map(lambda x: (user_id, user_name, x['answer_id'], x['datetime'], x['component_id']), states))
-
-            all_answers += answers
-
-            for answer in answers:
-                if not (answer[4] in raw_questions):
-                    component = el.get_component(component_id=answer[4])
-                    component_def = json.loads(component['definition_data'])
-                    component['parsed_definition_data'] = component_def
-                    is_radio_button = False
-                    if 'Instruments' in component_def:
-                        instrument = component_def['Instruments'][0]['Instrument']
-                        if 'RadioButtonGroup' in instrument:
-                            raw_questions[answer[4]] = component
-                            is_radio_button = True
-                    # if not is_radio_button:
-                    #    pp.pprint(answer)
-
-        pp.pprint(stages)
         for stage_id in (stage.id for stage in stages):
             time_series = el.find_time_series(study_result_id=study_result.id, stage_id=stage_id)
 
@@ -266,3 +308,19 @@ with open('answer.csv', 'w', newline='') as csvfile:
             answers = functools.reduce(lambda a, b: a + b, [[x['Label'], x['Id']] for x in items])
 
         answerwriter.writerow(answer + (question, correct) + tuple(answers))
+
+with open('mturk.csv', 'w', newline='') as csvfile:
+    videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    header = ['user_id'] + MTURK_FIELDS
+    videowriter.writerow(header)
+    for mturk_record in all_mturk_infos:
+        pp.pprint(mturk_record)
+        videowriter.writerow(mturk_record)
+
+
+with open('demographics.csv', 'w', newline='') as csvfile:
+    answerwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    header = ['user_id', 'user_name', 'answer_id', 'datetime', 'component_id']
+    answerwriter.writerow(header)
+    for answer in all_demographics:
+        answerwriter.writerow(answer)

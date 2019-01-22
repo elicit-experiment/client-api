@@ -105,15 +105,17 @@ trial_definition_specification = dict(trial_definition=dict(name='Webcam calibra
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
-                                                  phase_definition_id=phase_object.id)
+                                                  phase_definition_id=phase_object.id,
+                                                  MaxNoOfAttempts='2',
+                                                  MinCalibrationAccuracyPct='80')
 
-new_component_config = dict(name='Label component',
-                            definition_data=json.dumps(dict(MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80')))
-new_component = elicit_object.add_component(component=dict(component=new_component_config),
-                                            study_definition_id=study_object.id,
-                                            protocol_definition_id=protocol_object.id,
-                                            phase_definition_id=phase_object.id,
-                                            trial_definition_id=trial_object.id)
+#new_component_config = dict(name='Label component',
+#                            definition_data=json.dumps(dict(MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80')))
+#new_component = elicit_object.add_component(component=dict(component=new_component_config),
+#                                            study_definition_id=study_object.id,
+#                                            protocol_definition_id=protocol_object.id,
+#                                            phase_definition_id=phase_object.id,
+#                                            trial_definition_id=trial_object.id)
 
 # Trial 2: End of experiment page
 #

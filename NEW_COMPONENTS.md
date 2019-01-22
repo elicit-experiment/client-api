@@ -5,6 +5,9 @@ PYTHONPATH=`pwd` pipenv run python3 extract_component_definitions.py --output_fo
 PYTHONPATH=`pwd` pipenv run python3 extract_component_definitions.py --output_folder new_components_test --file experiment_xml/checkboxgrouptest.xml
 ```
 
+PYTHONPATH=`pwd` pipenv run python3 extract_component_definitions.py --output_folder new_components_experiments --file cockpit_test_experiments/experment1.xml
+
+
 This will generate the new component structures -- including the `.py` Python code -- for the given input XML.  In this case we're creating the freetext question.
 
 You can then create a study based on these with:
