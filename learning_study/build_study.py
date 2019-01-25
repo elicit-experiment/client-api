@@ -336,6 +336,8 @@ study_definition = dict(title='Learning Study - WebGazer',
                         enable_previous=1,
                         allow_anonymous_users=True,  # allow taking the study without login
                         show_in_study_list=True,  # show in the (public) study list for anonymous protocols
+                        max_auto_created_users=10, # up to ten workerId created users
+                        max_concurrent_users=1, # NYI
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=el.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
@@ -345,9 +347,7 @@ new_study = el.add_study(study=dict(study_definition=study_definition))
 #
 # Add a new Protocol Definition
 #
-new_protocol_definition_data = dict(
-    instructionsHtml = "<h3>instructions</h3>"
-)
+new_protocol_definition_data = dict( instructionsHtml = "<h3>instructions</h3>" )
 new_protocol_definition = dict(name='Learning Study Protocol',
                                definition_data=new_protocol_definition_data,
                                summary="Video Learning",
@@ -369,7 +369,8 @@ for phase_idx in range(1):
     # Add a new Phase Definition
     #
 
-    new_phase_definition = dict(phase_definition=dict(definition_data=dict()))
+    new_phase_definition = dict(phase_definition=dict(definition_data=dict(),
+                                                      trial_ordering='RandomWithoutReplacement'))
 
     new_phase = el.add_phase_definition(phase_definition=new_phase_definition,
                                         study_definition_id=new_study.id,
@@ -418,8 +419,10 @@ for phase_idx in range(1):
     #
 
     for study_participant in study_participants:
-        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                       user_id=study_participant.id))
+#        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
+#                                                       user_id=study_participant.id))
+        # config for random trial ordering
+        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials])))
         new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
                                              study_definition_id=new_study.id,
                                              protocol_definition_id=new_protocol.id,
