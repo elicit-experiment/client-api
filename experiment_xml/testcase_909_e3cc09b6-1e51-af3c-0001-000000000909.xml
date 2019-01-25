@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Experiment>
+   <Id>e3cc09b6-1e51-af3c-0001-000000000909</Id>
+   <Name>DTU:Testcase:909</Name>
+   <Version>1</Version>
+   <Target Id="d38a8e80-a10b-34ea-0001-000000000001" Name="UNKNOWN000001"/>
+   <LockQuestion>0</LockQuestion>
+   <EnablePrevious>1</EnablePrevious>
+   <Trials>
+      <Trial TaskId="_1">
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>This is testcase 909</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+         <Header Version="1">
+            <Inputs>
+               <HeaderLabel>{{center|Volume test}}</HeaderLabel>
+            </Inputs>
+            <Outputs>
+               <Validation/>
+               <Value/>
+            </Outputs>
+         </Header>
+         <Monitor Version="1">
+            <Inputs>
+               <Validation/>
+               <Events/>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+                  <MultiValue Id="Contexts" Max="Inf" Min="0">
+                     <ComplexValue Id="Context">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </Monitor>
+      </Trial>
+      <Trial TaskId="_1">
+         <Header Version="1">
+            <Inputs>
+               <HeaderLabel>{{center|Volume test}}</HeaderLabel>
+            </Inputs>
+            <Outputs>
+               <Validation/>
+               <Value/>
+            </Outputs>
+         </Header>
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>{{center|{{style|font-size: 30px|Adjusting volume}}}} {{n}} {{center|Please adjust the volume so that the music is played at a pleasent level}}. {{center|After you have found an appropriate listening level, please refrain from adjusting the volume throughout the experiment}}</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+         <RadioButtonGroup Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>This is two radiobuttons only accepting option 1?</HeaderLabel>
+                  <AlignForStimuli>1</AlignForStimuli>
+                  <Items>
+                     <Item>
+                        <Label>yes</Label>
+                        <Selected>0</Selected>
+                        <Id>1</Id>
+                     </Item>
+                     <Item>
+                        <Label>no</Label>
+                        <Selected>0</Selected>
+                        <Id>2</Id>
+                     </Item>
+                  </Items>
+                  <Stimulus>
+                     <Type>audio/mpeg</Type>
+                     <URI>https://s3-eu-west-1.amazonaws.com/ac0926766ce9afd07d63b7c8a5896b0c/system/140_item/resources/set1/001.mp3</URI>
+                     <Label>Audio Excerpt</Label>
+                  </Stimulus>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <SimpleValue Id="Id" Validation="^1$"/>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </RadioButtonGroup>
+      </Trial>
+      <Trial TaskId="_1">
+         <Header Version="1">
+            <Inputs>
+               <HeaderLabel>{{center|Volume test}}</HeaderLabel>
+            </Inputs>
+            <Outputs>
+               <Validation/>
+               <Value/>
+            </Outputs>
+         </Header>
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>{{center|{{style|font-size: 30px|Adjusting volume}}}} {{n}} {{center|Please adjust the volume so that the music is played at a pleasent level}}. {{center|After you have found an appropriate listening level, please refrain from adjusting the volume throughout the experiment}}</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+         <RadioButtonGroup Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>This is four radiobuttons without stimuli {{n}} only accepting option 2 as answer?</HeaderLabel>
+                  <AlignForStimuli>1</AlignForStimuli>
+                  <Items>
+                     <Item>
+                        <Label>yes</Label>
+                        <Selected>0</Selected>
+                        <Id>1</Id>
+                     </Item>
+                     <Item>
+                        <Label>no</Label>
+                        <Selected>0</Selected>
+                        <Id>2</Id>
+                     </Item>
+                     <Item>
+                        <Label>sort of</Label>
+                        <Selected>0</Selected>
+                        <Id>3</Id>
+                     </Item>
+                     <Item>
+                        <Label>not cuite</Label>
+                        <Selected>0</Selected>
+                        <Id>4</Id>
+                     </Item>
+                  </Items>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <SimpleValue Id="Id" Validation="^2$"/>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </RadioButtonGroup>
+      </Trial>
+      <Trial TaskId="NaN">
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>This is the end of testcase 909</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+         <EndOfExperiment Version="1">
+            <Inputs/>
+            <Outputs>
+               <Validation/>
+               <Value/>
+            </Outputs>
+         </EndOfExperiment>
+      </Trial>
+   </Trials>
+</Experiment>
