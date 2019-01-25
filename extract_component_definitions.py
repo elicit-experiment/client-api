@@ -15,7 +15,7 @@ import argparse
 from subprocess import call
 import re
 import pdprint
-
+import pathlib
 
 ##
 ## UTILITIES
@@ -119,8 +119,15 @@ root_tags = list(map(lambda x: x.tag, root))
 
 trials = root[root_tags.index('Trials')]
 
+input_basename = os.path.splitext(os.path.basename(args.file))[0]
+
+output_root = os.path.join(args.output_folder, input_basename)
+json_root = os.path.join(output_root, 'json')
+
+pathlib.Path(json_root).mkdir(parents=True, exist_ok=True)
+
 c_num = 0
-with open(os.path.join(args.output_folder, os.path.basename(args.file) + ".json"), 'w') as fd:
+with open(os.path.join(json_root, input_basename + ".json"), 'w') as fd:
     components = []
     trial_components = []
     json_components = []
@@ -137,30 +144,31 @@ with open(os.path.join(args.output_folder, os.path.basename(args.file) + ".json"
             c_num = c_num + 1
             component_json_filename = "%s_c%d.json" % (os.path.basename(args.file), c_num)
             component_json_schema_filename = "%s_s%d.json" % (os.path.basename(args.file), c_num)
-            with open(os.path.join(args.output_folder, component_json_filename), 'w') as jsonfd:
+            with open(os.path.join(json_root, component_json_filename), 'w') as jsonfd:
                 jsonfd.write(json.dumps(c))
             # TODO: user json schema generator to infer schema from the example JSONs, then maybe use it to enforce the schema in the server
             #      os.system("json-schema-generator %s --schema-version draft4 > %s"%(component_json_filename, component_json_schema_filename))
             json_components = json_components + list(map(lambda d: json.dumps(d, indent=2), c))
         trial_components.append(trial_component_list)
-    with open(os.path.join(args.output_folder, os.path.basename(args.file) + ".py"), 'w') as pyfd:
-        trial_component_refs = []
-        for trial_idx, trial_component in enumerate(trial_components):
-            trial_component_ref = ("trial_components_%d" % trial_idx)
-            trial_component_refs.append(trial_component_ref)
-            component_refs = []
-            for component_idx, component in enumerate(trial_component):
-                component_ref = ("component_%d_%d" % (trial_idx, component_idx))
-                component_refs.append(component_ref)
-                pyfd.write("\n# Trial %d, component: %d\n" % (trial_idx, component_idx))
-                pyfd.write("\n\n")
-                pyfd.write("%s=" % component_ref)
-                c = pdprint.pformat(component, indent=2)
-                pyfd.write(c)
-                pyfd.write("\n\n")
-            pyfd.write("%s=[ %s]" % (trial_component_ref, ", ".join(component_refs)))
-            pyfd.write("\n\n")
-        pyfd.write("\n# Trials %d\n" % (trial_idx))
-        pyfd.write("trial_components=[ %s]" % (", ".join(trial_component_refs)))
-        pyfd.write("\n\n")
     fd.write("[\n" + ",".join(json_components) + "\n]\n")
+
+with open(os.path.join(output_root, "__init__.py"), 'w') as pyfd:
+    trial_component_refs = []
+    for trial_idx, trial_component in enumerate(trial_components):
+        trial_component_ref = ("trial_components_%d" % trial_idx)
+        trial_component_refs.append(trial_component_ref)
+        component_refs = []
+        for component_idx, component in enumerate(trial_component):
+            component_ref = ("component_%d_%d" % (trial_idx, component_idx))
+            component_refs.append(component_ref)
+            pyfd.write("\n# Trial %d, component: %d\n" % (trial_idx, component_idx))
+            pyfd.write("\n\n")
+            pyfd.write("%s=" % component_ref)
+            c = pdprint.pformat(component, indent=2)
+            pyfd.write(c)
+            pyfd.write("\n\n")
+        pyfd.write("%s=[ %s]" % (trial_component_ref, ", ".join(component_refs)))
+        pyfd.write("\n\n")
+    pyfd.write("\n# Trials %d\n" % (trial_idx))
+    pyfd.write("trial_components=[ %s]" % (", ".join(trial_component_refs)))
+    pyfd.write("\n\n")

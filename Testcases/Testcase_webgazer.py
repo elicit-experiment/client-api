@@ -99,15 +99,16 @@ trials = []
 trial_definition_specification = dict(trial_definition=dict(name='Webcam calibration', 
                                                             definition_data=dict(
                                                                     TrialType='Calibration',
-                                                                    type='NewComponent::WebGazerCalibrate'
+                                                                    type='NewComponent::WebGazerCalibrate',
+                                                                    MaxNoOfAttempts='2',
+                                                                    MinCalibrationAccuracyPct='80'
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
                                                   phase_definition_id=phase_object.id,
-                                                  MaxNoOfAttempts='2',
-                                                  MinCalibrationAccuracyPct='80')
+                                                  )
 
 #new_component_config = dict(name='Label component',
 #                            definition_data=json.dumps(dict(MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80')))

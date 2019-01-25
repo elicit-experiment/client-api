@@ -38,7 +38,7 @@ study_participants = list(filter(lambda usr: usr.role == 'registered_user', user
 #
 # Add a new Study Definition
 #
-study_definition = dict(title='Learning Study - WebGazer',
+study_definition = dict(title='Basic Study',
                         description="""Study of learning, using eye gaze tracking from WebGazer 
                         This version calibrates on the video page""",
                         version=1,
