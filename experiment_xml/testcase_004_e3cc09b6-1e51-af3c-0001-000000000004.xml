@@ -1,0 +1,1552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Experiment>
+   <Id>e3cc09b6-1e51-af3c-0001-000000000004</Id>
+   <Name>DTU:Testcase:004</Name>
+   <Version>1</Version>
+   <Target Id="d38a8e80-a10b-34ea-0001-000000000001" Name="UNKNOWN000001"/>
+   <Trials>
+      <Trial TaskId="1">
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>This is testcase 004</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+      </Trial>
+      <Trial TaskId="1">
+         <TextBlock Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <Text>Please indicate your basic preference for each of the following genres using the scale provided.</Text>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </TextBlock>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Alternative</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Bluegrass</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Blues</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Classical</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Country</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Dance/Electronica</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Folk</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Funk</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Gospel</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Heavy Metal</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>International/Foreign</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Jazz</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>New Age</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Oldies</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Opera</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Pop</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Punk</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Rap/hip-hop</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Reggae</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Religious</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Rock</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Soul/R&amp;B</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+         <LikertScale Version="1">
+            <Inputs>
+               <Events/>
+               <Instrument>
+                  <HeaderLabel>Soundtracks/theme song</HeaderLabel>
+                  <MaxNoOfScalings>1</MaxNoOfScalings>
+                  <MinNoOfScalings>1</MinNoOfScalings>
+                  <Items>
+                     <Item>
+                        <Id>1:Dislike strongly</Id>
+                        <Label>Dislike strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>2:Dislike moderately</Id>
+                        <Label>Dislike moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>3:Dislike a little</Id>
+                        <Label>Dislike a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>4:Neither like nor dislike</Id>
+                        <Label>Neither like nor dislike</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>5:Like a little</Id>
+                        <Label>Like a little</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>6:Like moderately</Id>
+                        <Label>Like moderately</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                     <Item>
+                        <Id>7:Like strongly</Id>
+                        <Label>Like strongly</Label>
+                        <Selected>0</Selected>
+                     </Item>
+                  </Items>
+                  <Stimulus/>
+               </Instrument>
+            </Inputs>
+            <Outputs>
+               <Validation>
+                  <MultiValue Id="Selections" Max="1" Min="0">
+                     <SimpleValue Id="Id" Validation=".*"/>
+                  </MultiValue>
+                  <MultiValue Id="Events" Max="Inf" Min="0">
+                     <ComplexValue Id="Event">
+                        <SimpleValue Id="DateTime" Validation="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}.\d{3})Z"/>
+                        <SimpleValue Id="Type" Validation=".*"/>
+                        <SimpleValue Id="Id" Validation=".*"/>
+                        <SimpleValue Id="Data" Validation=".*"/>
+                        <SimpleValue Id="Method" Validation=".*"/>
+                     </ComplexValue>
+                  </MultiValue>
+               </Validation>
+               <Value/>
+            </Outputs>
+         </LikertScale>
+      </Trial>
+   </Trials>
+</Experiment>
