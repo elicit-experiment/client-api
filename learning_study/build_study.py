@@ -5,6 +5,8 @@ Example for dumping the results of a study.
 import pprint
 import csv
 import json
+import pdb
+from random import shuffle
 
 from examples_base import *
 from pyelicit import elicit
@@ -384,12 +386,14 @@ for phase_idx in range(1):
         # Add a new Trial Definition
         #
 
-        new_trial_definition_config = dict(trial_definition=dict(name=trial_names[trial_idx], definition_data=trial_definition_data[trial_idx]))
+        def_data = trial_definition_data[trial_idx]
+        new_trial_definition_config = dict(trial_definition=dict(name=trial_names[trial_idx], definition_data=def_data))
         pp.pprint(new_trial_definition_config)
         new_trial_definition = el.add_trial_definition(trial_definition=new_trial_definition_config,
                                                        study_definition_id=new_study.id,
                                                        protocol_definition_id=new_protocol.id,
                                                        phase_definition_id=new_phase.id)
+        new_trial_definition.definition_data = def_data
         trials.append(new_trial_definition)
 
         #
@@ -419,10 +423,34 @@ for phase_idx in range(1):
     #
 
     for study_participant in study_participants:
-#        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-#                                                       user_id=study_participant.id))
-        # config for random trial ordering
-        new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials])))
+        # generate randomized sequence
+        questions = []
+        seq = []
+        for trial in trials:
+            type = trial.definition_data['TrialType']
+            if (type == 'Questions'):
+                questions += [trial]
+            else:
+                if len(questions) > 0:
+                    shuffle(questions)
+                    seq += [x.id for x in questions]
+                seq += [trial.id]
+
+        pp.pprint(seq)
+
+        # fixed sequence
+        #sequence = ",".join([str(trial.id) for trial in trials])
+
+        # randomized sequence
+        sequence = ",".join(str(seq))
+
+        # user_id = nil, so the TrialOrder can be chosen by anonymous users
+        new_trial_order_config = dict(trial_order=dict(sequence_data=sequence))
+
+        # user_id is fixed
+        # new_trial_order_config = dict(trial_order=dict(sequence_data=sequence,
+        #                                               user_id=study_participant.id))
+
         new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
                                              study_definition_id=new_study.id,
                                              protocol_definition_id=new_protocol.id,
