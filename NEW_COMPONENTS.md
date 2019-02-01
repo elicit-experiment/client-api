@@ -28,3 +28,9 @@ PYTHONPATH=`pwd` pipenv run python3 create_new_component_study.py --env local --
 
 PYTHONPATH=`pwd` pipenv run python3 create_new_component_study.py --env local --trial_definitions_file new_components_experiments/dtu_emotion_likert_001_e3cc09b6-f3ee-af3c-0001-000000000001/__init__.py
 cockpit_test_experiments/dtu_emotion_likert_001_e3cc09b6-f3ee-af3c-0001-000000000001.xml
+
+
+PYTHONPATH=`pwd` pipenv run python3 create_new_component_study.py --env local --trial_definitions_file Testcases/random-and-completion-code.py
+cockpit_test_experiments/dtu_emotion_likert_001_e3cc09b6-f3ee-af3c-0001-000000000001.xml
+
+PYTHONPATH=`pwd` pipenv run python3 create_new_component_study.py --env local_docker --trial_definitions_file Testcases/video-stimuli-timing.py

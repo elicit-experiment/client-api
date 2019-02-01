@@ -322,10 +322,10 @@ user = el.assert_admin()
 #
 # Get list of users who will use the study
 #
-
-users = el.get_all_users()
-
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
+NUM_AUTO_CREATED_USERS=10
+NUM_ANONYMOUS_USERS=5
+NUM_REGISTERED_USERS=5
+study_participants = el.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
 #
 # Add a new Study Definition
@@ -336,9 +336,9 @@ study_definition = dict(title='Learning Study - WebGazer',
                         version=1,
                         lock_question=1,
                         enable_previous=1,
-                        allow_anonymous_users=True,  # allow taking the study without login
+                        allow_anonymous_users=(NUM_AUTO_CREATED_USERS>0 or NUM_ANONYMOUS_USERS>0),  # allow taking the study without login
                         show_in_study_list=True,  # show in the (public) study list for anonymous protocols
-                        max_auto_created_users=10, # up to ten workerId created users
+                        max_auto_created_users=NUM_AUTO_CREATED_USERS, # up to ten workerId created users
                         max_concurrent_users=1, # NYI
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=el.elicit_api.api_url + "/participant",

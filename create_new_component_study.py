@@ -14,7 +14,10 @@ from pyelicit import elicit
 
 pp = pprint.PrettyPrinter(indent=4)
 
-parser.add_argument('--trial_definitions_file', type=str, nargs='?', default='new_components_test/freetexttest.xml.py',
+parser.add_argument('--trial_definitions_file',
+                    type=str,
+                    nargs='?',
+                    default='new_components_test/freetexttest.xml.py',
                     help='Trial definitions Python code (from extract_component_definitions.py)')
 args = parse_command_line_args()
 
@@ -36,10 +39,13 @@ user = el.assert_admin()
 #
 # Get list of users who will use the study
 #
+NUM_AUTO_CREATED_USERS=10
+NUM_ANONYMOUS_USERS=5
+NUM_REGISTERED_USERS=0
+study_participants = el.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
-users = el.get_all_users()
-
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
+pp.pprint(study_participants)
+pp.pprint(user)
 
 #
 # Add a new Study Definition
@@ -49,10 +55,14 @@ study_definition = dict(title=("New Component test study: %s"%study_title),
                         version=1,
                         lock_question=1,
                         enable_previous=1,
+                        allow_anonymous_users=(NUM_AUTO_CREATED_USERS>0 or NUM_ANONYMOUS_USERS>0),  # allow taking the study without login
+                        show_in_study_list=True,  # show in the (public) study list for anonymous protocols
+                        max_auto_created_users=NUM_AUTO_CREATED_USERS, # up to ten workerId created users
+                        max_concurrent_users=1, # NYI
                         footer_label="This is the footer of the study",
                         redirect_close_on_url=el.elicit_api.api_url+"/participant",
                         data="Put some custom data here.",
-                        principal_investigator_user_id=user.id)
+                        principal_investigator_user_id=str(user.id))
 new_study = el.add_study(study=dict(study_definition=study_definition))
 
 #
@@ -118,13 +128,24 @@ for trial_idx in range(len(trial_components)):
 # Add a new Trial Orders
 #
 
-for study_participant in study_participants:
-  new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                 user_id=study_participant.id))
-  new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
-                                       study_definition_id=new_study.id,
-                                       protocol_definition_id=new_protocol.id,
-                                       phase_definition_id=new_phase.id)
+def make_fixed_trial_orders():
+    for study_participant in study_participants:
+      new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
+                                                     user_id=study_participant.id))
+      new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
+                                           study_definition_id=new_study.id,
+                                           protocol_definition_id=new_protocol.id,
+                                           phase_definition_id=new_phase.id)
+
+def make_anonymous_trial_orders():
+    for _ in study_participants:
+      new_trial_order_config = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials])))
+      new_trial_order = el.add_trial_order(trial_order=new_trial_order_config,
+                                           study_definition_id=new_study.id,
+                                           protocol_definition_id=new_protocol.id,
+                                           phase_definition_id=new_phase.id)
+
+make_anonymous_trial_orders()
 
 #
 # Add a new Phase Order

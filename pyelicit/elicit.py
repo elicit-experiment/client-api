@@ -3,6 +3,8 @@ from . import api
 import pprint
 import re
 import json
+import random
+import string
 
 _pp = pp = pprint.PrettyPrinter(indent=4)
 
@@ -159,6 +161,79 @@ class Elicit:
         assert resp.status == HTTPStatus.OK
         return resp.data
 
+    def ensure_users(self, num_registered, num_anonymous):
+        page = 0
+        next_link = 'first'
+        study_participants = []
+        while ((num_registered > 0) or (num_anonymous > 0)) and next_link:
+            page += 1
+            print("GETTING page %d next %s"%(page, next_link))
+            resp = self.client.request(self.elicit_api['findUsers'](page=page, page_size=3))
+            assert resp.status == HTTPStatus.OK
+            users = resp.data
+
+            print("got %d users"%len(users))
+
+            link = resp.header['Link'][0].split(',')
+
+            link_matches = [re.match(r'\s*<([^>]+)>;\s*rel="([a-z]+)"', x) for x in link]
+
+            links = [dict(href=m.group(1), rel=m.group(2)) for m in link_matches]
+
+            last_page_link = list(filter(lambda link: link['rel'] == 'last', links))
+            next_page_link = list(filter(lambda link: link['rel'] == 'next', links))
+
+            if len(last_page_link) == 1:
+                last_page = re.search(r'.*page=(\d+).*', last_page_link[0]['href']).group(1)
+                print("last_page %s"%last_page)
+
+            if len(next_page_link) == 1:
+                next_link = next_page_link[0]['href']
+            else:
+                next_link = ''
+
+            for user in users:
+                if user.role == 'registered_user':
+                    if num_registered > 0:
+                        study_participants += [user]
+                        num_registered -= 1
+                elif user.role == 'anonymous_user':
+                    if (num_anonymous > 0) and not "mturk" in user.email:
+                        study_participants += [user]
+                        num_anonymous -= 1
+            print("Got existing %d users.  %d registered and %d anonymous users remain."%(len(study_participants), num_registered, num_anonymous))
+
+        if (num_registered > 0) or (num_anonymous > 0):
+            print('Creating remaining users')
+
+        for i in range(num_anonymous):
+            username = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(16)])
+            role = 'anonymous_user'
+            password = 'password'
+            user_details = dict(username=username,
+                                password=password,
+                                email=username + "@elicit.dtu.dk",
+                                role=role or 'registered_user',
+                                anonymous=True,
+                                password_confirmation=password)
+            new_user = self.add_user(user=dict(user=user_details))
+            study_participants += new_user
+
+        for i in range(num_registered):
+            username = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(16)])
+            role = 'registered_user'
+            password = 'password'
+            user_details = dict(username=username,
+                                password=password,
+                                email=username + "@elicit.dtu.dk",
+                                role=role or 'registered_user',
+                                anonymous=False,
+                                password_confirmation=password)
+            new_user = self.add_user(user=dict(user=user_details))
+            study_participants += new_user
+
+        return study_participants
+
     def add_users_to_protocol(self, new_study, new_protocol, study_participants):
         add_users_to_protocol(self.client, self.elicit_api, new_study, new_protocol, study_participants)
 
@@ -201,7 +276,7 @@ for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataP
     add_find_api_fn(api_name)
 
 for api_name in ['addStudy', 'addProtocolDefinition', 'addPhaseDefinition', 'addTrialDefinition', 'addTrialOrder',
-                 'addPhaseOrder', 'addProtocolUser', 'addComponent']:
+                 'addPhaseOrder', 'addProtocolUser', 'addComponent', 'addUser']:
     add_add_api_fn(api_name)
 
 for api_name in ['getComponent']:

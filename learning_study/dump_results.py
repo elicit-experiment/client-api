@@ -157,21 +157,24 @@ def process_trial_result(trial_result):
     print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
         len(data_points), study_result.id, trial_result.id, protocol_user_id))
     # pp.pprint(trial_result)
-    # pp.pprint(data_points)
+    pp.pprint(data_points)
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
     pp.pprint(trial_definition_data)
-    trial_type = trial_definition_data['TrialType']
-    print(trial_type)
     video_layout_events, video_events = extract_video_events(data_points)
     all_video_events += video_events
     all_video_layout_events += video_layout_events
     states = list(filter(lambda x: x['point_type'] == 'State', data_points))
-    if trial_type == 'Questions':
-        print('EXTRACTING QUESTIONS')
-        all_answers += extract_answers(states)
-    if trial_type == 'Demographics':
-        print('EXTRACTING DEMOGRAPHICS')
-        all_demographics += extract_demographics(states)
+
+    if 'TrialType' in trial_definition_data:
+        trial_type = trial_definition_data['TrialType']
+        print(trial_type)
+
+        if trial_type == 'Questions':
+            print('EXTRACTING QUESTIONS')
+            all_answers += extract_answers(states)
+        if trial_type == 'Demographics':
+            print('EXTRACTING DEMOGRAPHICS')
+            all_demographics += extract_demographics(states)
 
 
 for study_result in study_results:
