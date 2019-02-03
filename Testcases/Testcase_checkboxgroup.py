@@ -13,6 +13,7 @@ import json
 
 from examples_base import parse_command_line_args
 from pyelicit import elicit
+from random import shuffle
 
 ##
 ## MAIN
@@ -52,7 +53,7 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='This protocol tests the RadiobuttonGroup component',
+protocol_definition_descriptiopn = dict(name='CheckboxGroup test',
                                definition_data="whatever you want here",
                                summary="This is a test of the RadiobuttonGroup component",
                                description='This is a test of the RadiobuttonGroup component',
@@ -92,9 +93,8 @@ phases = [phase_object]
 
 trials = []
 
-#
-# Trial 1: Radiobutton group
-#
+
+#%% Trial 1: Radiobutton group
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='AlignForStimuli test', definition_data=dict(TrialType='CheckboxGroup page')))
@@ -137,6 +137,7 @@ component_definition_description = dict(name='CheckboxGroup',
                 HeaderLabel='checkboxgroup (AlignForStimuli=1)',
                 MaxNoOfSelections='1',
                 MinNoOfSelections='1',
+                RandomizeOrder=False,
                 Items=dict(
                     Item=[
                           dict(Id='0',Label='yes',Selected='0'),
@@ -161,6 +162,7 @@ component_definition_description = dict(name='CheckboxGroup',
                 HeaderLabel='checkboxgroup (AlignForStimuli=0)',
                 MaxNoOfSelections='1',
                 MinNoOfSelections='1',
+                RandomizeOrder=False,
                 Items=dict(
                     Item=[
                           dict(Id='0',Label='yes',Selected='0'),
@@ -193,6 +195,7 @@ component_definition_description = dict(name='CheckboxGroup',
                 HeaderLabel='checkboxgroup (MinNoOfSelections=0)',
                 MaxNoOfSelections='1',
                 MinNoOfSelections='0',
+                RandomizeOrder=False,
                 Items=dict(
                     Item=[
                           dict(Id='0',Label='yes',Selected='0'),
@@ -210,20 +213,21 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # Component definition: CheckboxGroup
 component_definition_description = dict(name='CheckboxGroup',
                                         definition_data=dict(
-    Instruments=[dict(
-        Instrument=dict(
-            CheckBoxGroup=dict(
-                AlignForStimuli='0',
-                HeaderLabel='checkboxgroup (pre selected options, [1 3 5])',
-                MaxNoOfSelections='1',
-                MinNoOfSelections='0',
-                Items=dict(
-                    Item=[
-                          dict(Id='0',Label='yes',Selected='1'),
-                          dict(Id='1',Label='no',Selected='0'), 
-                          dict(Id='2',Label='dont know',Selected='1'), 
-                          dict(Id='3',Label='kinda',Selected='0'), 
-                          dict(Id='4',Label='a little',Selected='1')]))))]))
+                                                    Instruments=[dict(
+                                                        Instrument=dict(
+                                                            CheckBoxGroup=dict(
+                                                                AlignForStimuli='0',
+                                                                HeaderLabel='checkboxgroup (pre selected options, [1 3 5])',
+                                                                MaxNoOfSelections='1',
+                                                                MinNoOfSelections='0',
+                                                                RandomizeOrder=False,
+                                                                Items=dict(
+                                                                    Item=[
+                                                                          dict(Id='0',Label='yes',Selected='1'),
+                                                                          dict(Id='1',Label='no',Selected='0'), 
+                                                                          dict(Id='2',Label='dont know',Selected='1'), 
+                                                                          dict(Id='3',Label='kinda',Selected='0'), 
+                                                                          dict(Id='4',Label='a little',Selected='1')]))))]))
 
 
 
@@ -244,6 +248,7 @@ component_definition_description = dict(name='CheckboxGroup',
                                                     HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=10)',
                                                     MaxNoOfSelections='10',
                                                     MinNoOfSelections='2',
+                                                    RandomizeOrder=False,
                                                     Items=dict(
                                                         Item=[
                                                             dict(Id='0',Label='bla1',Selected='0'),
@@ -281,8 +286,92 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-#
-# Trial 5: End of experiment page
+
+#%% Trial 2: Radiobutton group (random orders)
+
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='Random order test', definition_data=dict(TrialType='CheckboxGroup')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|This is a test of a CheckboxGroup component}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+
+# Component definition: CheckboxGroup
+component_definition_description = dict(name='CheckboxGroup',
+                                        definition_data=dict(
+                                                    Instruments=[dict(
+                                                        Instrument=dict(
+                                                            CheckBoxGroup=dict(
+                                                                AlignForStimuli='0',
+                                                                HeaderLabel='checkboxgroup (random order)',
+                                                                MaxNoOfSelections='1',
+                                                                MinNoOfSelections='0',
+                                                                RandomizeOrder=True,
+                                                                Items=dict(
+                                                                    Item=[
+                                                                          dict(Id='0',Label='option 0',Selected='0'),
+                                                                          dict(Id='1',Label='option 1',Selected='0'), 
+                                                                          dict(Id='2',Label='option 2',Selected='0'), 
+                                                                          dict(Id='3',Label='option 3',Selected='0'), 
+                                                                          dict(Id='4',Label='option 4',Selected='0')]))))]))
+
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
+
+# Component definition: CheckboxGroup
+component_definition_description = dict(name='CheckboxGroup',
+                                        definition_data=dict(
+                                                    Instruments=[dict(
+                                                        Instrument=dict(
+                                                            CheckBoxGroup=dict(
+                                                                AlignForStimuli='0',
+                                                                HeaderLabel='checkboxgroup (random order, preselected)',
+                                                                MaxNoOfSelections='2',
+                                                                MinNoOfSelections='2',
+                                                                RandomizeOrder=True,
+                                                                Items=dict(
+                                                                    Item=[
+                                                                          dict(Id='0',Label='option 0 (pre)',Selected='1'),
+                                                                          dict(Id='1',Label='option 1',Selected='0'), 
+                                                                          dict(Id='2',Label='option 2 (pre)',Selected='1'), 
+                                                                          dict(Id='3',Label='option 3',Selected='0'), 
+                                                                          dict(Id='4',Label='option 4',Selected='0')]))))]))
+
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
+#%%  Trial 3: End of experiment page
 #
 # Trial definition
 trial_definition_specification =  dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
@@ -324,24 +413,33 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-#
-# Add a Trial Orders to the study
-#
+#%% Add Trial Orders to the study
 
-# Define the trial orders
+#trail_orders for specific users
 for study_participant in study_participants:
-    trial_order_specification = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                   user_id=study_participant.id))
+    trial_order_specification_user = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),user_id=study_participant.id))
+    print(trial_order_specification_user)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_user,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
+#trail_orders for anonymous users
+for anonymous_participant in range(0,10):
+    trial_id = [int(trial.id) for trial in trials]
+    shuffle(trial_id)
 
-# Trial order addition
-    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification,
-                                         study_definition_id=study_object.id,
-                                         protocol_definition_id=protocol_object.id,
-                                         phase_definition_id=phase_object.id)
+    trial_order_specification_anonymous = dict(trial_order=dict(sequence_data=",".join(map(str,trial_id))))
+    print(trial_order_specification_anonymous)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_anonymous,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
 
-#
-# Add a new Phase Order
-#
+#%% Add a new Phase Order
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 
 phase_order_specification = dict(phase_order=dict(sequence_data=phase_sequence_data,
