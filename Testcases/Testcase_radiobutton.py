@@ -10,6 +10,7 @@ import pprint
 import sys
 import csv
 import json
+from random import shuffle
 
 from examples_base import parse_command_line_args
 from pyelicit import elicit
@@ -52,7 +53,7 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='This protocol tests the RadiobuttonGroup component',
+protocol_definition_descriptiopn = dict(name='Radiobutton test',
                                definition_data="whatever you want here",
                                summary="This is a test of the RadiobuttonGroup component",
                                description='This is a test of the RadiobuttonGroup component',
@@ -92,9 +93,8 @@ phases = [phase_object]
 
 trials = []
 
-#
-# Trial 1: Radiobutton group
-#
+
+#%% Trial 1: Radiobutton group
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='IsOptional test', definition_data=dict(TrialType='RadiobuttonGroup page')))
@@ -222,7 +222,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
-
+#%% Trial 2
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Options formatting', definition_data=dict(TrialType='RadiobuttonGroup page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -282,7 +282,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
-
+#%% Trial 3
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Pre-selection', definition_data=dict(TrialType='RadiobuttonGroup page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -301,10 +301,10 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             AlignForStimuli='0',
                                                             QuestionsPerRow='3',
-                                                            HeaderLabel='This is a test of pre selected options {{n}}(first options should be selected)',
+                                                            HeaderLabel='This is a test of pre selected options',
                                                             IsOptional='0',
                                                             Items=dict(
-                                                                    Item=[dict(Id='1',Label='answer 1',Selected='1',Correct=True),
+                                                                    Item=[dict(Id='1',Label='answer 1 (pre)',Selected='1',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4',Selected='0',Correct=True),
@@ -320,9 +320,70 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
-#
-# Trial 5: End of experiment page
-#
+#%% Trial 3
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='Random orders', definition_data=dict(TrialType='RadiobuttonGroup page')))
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+# with images and wierd options
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                    Instruments=[dict(
+                                            Instrument=dict(
+                                                    RadioButtonGroup=dict(
+                                                            AlignForStimuli='0',
+                                                            QuestionsPerRow='3',
+                                                            HeaderLabel='This is a test of randomized order)',
+                                                            IsOptional='0',
+                                                            RandomizeOrder=True,
+                                                            Items=dict(
+                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
+                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=True),
+                                                                          dict(Id='3',Label='answer 3',Selected='0',Correct=True),
+                                                                          dict(Id='4',Label='answer 4',Selected='0',Correct=True),
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True),
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True)]))))]))
+                        
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+
+
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                    Instruments=[dict(
+                                            Instrument=dict(
+                                                    RadioButtonGroup=dict(
+                                                            AlignForStimuli='0',
+                                                            QuestionsPerRow='3',
+                                                            HeaderLabel='This is a test of randomized order (pre-selected)))',
+                                                            IsOptional='0',
+                                                            RandomizeOrder=True,
+                                                            Items=dict(
+                                                                    Item=[dict(Id='0',Label='answer 0'      ,Selected='0',Correct=True),
+                                                                          dict(Id='1',Label='answer 1'      ,Selected='0',Correct=True),
+                                                                          dict(Id='2',Label='answer 2 (pre)',Selected='1',Correct=True),
+                                                                          dict(Id='3',Label='answer 3'      ,Selected='0',Correct=True),
+                                                                          dict(Id='4',Label='answer 4'      ,Selected='0',Correct=True),
+                                                                          dict(Id='5',Label='answer 5'      ,Selected='0',Correct=True)]))))]))
+                        
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+#%% Trial 5: End of experiment page
+
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -363,24 +424,35 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-#
-# Add a Trial Orders to the study
-#
+#%% Add Trial Orders to the study
 
-# Define the trial orders
+#trail_orders for specific users
 for study_participant in study_participants:
-    trial_order_specification = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                   user_id=study_participant.id))
+    trial_order_specification_user = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),user_id=study_participant.id))
+    print(trial_order_specification_user)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_user,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
+#trail_orders for anonymous users
+for anonymous_participant in range(0,10):
+    trial_id = [int(trial.id) for trial in trials]
+    shuffle(trial_id)
 
-# Trial order addition
-    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification,
-                                         study_definition_id=study_object.id,
-                                         protocol_definition_id=protocol_object.id,
-                                         phase_definition_id=phase_object.id)
+    trial_order_specification_anonymous = dict(trial_order=dict(sequence_data=",".join(map(str,trial_id))))
+    print(trial_order_specification_anonymous)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_anonymous,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
 
-#
-# Add a new Phase Order
-#
+
+#%% Add a new Phase Order
+
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 
 phase_order_specification = dict(phase_order=dict(sequence_data=phase_sequence_data,
