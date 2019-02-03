@@ -13,6 +13,7 @@ import json
 
 from examples_base import parse_command_line_args
 from pyelicit import elicit
+from random import shuffle
 
 ##
 ## MAIN
@@ -94,9 +95,8 @@ phases = [phase_object]
 trials = []
 
 
-#
-# Trial 1: 2 videos on the same page
-#
+
+#%% Trial 1: 2 videos on the same page
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Multi-video page', definition_data=dict(TrialType='Video page')))
@@ -159,9 +159,9 @@ component_object = elicit_object.add_component(component=dict(component=video_co
 
 
 
-#
-# Trial 2: Single pausable video
-#
+
+#%% Trial 2: Single pausable video
+
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Pausable video page', definition_data=dict(TrialType='Video page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -206,7 +206,7 @@ component_object = elicit_object.add_component(component=dict(component=video_co
 
 
 #
-# Trial 3: Single non pausable video
+#%% Trial 3: Single non pausable video
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Non-Pausable video page', definition_data=dict(TrialType='Video page')))
@@ -251,9 +251,9 @@ component_object = elicit_object.add_component(component=dict(component=video_co
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-#
-# Trial 5: End of experiment page
-#
+
+#%% Trial 5: End of experiment page
+
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -293,24 +293,36 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-#
-# Add a Trial Orders to the study
-#
+#%% Add Trial Orders to the study
 
-# Define the trial orders
+#trail_orders for specific users
 for study_participant in study_participants:
-    trial_order_specification = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),
-                                                   user_id=study_participant.id))
+    trial_order_specification_user = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),user_id=study_participant.id))
+    print(trial_order_specification_user)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_user,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
+#trail_orders for anonymous users
+for anonymous_participant in range(0,10):
+    trial_id = [int(trial.id) for trial in trials]
+    shuffle(trial_id)
 
-# Trial order addition
-    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification,
-                                         study_definition_id=study_object.id,
-                                         protocol_definition_id=protocol_object.id,
-                                         phase_definition_id=phase_object.id)
+    trial_order_specification_anonymous = dict(trial_order=dict(sequence_data=",".join(map(str,trial_id))))
+    print(trial_order_specification_anonymous)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_anonymous,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
+    
 
-#
-# Add a new Phase Order
-#
+
+#%% Add a new Phase Order
+
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 
 phase_order_specification = dict(phase_order=dict(sequence_data=phase_sequence_data,
