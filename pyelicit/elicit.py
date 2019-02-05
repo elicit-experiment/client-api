@@ -161,6 +161,10 @@ class Elicit:
         assert resp.status == HTTPStatus.OK
         return resp.data
 
+    def find_or_create_user(self, username, password, email=None, role=None):
+        user = find_or_create_user(self.client, self.elicit_api, username, password, email, role)
+        return user
+
     def ensure_users(self, num_registered, num_anonymous):
         page = 0
         next_link = 'first'

@@ -73,6 +73,9 @@ users = elicit_object.get_all_users()
 # find registered users
 study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
 
+study_participants += [elicit_object.find_or_create_user('anonymous4', 'password', 'anonymous3@elicit.dk', 'anonymous_user')]
+study_participants += [elicit_object.find_or_create_user('anonymous5', 'password', 'anonymous4@elicit.dk', 'anonymous_user')]
+
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)
 
