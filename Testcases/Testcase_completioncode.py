@@ -121,14 +121,15 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-component_definition_description = dict(
+component_definition_description =  dict(name='Freetext',
+                                        definition_data=dict(
                                     Instruments=[dict(
                                         Instrument=dict(
                                             CompletionCode=dict(
                                                 Label='Completion Code{{n}}'
                                                       '(Click to copy to clipboard; or select & copy)',
                                                 LabelPosition='top',
-                                                Validation='.+')))])
+                                                Validation='.+')))]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
