@@ -11,3 +11,8 @@ or
 sudo dnf install pipenv
 ```
 
+2. Install packages
+
+```bash
+pipenv install
+```

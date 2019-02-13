@@ -19,10 +19,13 @@ from pyelicit import elicit
 ## HELPERS
 ##
 
-def parse_datetime(field, state):
-    state[field] = datetime.strptime(state[field], '%Y-%m-%dT%H:%M:%S.%fZ')
-    return state
+ELICIT_API_DATEFMT='%Y-%m-%dT%H:%M:%S.%fZ'
+RESULTS_OUTPUT_DATEFMT='%Y-%m-%d %H:%M:%S.%f%Z'
 
+
+def parse_datetime(field, state):
+    state[field] = datetime.strptime(state[field], ELICIT_API_DATEFMT)
+    return state
 
 def is_video_event(data_point):
     return (data_point['point_type'] != 'State') and \
@@ -117,7 +120,6 @@ def extract_video_events(data_points):
     video_layout_events = []
     video_events = filter(lambda x: is_video_event, data_points)
     video_events = list(video_events)
-    video_events = filter(partial(parse_datetime, 'datetime'), video_events)
     make_video_event_row = lambda x: (user_id,
                                       x['datetime'],
                                       x['point_type'],
@@ -157,7 +159,9 @@ def process_trial_result(trial_result):
     print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
         len(data_points), study_result.id, trial_result.id, protocol_user_id))
     # pp.pprint(trial_result)
-    pp.pprint(data_points)
+    #data_points = filter(partial(parse_datetime, 'datetime'), data_points)
+
+    pp.pprint(list(data_points))
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
     pp.pprint(trial_definition_data)
     video_layout_events, video_events = extract_video_events(data_points)

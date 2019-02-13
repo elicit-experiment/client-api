@@ -140,8 +140,8 @@ component_definition_description = dict(name='CheckboxGroup',
                 RandomizeOrder=False,
                 Items=dict(
                     Item=[
-                          dict(Id='0',Label='yes',Selected='0'),
-                          dict(Id='1',Label='no',Selected='0')]))))]))
+                          dict(Id='0',Label='yes lorem50 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0'),
+                          dict(Id='1',Label='no Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0')]))))]))
 
 
 # Component addition: add the component to the trial

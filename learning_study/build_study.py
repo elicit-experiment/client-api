@@ -269,9 +269,10 @@ for video_no in videos:
     trial_definition_data.append(dict(TrialType='Calibration', type="NewComponent::WebGazerCalibrate", MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80'))
     study_description += "Then, you'll calibrate your gaze to the webcam of your computer.<br/>"
 
-    trial_components += pre_questions[-5:]
-    trial_names += [("Pre-question %d"%(i+1)) for i in range(5)]
-    trial_definition_data += [dict(TrialType='Questions') for i in range(len(pre_questions))]
+    questions = pre_questions[-5:]
+    trial_components += questions
+    trial_names += [("Pre-question %d"%(i+1)) for i in range(len(questions))]
+    trial_definition_data += [dict(TrialType='Questions') for i in range(len(questions))]
     study_description += "Then you'll answer some questions.<br/>"
 
     trial_components.append([yt_video])
@@ -279,9 +280,10 @@ for video_no in videos:
     trial_definition_data.append(dict(TrialType='Video'))
     study_description += "Then you'll watch a cool video.<br/>"
 
+    questions = post_questions[-5:]
     trial_components += post_questions[-5:]
-    trial_names += [("Post-question %d"%(i+1)) for i in range(5)]
-    trial_definition_data += [dict(TrialType='Questions') for _ in range(len(post_questions))]
+    trial_names += [("Post-question %d"%(i+1)) for i in range(len(questions))]
+    trial_definition_data += [dict(TrialType='Questions') for _ in range(len(questions))]
     study_description += "Then another set of questions to answer.<br/>"
 
     trial_names += ['End of Experiment']
@@ -298,7 +300,7 @@ for video_no in videos:
                     EndOfExperiment=dict()))]
         )
     ]]
-    trial_definition_data += [dict()]
+    trial_definition_data += [dict(TrialType='EOE')]
 
     study_description += "Then, done!.\n"
 
@@ -322,10 +324,12 @@ user = el.assert_admin()
 #
 # Get list of users who will use the study
 #
-NUM_AUTO_CREATED_USERS=10
-NUM_ANONYMOUS_USERS=5
-NUM_REGISTERED_USERS=5
+NUM_AUTO_CREATED_USERS = 10
+NUM_ANONYMOUS_USERS = 5
+NUM_REGISTERED_USERS = 5
 study_participants = el.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
+
+pp.pprint(study_participants)
 
 #
 # Add a new Study Definition
@@ -421,6 +425,7 @@ for phase_idx in range(1):
     #
     # Add a new Trial Orders
     #
+    pp.pprint([ [trial.id, trial.definition_data['TrialType'] ] for trial in trials] )
 
     for study_participant in study_participants:
         # generate randomized sequence
@@ -428,12 +433,13 @@ for phase_idx in range(1):
         seq = []
         for trial in trials:
             type = trial.definition_data['TrialType']
-            if (type == 'Questions'):
+            if type == 'Questions':
                 questions += [trial]
             else:
                 if len(questions) > 0:
                     shuffle(questions)
                     seq += [x.id for x in questions]
+                    questions = []
                 seq += [trial.id]
 
         pp.pprint(seq)
@@ -442,7 +448,7 @@ for phase_idx in range(1):
         #sequence = ",".join([str(trial.id) for trial in trials])
 
         # randomized sequence
-        sequence = ",".join(str(seq))
+        sequence = ",".join(str(trial_id) for trial_id in seq)
 
         # user_id = nil, so the TrialOrder can be chosen by anonymous users
         new_trial_order_config = dict(trial_order=dict(sequence_data=sequence))

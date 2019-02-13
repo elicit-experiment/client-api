@@ -221,7 +221,7 @@ class Elicit:
                                 anonymous=True,
                                 password_confirmation=password)
             new_user = self.add_user(user=dict(user=user_details))
-            study_participants += new_user
+            study_participants += [new_user]
 
         for i in range(num_registered):
             username = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(16)])
@@ -234,7 +234,7 @@ class Elicit:
                                 anonymous=False,
                                 password_confirmation=password)
             new_user = self.add_user(user=dict(user=user_details))
-            study_participants += new_user
+            study_participants += [new_user]
 
         return study_participants
 
@@ -251,6 +251,7 @@ class Elicit:
             return None
 
 
+
 def add_find_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
 
@@ -258,6 +259,7 @@ def add_find_api_fn(api_name):
         return find_objects(self.client, self.elicit_api, api_name, self.pp(), **kwargs)
 
     setattr(Elicit, fn_name, fn)
+
 
 def add_get_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
@@ -267,6 +269,7 @@ def add_get_api_fn(api_name):
 
     setattr(Elicit, fn_name, fn)
 
+
 def add_add_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
 
@@ -274,6 +277,7 @@ def add_add_api_fn(api_name):
         return add_object(self.client, self.elicit_api, api_name, self.pp(), **kwargs)
 
     setattr(Elicit, fn_name, fn)
+
 
 for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries',
                  'findTrialResults', 'findComponents', 'findTimeSeries']:
