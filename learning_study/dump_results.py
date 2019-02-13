@@ -13,7 +13,7 @@ import requests
 from examples_base import *
 import functools
 from pyelicit import elicit
-
+import pandas as pd
 
 ##
 ## HELPERS
@@ -26,6 +26,15 @@ RESULTS_OUTPUT_DATEFMT='%Y-%m-%d %H:%M:%S.%f%Z'
 def parse_datetime(field, state):
     state[field] = datetime.strptime(state[field], ELICIT_API_DATEFMT)
     return state
+
+
+def with_dates(o):
+    o = (o.copy())
+    for key in o:
+        if key.endswith('_at') and o[key] is not None:
+            o[key] = (o[key].v).strftime(RESULTS_OUTPUT_DATEFMT)
+    return o
+
 
 def is_video_event(data_point):
     return (data_point['point_type'] != 'State') and \
@@ -73,6 +82,8 @@ all_experiment_results = []
 all_mturk_infos = []
 all_demographics = []
 MTURK_FIELDS = ['assignmentId', 'hitId', 'workerId']
+all_datapoints = []
+
 
 
 def fetch_answer(state):
@@ -151,19 +162,28 @@ def extract_video_events(data_points):
 
 
 def process_trial_result(trial_result):
-    global all_video_events, all_video_layout_events, all_answers, all_answers, all_demographics
+    global all_video_events, all_video_layout_events, all_answers, all_answers, all_demographics, all_datapoints
     data_points = el.find_data_points(study_result_id=study_result.id,
                                       trial_definition_id=trial_result.trial_definition_id,
                                       protocol_user_id=protocol_user_id,
                                       page_size=50)
     print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
         len(data_points), study_result.id, trial_result.id, protocol_user_id))
-    # pp.pprint(trial_result)
-    #data_points = filter(partial(parse_datetime, 'datetime'), data_points)
 
-    pp.pprint(list(data_points))
+    #pp.pprint(list(data_points))
+
+    make_data_point_row = lambda x: (user_id,
+                                      x['datetime'],
+                                      x['point_type'],
+                                      experiment.id,
+                                      trial_result.phase_definition_id,
+                                      trial_result.trial_definition_id,
+                                      x['component_id'])
+    all_datapoints += data_points
+
+
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
-    pp.pprint(trial_definition_data)
+    #pp.pprint(trial_definition_data)
     video_layout_events, video_events = extract_video_events(data_points)
     all_video_events += video_events
     all_video_layout_events += video_layout_events
@@ -181,6 +201,10 @@ def process_trial_result(trial_result):
             all_demographics += extract_demographics(states)
 
 
+print("\n\nSTUDY_RESULTS\n\n")
+
+pp.pprint([with_dates(study_result) for study_result in study_results])
+
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
 
@@ -189,11 +213,13 @@ for study_result in study_results:
                                 x.completed_at,
                                 x.id] for x in experiments]
 
+    print("\n\nEXPERIMENTS\n\n")
+
+    pp.pprint([with_dates(experiment) for experiment in experiments])
+
     for experiment in experiments:
         user_id = experiment['protocol_user']['user_id']
         user_name = experiment['protocol_user']['user']['username']
-
-        pp.pprint(experiment)
 
         if args.user_id and args.user_id != user_id:
             continue
@@ -331,3 +357,11 @@ with open('demographics.csv', 'w', newline='') as csvfile:
     answerwriter.writerow(header)
     for answer in all_demographics:
         answerwriter.writerow(answer)
+
+
+df = pd.DataFrame.from_records(all_datapoints)
+
+csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
+#print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
+
+print(csv)
