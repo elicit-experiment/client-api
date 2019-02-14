@@ -179,6 +179,8 @@ def process_trial_result(trial_result):
                                       trial_result.phase_definition_id,
                                       trial_result.trial_definition_id,
                                       x['component_id'])
+
+    print("got %d datapoints"%(len(data_points)))
     all_datapoints += data_points
 
 
@@ -364,4 +366,6 @@ df = pd.DataFrame.from_records(all_datapoints)
 csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
 #print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
 
-print(csv)
+with open('datapoints.csv', 'w', newline='') as csvfile:
+    csvfile.write(csv)
+
