@@ -35,6 +35,19 @@ def camel_to_snake(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
+
+# Parse the pagination link headers out of the HTTP response
+def parse_pagination_links(link_header):
+    pp.pprint(link_header)
+    link = link_header[0].split(',')
+    link_matches = [re.match(r'\s*<([^>]+)>;\s*rel="([a-z]+)"', x) for x in link]
+    links = [dict(href=m.group(1), rel=m.group(2)) for m in link_matches]
+    last_page_link = list(filter(lambda link: link['rel'] == 'last', links))
+    next_page_link = list(filter(lambda link: link['rel'] == 'next', links))
+    return last_page_link, next_page_link
+
+
+
 def assert_admin(client, elicit):
     resp = client.request(elicit['getCurrentUser']())
 
@@ -104,18 +117,44 @@ def add_object(client, elicit, operation, pp = _pp, **args):
 
     return (created_object)
 
-def find_objects(client, elicit, operation, pp = _pp, **args):
-    resp = client.request(elicit[operation](**args))
-    assert resp.status == HTTPStatus.OK
-    if resp.status != HTTPStatus.OK:
-        return (None)
 
-    found_objects = resp.data
-    if pp != None:
-        pp.print("\n\nFound objects with %s(%s):\n" %(operation, args))
+def find_objects(client, elicit, operation, pp = _pp, **args):
+    next_link = 'first'
+    found_objects = []
+    page = 0
+    pagination_aware = 'page' in args
+    while next_link:
+        page += 1
+
+        if not pagination_aware:
+            page_size = args['page_size'] if 'page_size' in args else 3
+            args = dict(args, page=page, page_size=page_size)
+
+        resp = client.request(elicit[operation](**args))
+
+        assert resp.status == HTTPStatus.OK
+        if resp.status != HTTPStatus.OK:
+            return None
+
+        next_link = None
+        link_header = resp.header['Link'] if 'Link' in resp.header else []
+        if not pagination_aware and list(filter(None, link_header)):
+            last_page_link, next_page_link = parse_pagination_links(link_header)
+
+            if len(last_page_link) == 1:
+                last_page = re.search(r'.*page=(\d+).*', last_page_link[0]['href']).group(1)
+                print("last_page %s" % last_page)
+
+            if len(next_page_link) == 1:
+                next_link = next_page_link[0]['href']
+
+        found_objects += resp.data
+
+    if pp is not None:
+        pp.print("\n\nFound objects with %s(%s) in %d/%d pages:\n" % (operation, args, page, last_page))
         pp.pprint(found_objects)
 
-    return (found_objects)
+    return found_objects
 
 
 def get_object(client, elicit, operation, pp = _pp, **args):
@@ -178,14 +217,9 @@ class Elicit:
 
             print("got %d users"%len(users))
 
-            link = resp.header['Link'][0].split(',')
+            link_header = resp.header['Link']
 
-            link_matches = [re.match(r'\s*<([^>]+)>;\s*rel="([a-z]+)"', x) for x in link]
-
-            links = [dict(href=m.group(1), rel=m.group(2)) for m in link_matches]
-
-            last_page_link = list(filter(lambda link: link['rel'] == 'last', links))
-            next_page_link = list(filter(lambda link: link['rel'] == 'next', links))
+            last_page_link, next_page_link = parse_pagination_links(link_header)
 
             if len(last_page_link) == 1:
                 last_page = re.search(r'.*page=(\d+).*', last_page_link[0]['href']).group(1)
