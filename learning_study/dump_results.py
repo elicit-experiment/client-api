@@ -22,7 +22,7 @@ import pandas as pd
 
 ELICIT_API_DATEFMT='%Y-%m-%dT%H:%M:%S.%fZ'
 RESULTS_OUTPUT_DATEFMT='%Y-%m-%d %H:%M:%S.%f%Z'
-
+video_layout_fields = frozenset(['x','y', 'width', 'height', 'top', 'bottom', 'left'])
 
 def parse_datetime(field, state):
     state[field] = datetime.strptime(state[field], ELICIT_API_DATEFMT)
@@ -144,21 +144,26 @@ def extract_video_events(data_points):
     if len(layouts) > 0:
         layout = layouts[0]
         video_layout = json.loads(layout['value'])
-        video_layout_event = [video_layout['x'],
-                              video_layout['y'],
-                              video_layout['width'],
-                              video_layout['height'],
-                              video_layout['top'],
-                              video_layout['right'],
-                              video_layout['bottom'],
-                              video_layout['left'],
-                              layout['datetime'],
-                              user_id,
-                              experiment.id,
-                              trial_result.phase_definition_id,
-                              trial_result.trial_definition_id,
-                              layout['component_id']]
-        video_layout_events += [video_layout_event]
+        fields = set(video_layout.keys())
+        if fields.issuperset(video_layout_fields):
+            video_layout_event = [video_layout['x'],
+                                  video_layout['y'],
+                                  video_layout['width'],
+                                  video_layout['height'],
+                                  video_layout['top'],
+                                  video_layout['right'],
+                                  video_layout['bottom'],
+                                  video_layout['left'],
+                                  layout['datetime'],
+                                  user_id,
+                                  experiment.id,
+                                  trial_result.phase_definition_id,
+                                  trial_result.trial_definition_id,
+                                  layout['component_id']]
+            video_layout_events += [video_layout_event]
+        else:
+            print("Invalid video_layout event")
+            print(video_layout)
     return video_layout_events, video_events_rows
 
 
