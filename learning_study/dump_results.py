@@ -7,6 +7,7 @@ import pprint
 import json
 import os
 import cgi
+import collections
 from datetime import datetime
 from functools import partial
 import requests
@@ -83,8 +84,8 @@ all_mturk_infos = []
 all_demographics = []
 MTURK_FIELDS = ['assignmentId', 'hitId', 'workerId']
 all_datapoints = []
-
-
+object_counts=dict(trial_results=0, data_points=0, experiments=0, study_results=0)
+object_ids=dict(trial_results=[],data_points=[])
 
 def fetch_answer(state):
     out = state.copy()
@@ -183,6 +184,8 @@ def process_trial_result(trial_result):
     print("got %d datapoints"%(len(data_points)))
     all_datapoints += data_points
 
+    object_counts['data_points'] += len(data_points)
+    object_ids['data_points'] += [r.id for r in data_points]
 
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
     #pp.pprint(trial_definition_data)
@@ -207,6 +210,8 @@ print("\n\nSTUDY_RESULTS\n\n")
 
 pp.pprint([with_dates(study_result) for study_result in study_results])
 
+object_counts['study_results'] = len(study_results)
+
 for study_result in study_results:
     experiments = el.find_experiments(study_result_id=study_result.id)
 
@@ -218,6 +223,8 @@ for study_result in study_results:
     print("\n\nEXPERIMENTS\n\n")
 
     pp.pprint([with_dates(experiment) for experiment in experiments])
+
+    object_counts['experiments'] += len(experiments)
 
     for experiment in experiments:
         user_id = experiment['protocol_user']['user_id']
@@ -249,6 +256,9 @@ for study_result in study_results:
                                experiment.id,
                                x.phase_definition_id,
                                x.trial_definition_id] for x in trial_results]
+
+        object_counts['trial_results'] += len(trial_results)
+        object_ids['trial_results'] += [r.id for r in trial_results]
 
         for trial_result in trial_results:
             process_trial_result(trial_result)
@@ -368,4 +378,11 @@ csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_i
 
 with open('datapoints.csv', 'w', newline='') as csvfile:
     csvfile.write(csv)
+
+pp.pprint(object_counts)
+#pp.pprint(object_ids)
+for object_type in object_ids.keys():
+    pp.pprint('Duplicates for %s'%object_type)
+    dupes = [item for item, count in collections.Counter(object_ids[object_type]).items() if count > 1]
+    pp.pprint(dupes)
 

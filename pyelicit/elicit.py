@@ -119,7 +119,8 @@ def add_object(client, elicit, operation, pp = _pp, **args):
 
 
 def find_objects(client, elicit, operation, pp = _pp, **args):
-    next_link = 'first'
+    next_link = True
+    last_page = ""
     found_objects = []
     page = 0
     pagination_aware = 'page' in args
@@ -136,22 +137,33 @@ def find_objects(client, elicit, operation, pp = _pp, **args):
         if resp.status != HTTPStatus.OK:
             return None
 
-        next_link = None
-        link_header = resp.header['Link'] if 'Link' in resp.header else []
-        if not pagination_aware and list(filter(None, link_header)):
-            last_page_link, next_page_link = parse_pagination_links(link_header)
+        next_link = False
+        result_len = len(resp.data)
+        if result_len > 0:
+            link_header = resp.header['Link'] if 'Link' in resp.header else []
+            if not pagination_aware:
+                if list(filter(None, link_header)):
+                    last_page_link, next_page_link = parse_pagination_links(link_header)
 
-            if len(last_page_link) == 1:
-                last_page = re.search(r'.*page=(\d+).*', last_page_link[0]['href']).group(1)
-                print("last_page %s" % last_page)
+                    if len(last_page_link) == 1:
+                        last_page = re.search(r'.*page=(\d+).*', last_page_link[0]['href']).group(1)
+                        if pp is not None:
+                            pp.print("last_page (%s)" % last_page)
 
-            if len(next_page_link) == 1:
-                next_link = next_page_link[0]['href']
+                    if len(next_page_link) == 1:
+                        next_link = bool(next_page_link[0]['href'])
+                        if pp is not None:
+                            pp.pprint("found next page link (%s)"%next_page_link[0]['href'])
+                elif result_len >= page_size:
+                    #  no header, but full page. N+1 risk
+                    if pp is not None:
+                        pp.print("Full page: %d/%d; getting next page" % (result_len, page_size))
+                    next_link = True
 
-        found_objects += resp.data
+            found_objects += resp.data
 
     if pp is not None:
-        pp.print("\n\nFound objects with %s(%s) in %d/%d pages:\n" % (operation, args, page, last_page))
+        pp.print("\n\nFound objects with %s(%s) in %d/%s pages:\n" % (operation, args, int(page), last_page))
         pp.pprint(found_objects)
 
     return found_objects
