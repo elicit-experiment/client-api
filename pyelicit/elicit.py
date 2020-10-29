@@ -326,7 +326,7 @@ def add_add_api_fn(api_name):
 
 
 for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries',
-                 'findTrialResults', 'findComponents', 'findTimeSeries']:
+                 'findTrialResults', 'findComponents', 'findTimeSeries', 'findStudyDefinitions']:
     add_find_api_fn(api_name)
 
 for api_name in ['addStudy', 'addProtocolDefinition', 'addPhaseDefinition', 'addTrialDefinition', 'addTrialOrder',
