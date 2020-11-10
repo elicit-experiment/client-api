@@ -3,7 +3,8 @@ import argparse
 ENVIRONMENTS = {
     'local': 'http://localhost:3000',
     'local_docker': 'https://elicit.docker.local',
-    'prod': 'http://elicit-experiment.com'
+    'prodx': 'http://142.93.48.58',
+    'prod': 'https://elicit-experiment.com'
 }
 parser = argparse.ArgumentParser(prog='elicit')
 parser.add_argument('--env', choices=ENVIRONMENTS.keys(), default='prod',

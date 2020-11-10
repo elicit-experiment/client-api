@@ -30,7 +30,8 @@ class ElicitApi:
             dont_check_ssl()
 
         self.api_url = api_url
-        self.app = App._create_(self.api_url + '/apidocs/v1/swagger.json')
+        self.swagger_url = self.api_url + '/apidocs/v1/swagger.json'
+        self.app = App._create_(self.swagger_url)
         self.auth = Security(self.app)
         self.creds = creds
 
