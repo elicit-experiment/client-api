@@ -193,9 +193,9 @@ def load_trial_definitions(file_name):
 
 
 class Elicit:
-    def __init__(self, script_args):
+    def __init__(self, script_args, creds=api.ElicitCreds()):
         self.script_args = script_args  # parse_command_line_args()
-        self.elicit_api = api.ElicitApi(api.ElicitCreds(), self.script_args.apiurl, self.script_args.send_opt)
+        self.elicit_api = api.ElicitApi(creds, self.script_args.apiurl, self.script_args.send_opt)
         self.client = self.elicit_api.login()
 
     def api_url(self):
