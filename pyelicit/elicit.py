@@ -48,7 +48,7 @@ def parse_pagination_links(link_header):
 
 
 
-def assert_admin(client, elicit):
+def assert_role(client, elicit, role = 'admin'):
     resp = client.request(elicit['getCurrentUser']())
 
     assert resp.status == HTTPStatus.OK
@@ -58,7 +58,7 @@ def assert_admin(client, elicit):
 
     user = resp.data
 
-    assert (resp.data.role == 'admin')  # must be admin!
+    assert (resp.data.role == role)
 
     return user
 
@@ -288,7 +288,10 @@ class Elicit:
         add_users_to_protocol(self.client, self.elicit_api, new_study, new_protocol, study_participants)
 
     def assert_admin(self):
-        return assert_admin(self.client, self.elicit_api)
+        return assert_role(self.client, self.elicit_api, 'admin')
+
+    def assert_investigator(self):
+        return assert_role(self.client, self.elicit_api, 'investigator')
 
     def pp(self):
         if self.script_args.debug:

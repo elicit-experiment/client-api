@@ -10,6 +10,7 @@ import json
 
 from examples_base import *
 from pyelicit import elicit
+from pyelicit import api
 
 ##
 ## MAIN
@@ -30,5 +31,8 @@ user = el.assert_admin()
 investigator = el.find_or_create_user('MagnumPI', 'bad_password', 'investigator3@elicit.dk', 'investigator')
 
 pp.pprint(investigator)
+
+# now login as investigator
+el = elicit.Elicit(args, api.ElicitCreds(_admin_user='investigator3@elicit.dk', _admin_password='bad_password'))
 
 pp.pprint(el.find_study_definitions())
