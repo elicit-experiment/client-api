@@ -15,6 +15,8 @@ from examples_base import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
 
+experiment_URL = 'https://elicit-experiment.com'
+
 ##
 ## MAIN
 ##
@@ -41,7 +43,7 @@ study_definition_description = dict(title='Video player test',
                         allow_anonymous_users=True,  # allow taking the study without login
                         show_in_study_list=False,  # show in the (public) study list for anonymous protocols
                         footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
-                        redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
+                        redirect_close_on_url=experiment_URL + "/participant",
                         data="Put some data here, we don't really care about it.",
                         principal_investigator_user_id=user_admin.id)
 
@@ -72,7 +74,7 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 users = elicit_object.get_all_users()
 
 # find registered users
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
+study_participants = list(filter(lambda usr: usr.role == 'anonymous_user', users))
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)
@@ -262,12 +264,14 @@ video_test(test_name='Replayable video page', video_label='This video is replaya
 #%% Trial 5: Single optional video
 video_test(test_name='Optional video page', video_label='This video is optional', video_params=dict(IsOptional=True))
 
+#%% Trial 6: Single optional video
+video_test(test_name='NOT Optional video page', video_label='This video is optional', video_params=dict(IsOptional=False))
 #
-#%% Trial 6: Single replayable (2X) video
+#%% Trial 7: Single replayable (2X) video
 video_test(test_name='Replayable video page', video_label='This video is replayable (2 times)', video_params=dict(IsReplayable=True, MaxReplayCount=2))
 
 
-#%% Trial 7: End of experiment page
+#%% Trial 8: End of experiment page
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
@@ -364,7 +368,6 @@ print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
 print('')
-#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
 print('Study link: ', end='')
-print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
+print((experiment_URL + '/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
