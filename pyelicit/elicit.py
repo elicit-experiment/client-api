@@ -90,7 +90,7 @@ def find_or_create_user(client, elicit, username, password, email=None, role=Non
         print("Not found; Creating user:")
         user_details = dict(username=username,
                             password=password,
-                            email=email or (username + "@elicit.dtu.dk"),
+                            email=email or (username + "@elicit.com"),
                             role=role or 'registered_user',
                             password_confirmation=password)
         resp = client.request(elicit['addUser'](user=dict(user=user_details)))
@@ -168,7 +168,6 @@ def find_objects(client, elicit, operation, pp = _pp, **args):
 
     return found_objects
 
-
 def get_object(client, elicit, operation, pp = _pp, **args):
     resp = client.request(elicit[operation](**args))
     assert resp.status == HTTPStatus.OK
@@ -182,7 +181,6 @@ def get_object(client, elicit, operation, pp = _pp, **args):
 
     return (found_object)
 
-
 def load_trial_definitions(file_name):
     with open(file_name, 'r') as tdfd:
         lines = tdfd.readlines()
@@ -190,7 +188,6 @@ def load_trial_definitions(file_name):
         _locals = locals()
         exec(td, globals(), _locals)
         return _locals['trial_components']
-
 
 class Elicit:
     def __init__(self, script_args, creds=api.ElicitCreds()):
@@ -207,8 +204,8 @@ class Elicit:
     def add_obj(self, op, args):
         return add_object(self.client, self.elicit_api, op, self.pp(), **args)
 
-    def get_all_users(self):
-        resp = self.client.request(self.elicit_api['findUsers']())
+    def get_all_users(self, args = dict()):
+        resp = self.client.request(self.elicit_api['findUsers'](**args))
         assert resp.status == HTTPStatus.OK
         return resp.data
 
@@ -262,7 +259,7 @@ class Elicit:
             password = 'password'
             user_details = dict(username=username,
                                 password=password,
-                                email=username + "@elicit.dtu.dk",
+                                email=username + "@elicit.com",
                                 role=role or 'registered_user',
                                 anonymous=True,
                                 password_confirmation=password)
@@ -275,7 +272,7 @@ class Elicit:
             password = 'password'
             user_details = dict(username=username,
                                 password=password,
-                                email=username + "@elicit.dtu.dk",
+                                email=username + "@elicit.com",
                                 role=role or 'registered_user',
                                 anonymous=False,
                                 password_confirmation=password)
@@ -299,8 +296,6 @@ class Elicit:
         else:
             return None
 
-
-
 def add_find_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
 
@@ -308,7 +303,6 @@ def add_find_api_fn(api_name):
         return find_objects(self.client, self.elicit_api, api_name, self.pp(), **kwargs)
 
     setattr(Elicit, fn_name, fn)
-
 
 def add_get_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
@@ -318,7 +312,6 @@ def add_get_api_fn(api_name):
 
     setattr(Elicit, fn_name, fn)
 
-
 def add_add_api_fn(api_name):
     fn_name = camel_to_snake(api_name)
 
@@ -326,7 +319,6 @@ def add_add_api_fn(api_name):
         return add_object(self.client, self.elicit_api, api_name, self.pp(), **kwargs)
 
     setattr(Elicit, fn_name, fn)
-
 
 for api_name in ['findStudyResults', 'findExperiments', 'findStages', 'findDataPoints', 'findTimeSeries',
                  'findTrialResults', 'findComponents', 'findTimeSeries', 'findStudyDefinitions']:
