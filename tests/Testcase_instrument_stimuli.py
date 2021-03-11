@@ -14,7 +14,9 @@ from random import shuffle
 
 ## Stimuli URLs
 audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
-video_url = 'https://youtu.be/zr9leP_Dcm8'
+video_youtube_url = 'https://youtu.be/zr9leP_Dcm8'
+video_mp4_url = 'https://max-nentwich.vids.io/videos/a79dddb31b1de5c12e/despicable_me_english-mp4'
+
 ##
 
 ##
@@ -137,7 +139,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                             Layout='column',
                                                             ColumnWidthPercent='30',
                                                             QuestionsPerRow='1',
-                                                            HeaderLabel='This is a RadioButtonGroup with video stimuli (column)',
+                                                            HeaderLabel='This is a RadioButtonGroup with mp4 video stimuli (column)',
                                                             IsOptional='0',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
@@ -155,9 +157,9 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='13',Label='answer 13',Selected='0',Correct=True)]))))], 
                                     Stimuli=[dict(
                                             Label='This video is pausable',
-                                            Type='video/youtube',
+                                            Type='video/mp4',
                                             IsPausable=True,
-                                            URI=video_url)]))
+                                            URI=video_mp4_url)]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -279,7 +281,7 @@ component_definition = dict(name='RadioButtonGroup',
                                     Label='This video is pausable',
                                     Type='video/youtube',
                                     IsPausable=True,
-                                    URI=video_url)]))
+                                    URI=video_youtube_url)]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                                study_definition_id=study_object.id,
@@ -409,7 +411,7 @@ component_definition = dict(name='CheckBoxGroup',
                                             Label='This video is pausable',
                                             Type='video/youtube',
                                             IsPausable=True,
-                                            URI=video_url)]))
+                                            URI=video_youtube_url)]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -521,7 +523,7 @@ component_definition = dict(name='FreeText with video',
                                             Label='This video is pausable',
                                             Type='video/youtube',
                                             IsPausable=True,
-                                            URI=video_url)]))
+                                            URI=video_youtube_url)]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
