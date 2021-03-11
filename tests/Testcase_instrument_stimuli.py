@@ -28,7 +28,8 @@ elicit_object = elicit.Elicit(parse_command_line_args())
 
 
 # Double-check that we have the right user: we need to be admin to create a study
-user_admin = elicit_object.assert_investigator()
+# user_admin = elicit_object.assert_investigator()
+user_admin = elicit_object.assert_admin()
 
 #
 # Add a new Study Definition
@@ -96,7 +97,7 @@ phase_object = elicit_object.add_phase_definition(phase_definition=phase_definit
 phases.append(phase_object)
 
 #
-# Trial 1: Radiobutton group
+# TRIAL 2: Video stimulus COLUMN format
 #
 
 # Trial definition col order
@@ -165,6 +166,11 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
+
+#
+# TRIAL 2: Audio stimulus COLUMN format
+#
+
 trial_definition_specification = dict(trial_definition=dict(name='RadiobuttonGroup with Audio Stimuli', definition_data=dict(TrialType='RadiobuttonGroup page')))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -174,7 +180,51 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 # save trial to later define trial orders
 trials.append(trial_object)
 
-# Trial definition 2 : video row order
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    Header=dict(
+                                                        HeaderLabel='{{center|RadiobuttonGroup with Audio Stimuli (column)}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
+# 2 answer options
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                Instruments=[dict(
+                                    Instrument=dict(
+                                        RadioButtonGroup=dict(
+                                            Layout='column',
+                                            ColumnWidthPercent='80',
+                                            AlignForStimuli='1',
+                                            HeaderLabel='Have you adjusted the volume appropriately?',
+                                            Items=dict(
+                                                Item=[dict(Id='1', Label='yes', Selected='0'),
+                                                      dict(Id='2', Label='no', Selected='0')]))))],
+                                Stimuli=[dict(
+                                    Label='Audio Excerpt',
+                                    Type='audio/mpeg',
+                                    IsPausable=True,
+                                    URI=audio_url)]))
+
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
+
+#
+# TRIAL 4: Video stimulus ROW format
+#
+
 trial_definition_specification = dict(trial_definition=dict(name='RadiobuttonGroup with Video Stimuli',
                                                             definition_data=dict(TrialType='RadiobuttonGroup page')))
 
@@ -237,6 +287,11 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
+#
+# TRIAL 4: Audio stimulus ROW format
+#
+
+
 trial_definition_specification = dict(trial_definition=dict(name='RadiobuttonGroup with Audio Stimuli',
                                                             definition_data=dict(TrialType='RadiobuttonGroup page')))
 
@@ -267,6 +322,7 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
+                                                            Layout='row',
                                                             AlignForStimuli='1',
                                                             HeaderLabel='Have you adjusted the volume appropriately?',
                                                             Items=dict(
