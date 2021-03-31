@@ -145,7 +145,7 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
             # Layout is 'column' or 'row'
             # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
             Layout='row',
-            QuestionsPerRow='6')
+            QuestionsPerRow= 1 if component_type == 'CheckboxGroup' else '6')
 
     header_label = "This is a {0} with {1} stimuli ({2})".format(component_type, stimulus_type, layout)
 
@@ -176,7 +176,7 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
     elif component_type == 'CheckboxGroup':
         component_parameters = dict(
             AlignForStimuli='1',
-            HeaderLabel='checkboxgroup (AlignForStimuli=1)',
+            HeaderLabel='checkboxgroup',
             MaxNoOfSelections='1',
             MinNoOfSelections='1',
             RandomizeOrder=False,
