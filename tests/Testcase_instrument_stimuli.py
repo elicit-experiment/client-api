@@ -256,14 +256,14 @@ make_trial('RadiobuttonGroup', 'image', 'column')
 # %% CheckBoxGroup
 
 # Define phase
-phase_definition_description = dict(
-    phase_definition=dict(name='CheckBoxGroup', definition_data=dict(PhaseType='CheckBoxGroup')))
+# phase_definition_description = dict(
+#    phase_definition=dict(name='CheckBoxGroup', definition_data=dict(PhaseType='CheckBoxGroup')))
 
 # Add phase
-phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-                                                  study_definition_id=study_object.id,
-                                                  protocol_definition_id=protocol_object.id)
-phases.append(phase_object)
+#phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
+#                                                  study_definition_id=study_object.id,
+#                                                  protocol_definition_id=protocol_object.id)
+#phases.append(phase_object)
 
 make_trial('CheckboxGroup', None, 'row')
 make_trial('CheckboxGroup', None, 'column')
@@ -279,13 +279,13 @@ make_trial('CheckboxGroup', 'image', 'column')
 # %% FreeText
 
 # Define phase
-phase_definition_description = dict(phase_definition=dict(name='FreeText', definition_data=dict(PhaseType='FreeText')))
+# phase_definition_description = dict(phase_definition=dict(name='FreeText', definition_data=dict(PhaseType='FreeText')))
 
 # Add phase
-phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-                                                  study_definition_id=study_object.id,
-                                                  protocol_definition_id=protocol_object.id)
-phases.append(phase_object)
+# phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
+#                                                  study_definition_id=study_object.id,
+#                                                  protocol_definition_id=protocol_object.id)
+# phases.append(phase_object)
 
 make_trial('Freetext', None, 'row')
 make_trial('Freetext', None, 'column')
@@ -301,14 +301,14 @@ make_trial('Freetext', 'image', 'column')
 # %% End of experiment
 
 # Define phase
-phase_definition_description = dict(
-    phase_definition=dict(name='EndOfExperiment', definition_data=dict(PhaseType='EndOfExperiment')))
+# phase_definition_description = dict(
+#    phase_definition=dict(name='EndOfExperiment', definition_data=dict(PhaseType='EndOfExperiment')))
 
 # Add phase
-phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-                                                  study_definition_id=study_object.id,
-                                                  protocol_definition_id=protocol_object.id)
-phases.append(phase_object)
+# phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
+#                                                  study_definition_id=study_object.id,
+#                                                  protocol_definition_id=protocol_object.id)
+#phases.append(phase_object)
 
 #
 # Trial 5: End of experiment page
