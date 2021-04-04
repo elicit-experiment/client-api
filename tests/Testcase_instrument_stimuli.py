@@ -16,7 +16,7 @@ from random import shuffle
 ## Stimuli URLs
 audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
 video_youtube_url = 'https://youtu.be/zr9leP_Dcm8'
-video_mp4_url = 'https://max-nentwich.vids.io/videos/a79dddb31b1de5c12e/despicable_me_english-mp4'
+video_mp4_url = 'https://cdn.muse.ai/w/1d51a75d0e66f71ac1be9adabe7109a9675a1bf7e8639389569258c5d255b5d7/videos/video.mp4'
 test_image_url = 'https://i.picsum.photos/id/1019/200/300.jpg?hmac=HLUPqgTMOzQ6-GDkgZZ3NXQqJyl5m6iX_MXvS3Xqt3Q'
 
 ##
@@ -31,8 +31,8 @@ pp = pprint.PrettyPrinter(indent=4)
 elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
-# user_admin = elicit_object.assert_investigator()
-user_admin = elicit_object.assert_admin()
+user_admin = elicit_object.assert_investigator()
+#user_admin = elicit_object.assert_admin()
 
 #
 # Add a new Study Definition
@@ -77,7 +77,7 @@ protocol_object = elicit_object.add_protocol_definition(
 users = elicit_object.get_all_users()
 
 # find registered users
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
+study_participants = list(filter(lambda usr: usr.role == 'anonymous_user', users))
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)
@@ -195,12 +195,12 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                 CheckBoxGroup=component_parameters))]
     elif component_type == 'Freetext':
         component_parameters = dict(
-            BoxHeight=None,
-            BoxWidth=None,
-            Label="Please write what you think about this excerpts",
-            LabelPosition='top',
-            Resizable=None,
-            Validation='.+')
+                                    BoxHeight=None,
+                                    BoxWidth=None,
+                                    Label="Please write what you think about this excerpts",
+                                    LabelPosition='top',
+                                    Resizable=None,
+                                    Validation='.+')
         component_parameters = {**component_parameters, **layout_parameters, **instrument_config}
         instruments = [dict(Instrument=dict(Freetext=component_parameters))]
 
@@ -208,17 +208,27 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
         stimulus = dict(Label='This video is pausable',
                         Type='video/mp4',
                         IsPausable=True,
+                        IsOptional=True,
+                        IsReplayable=True,
+                        MaxReplayCount=2,
                         URI=video_mp4_url)
     elif stimulus_type == 'video_youtube':
         stimulus = dict(Label='This video is pausable',
                         Type='video/youtube',
                         IsPausable=True,
+                        IsOptional=True,
+                        IsReplayable=True,
+                        MaxReplayCount=2,
                         URI=video_youtube_url)
     elif stimulus_type == 'audio':
         stimulus = dict(Label='Audio Excerpt',
                         Type='audio/mpeg',
                         IsPausable=True,
+                        IsOptional=True,
+                        IsReplayable=True,
+                        MaxReplayCount=2,
                         URI=audio_url)
+        
     elif stimulus_type == 'image':
         stimulus = dict(
             Label='This is a full size',
@@ -407,7 +417,6 @@ print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
 print('')
-# print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))
 
 print('Study link: ', end='')
-print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/' + str(protocol_object.id)))
+print(('https://elicit-experiment.com/studies/' + str(study_object.id) + '/protocols/' + str(protocol_object.id)))
