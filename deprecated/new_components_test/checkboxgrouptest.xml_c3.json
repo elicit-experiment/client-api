@@ -1,1 +1,0 @@
-{"Instruments": [{"Instrument": {"CheckBoxGroup": {"HeaderLabel": "checkboxgroup (AlignForStimuli=0)", "MinNoOfSelections": "1", "MaxNoOfSelections": "1", "AlignForStimuli": "0", "Items": {"Item": [{"Id": "0:yes", "Label": "yes", "Selected": "0"}, {"Id": "1:no", "Label": "no", "Selected": "0"}]}}}}]}

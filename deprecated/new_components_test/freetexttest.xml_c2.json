@@ -1,1 +1,0 @@
-{"Instruments": [{"Instrument": {"Freetext": {"Label": "Only digits here (LabelPosition=top)", "LabelPosition": "top", "Validation": "^[0-9]+$", "BoxWidth": null, "BoxHeight": null, "Resizable": null}}}]}
