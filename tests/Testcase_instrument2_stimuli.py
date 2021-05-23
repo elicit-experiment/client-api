@@ -190,6 +190,33 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
         instruments = [dict(
             Instrument=dict(
                 OneDScale=component_parameters))]
+    elif component_type == 'OneDScaleT':
+        component_parameters = dict(
+            HeaderLabel=header_label,
+            IsOptional='0',
+            Position='-0.3',
+            X1AxisTicks=dict(
+                X1AxisTick=[dict(dictId='1', Position='-1.0', Label='good'),
+                            dict(Id='2', Position='0.0', Label='indifferent'),
+                            dict(Id='3', Position='1.0', Label='bad')]),
+            X2AxisTicks=dict(
+                X2AxisTick=[dict(dictId='1', Position='-1.0', Label='red'),
+                            dict(Id='2', Position='0.0', Label='green'),
+                            dict(Id='3', Position='1.0', Label='blue')]),
+            Y1AxisTicks=dict(
+                Y1AxisTick=[dict(dictId='1', Position='-1.0', Label='top'),
+                            dict(Id='2', Position='0.0', Label='middle'),
+                            dict(Id='3', Position='1.0', Label='bottom')]),
+            Y2AxisTicks=dict(
+                Y2AxisTick=[dict(dictId='1', Position='0.0', Label='up'),
+                            dict(Id='2', Position='0.0', Label='center'),
+                            dict(Id='3', Position='1.0', Label='down')])
+        )
+
+        component_parameters = {**component_parameters, **layout_parameters}
+        instruments = [dict(
+            Instrument=dict(
+                OneDScaleT=component_parameters))]
     elif component_type == 'TwoDScale':
         component_parameters = dict(
             HeaderLabel=header_label,
@@ -386,7 +413,6 @@ make_trial('TaggingA', 'video_youtube', 'column')
 make_trial('TaggingA', 'audio', 'column')
 make_trial('TaggingA', 'image', 'column')
 
-"""
 
 make_trial('TaggingB', None, 'row')
 make_trial('TaggingB', None, 'column')
@@ -409,6 +435,20 @@ make_trial('TwoDScale', 'video', 'column')
 make_trial('TwoDScale', 'video_youtube', 'column')
 make_trial('TwoDScale', 'audio', 'column')
 make_trial('TwoDScale', 'image', 'column')
+
+"""
+
+make_trial('OneDScaleT', None, 'row')
+make_trial('OneDScaleT', None, 'column')
+make_trial('OneDScaleT', 'video', 'row')
+make_trial('OneDScaleT', 'video_youtube', 'row')
+make_trial('OneDScaleT', 'audio', 'row')
+make_trial('OneDScaleT', 'image', 'row')
+make_trial('OneDScaleT', 'video', 'column')
+make_trial('OneDScaleT', 'video_youtube', 'column')
+make_trial('OneDScaleT', 'audio', 'column')
+make_trial('OneDScaleT', 'image', 'column')
+
 
 # %% End of experiment
 
