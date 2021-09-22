@@ -27,6 +27,7 @@ elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_admin = elicit_object.assert_admin()
+#user_admin = elicit_object.assert_investigator()
 
 #
 # Add a new Study Definition
@@ -165,14 +166,17 @@ component_definition = dict(name='RadioButtonGroup',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='IsOptional=0 (i.e. does not have to be answered) {{n}} 3 options per row',
                                                             IsOptional='0',                                                            
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=True,
                                                             Items=dict(
-                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
-                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=True),
-                                                                          dict(Id='3',Label='answer 3',Selected='0',Correct=True),
-                                                                          dict(Id='4',Label='answer 4',Selected='0',Correct=True),
-                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True),
-                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=True),
+                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False),
+                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=False),
+                                                                          dict(Id='3',Label='answer 3',Selected='0',Correct=False),
+                                                                          dict(Id='4',Label='answer 4',Selected='0',Correct=False),
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=False),
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=False),
+                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=False),
                                                                           dict(Id='8',Label='answer 8',Selected='0',Correct=True),
                                                                           dict(Id='9',Label='answer 9',Selected='0',Correct=True),
                                                                           dict(Id='10',Label='answer 10',Selected='0',Correct=True),
@@ -198,9 +202,12 @@ component_definition = dict(name='RadioButtonGroup',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='IsOptional=1 {{n}} 3 options per row',
                                                             IsOptional='1',
+                                                            MustAnswerCorrectly=True,
+                                                            ShowFeedback=True,
+                                                            ShowCorrectness=True,
                                                             Items=dict(
-                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
-                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=True),
+                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=True,Feedback='You know!'),
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4',Selected='0',Correct=True),
                                                                           dict(Id='5',Label='answer 5',Selected='0',Correct=True),
