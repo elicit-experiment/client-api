@@ -221,13 +221,17 @@ component_definition_description = dict(name='CheckboxGroup',
                                                                 MaxNoOfSelections='1',
                                                                 MinNoOfSelections='0',
                                                                 RandomizeOrder=False,
+                                                                AnswerOnce=True,
+                                                                MustAnswerCorrectly=False,
+                                                                ShowFeedback=False,
+                                                                ShowCorrectness=True,
                                                                 Items=dict(
                                                                     Item=[
-                                                                          dict(Id='0',Label='yes',Selected='1'),
-                                                                          dict(Id='1',Label='no',Selected='0'), 
-                                                                          dict(Id='2',Label='dont know',Selected='1'), 
-                                                                          dict(Id='3',Label='kinda',Selected='0'), 
-                                                                          dict(Id='4',Label='a little',Selected='1')]))))]))
+                                                                          dict(Id='0',Label='yes',Selected='0', Correct=False, Feedback='Not Right'),
+                                                                          dict(Id='1',Label='no',Selected='1', Correct=True, Feedback='Right'),
+                                                                          dict(Id='2',Label='dont know',Selected='1', Correct=True, Feedback='Right'),
+                                                                          dict(Id='3',Label='kinda',Selected='0', Correct=False, Feedback='Not Right'),
+                                                                          dict(Id='4',Label='a little',Selected='0', Correct=False, Feedback='Not Right')]))))]))
 
 
 
