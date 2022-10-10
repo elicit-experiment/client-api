@@ -114,4 +114,17 @@ for f in likertscaletest.xml_c*; do (cat "${f}"; echo) >> x.jsonl; done
 skinfer --jsonlines x.json
 
 
+PYTHONPATH=`pwd` pipenv run python3 client-api-master/tests/Testcase_webgazer.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local PYTHONPATH=`pwd` pipenv run python3 client-api-master\tests\Testcase_webgazer.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local --ignore_https
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local --ignore_https
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local_docker
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_video.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 client-api-master\tests\Testcase_webgazer.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_video_stimuli.py  --env local
 
+
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local
+
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local_docker

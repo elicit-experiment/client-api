@@ -52,15 +52,15 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='This protocol tests the video player',
-                               definition_data="whatever you want here",
-                               summary="This is a test of the video player",
-                               description='This is a test of the video player',
-                               active=True)
+protocol_definition_description = dict(name='This protocol tests the video player',
+                                       definition_data="whatever you want here",
+                                       summary="This is a test of the video player",
+                                       description='This is a test of the video player',
+                                       active=True)
 
 # Add protocol
-protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
-                                          study_definition_id=study_object.id)
+protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_description),
+                                                        study_definition_id=study_object.id)
 
 
 #
@@ -159,6 +159,12 @@ component_object = elicit_object.add_component(component=dict(component=video_co
 
 
 
+monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
 
 #%% Trial 2: Single pausable video
 

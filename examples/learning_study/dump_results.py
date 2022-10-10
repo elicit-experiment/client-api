@@ -1,6 +1,8 @@
 """
 Example for dumping the results of a study.
 """
+import sys
+sys.path.append('../../')
 
 import csv
 import pprint
@@ -73,7 +75,7 @@ client = el.client
 user = el.assert_admin()
 
 study_results = el.find_study_results(study_definition_id=args.study_id)
-
+print(study_results)
 all_answers = []
 raw_questions = dict()
 all_video_events = []
@@ -378,8 +380,9 @@ with open('demographics.csv', 'w', newline='') as csvfile:
 
 df = pd.DataFrame.from_records(all_datapoints)
 
+print(all_datapoints[0])
+print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
 csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
-#print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
 
 with open('datapoints.csv', 'w', newline='') as csvfile:
     csvfile.write(csv)

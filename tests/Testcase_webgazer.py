@@ -197,7 +197,7 @@ stimulus = dict(
                                           IsOptional=True, 
                                           IsReplayable=True, 
                                           MaxReplayCount=2,
-                                          URI=butterfly_video_url);
+                                          URI=butterfly_video_url)
 
 video_component_definition = dict(name='butterflies',
                                   definition_data=dict(
@@ -208,7 +208,12 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            protocol_definition_id=protocol_object.id,
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
-
+monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
 #%% Trial 3: Radiobutton group
 
 # Trial definition
@@ -229,6 +234,17 @@ component_definition_description = dict(name='HeaderLabel',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Header=dict(HeaderLabel='{{center|This is a test of a RadiobuttonGroup component}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+
+# Component definition: Monitor
+component_definition_description = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),

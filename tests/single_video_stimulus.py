@@ -155,7 +155,7 @@ component_definition = dict(name='RadioButtonGroup',
                                 Stimuli=[dict(
                                     Label='Hacky way of doing stimuli only',
                                     Type='video/mp4',
-                                    IsPausable=False,
+                                    IsPausable=True,
                                     IsOptional=False,
                                     URI=video_mp4_url)]))
 
@@ -203,7 +203,7 @@ component_definition = dict(name='SoloTimulus',
                                     Type='video/mp4',
                                     Width='50',
                                     Height='50',
-                                    IsPausable=False,
+                                    IsPausable=True,
                                     IsOptional=False,
                                     URI=video_mp4_url
                                 )]))
