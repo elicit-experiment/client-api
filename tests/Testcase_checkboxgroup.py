@@ -11,6 +11,10 @@ import sys
 import csv
 import json
 
+sys.path.append("../")
+
+import pprint
+
 from examples_base import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
@@ -56,15 +60,15 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='CheckboxGroup test',
-                               definition_data="whatever you want here",
-                               summary="This is a test of the RadiobuttonGroup component",
-                               description='This is a test of the RadiobuttonGroup component',
-                               active=True)
+protocol_definition_description = dict(name='CheckboxGroup test',
+                                       definition_data="whatever you want here",
+                                       summary="This is a test of the RadiobuttonGroup component",
+                                       description='This is a test of the RadiobuttonGroup component',
+                                       active=True)
 
 # Add protocol
-protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
-                                          study_definition_id=study_object.id)
+protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_description),
+                                                        study_definition_id=study_object.id)
 
 #
 # Add users to protocol
@@ -143,16 +147,20 @@ component_definition_description = dict(name='CheckboxGroup',
                                                             CheckBoxGroup=dict(
                                                                 AlignForStimuli='0',
                                                                 HeaderLabel='checkboxgroup (pre selected options, [1 3 5])',
-                                                                MaxNoOfSelections='1',
+                                                                MaxNoOfSelections='2',
                                                                 MinNoOfSelections='0',
                                                                 RandomizeOrder=False,
+                                                                ShowFeedback=True,
+                                                                ShowCorrectness=True,
+                                                                FeedbackCorrect='Good job',
+                                                                FeedbackIncorrect='bad job',
                                                                 Items=dict(
                                                                     Item=[
-                                                                          dict(Id='0',Label='yes',Selected='1'),
-                                                                          dict(Id='1',Label='no',Selected='0'), 
-                                                                          dict(Id='2',Label='dont know',Selected='1'), 
-                                                                          dict(Id='3',Label='kinda',Selected='0'), 
-                                                                          dict(Id='4',Label='a little',Selected='1')]))))]))
+                                                                          dict(Id='0',Label='yes',Correct=False, Feedback="Not Right"),
+                                                                          dict(Id='1',Label='no',Correct=True, Feedback="Right"),
+                                                                          dict(Id='2',Label='dont know',Correct=True, Feedback="Right"),
+                                                                          dict(Id='3',Label='kinda',Correct=False, Feedback="Not Right"),
+                                                                          dict(Id='4',Label='a little', Correct=False, Feedback="Not Right")]))))]))
 
 
 
@@ -171,9 +179,11 @@ component_definition_description = dict(name='CheckboxGroup',
                                                 CheckBoxGroup=dict(
                                                     AlignForStimuli='1',
                                                     HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=10)',
-                                                    MaxNoOfSelections='10',
-                                                    MinNoOfSelections='2',
+                                                    MaxNoOfSelections=10,
+                                                    MinNoOfSelections=2,
                                                     RandomizeOrder=False,
+                                                    FeedbackCorrect='Good job',
+                                                    FeedbackIncorrect='bad job',
                                                     Items=dict(
                                                         Item=[
                                                             dict(Id='0',Label='bla1',Selected='0'),
@@ -211,6 +221,54 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
+component_definition_description = dict(name='CheckboxGroup',
+                                    definition_data=dict(
+                                        Instruments=[dict(
+                                            Instrument=dict(
+                                                CheckBoxGroup=dict(
+                                                    AlignForStimuli='1',
+                                                    HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=3)',
+                                                    MaxNoOfSelections=3,
+                                                    MinNoOfSelections=2,
+                                                    RandomizeOrder=False,
+                                                    FeedbackCorrect='Good job',
+                                                    FeedbackIncorrect='bad job',
+                                                    Items=dict(
+                                                        Item=[
+                                                            dict(Id='0',Label='bla1',Selected='0'),
+                                                            dict(Id='1',Label='bla12',Selected='0'),
+                                                            dict(Id='2',Label='bla123',Selected='0'),
+                                                            dict(Id='3',Label='bla1234',Selected='0'),
+                                                            dict(Id='4',Label='bla12345',Selected='0'),
+                                                            dict(Id='5',Label='bla123456',Selected='0'),
+                                                            dict(Id='6',Label='bla1234567',Selected='0'),
+                                                            dict(Id='7',Label='bla12345678',Selected='0'),
+                                                            dict(Id='8',Label='bla123456789',Selected='0'),
+                                                            dict(Id='9',Label='bla1234567890',Selected='0'),
+                                                            dict(Id='10',Label='blablabla',Selected='0'),
+                                                            dict(Id='11',Label='blablablabla',Selected='0'),
+                                                            dict(Id='12',Label='blablablabla',Selected='0'),
+                                                            dict(Id='13',Label='blablablabla',Selected='0'),
+                                                            dict(Id='14',Label='blablablabla',Selected='0'),
+                                                            dict(Id='15',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                            dict(Id='16',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                            dict(Id='17',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                            dict(Id='18',Label='{{b|bold bla}}',Selected='0'),
+                                                            dict(Id='19',Label='{{i|italic bla}}',Selected='0'),
+                                                            dict(Id='20',Label='{{style|color: red;font-size: 20px;|Red large bla}}',Selected='0'),
+                                                            dict(Id='21',Label='{{link|http://www.google.com|Link}}',Selected='0'),
+                                                            dict(Id='22',Label='this should be flush{{n}}this should be flush{{n}}this should be flush',Selected='0'),
+                                                            dict(Id='23',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                            dict(Id='24',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                            dict(Id='25',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0')
+                                                            ]))))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
 
 #%% Trial 2: Radiobutton group (random orders)
 

@@ -6,9 +6,9 @@ This is the client API access code for Elicit.  It lets you write (Python) code 
 ## Setup
 
 ```
-sudo pip install pyswagger
-sudo pip install requests
-sudp pip install requests_toolbelt
+pip install pyswagger
+pip install requests
+pip install requests_toolbelt
 ```
 
 ## Examples
@@ -108,6 +108,9 @@ python3 parse_tobii.py
 ```
 
 ##
+
+```bash
+
 python3 extract_component_definitions.py experiment_xml/likertscaletest.xml 
 
 for f in likertscaletest.xml_c*; do (cat "${f}"; echo) >> x.jsonl; done
@@ -123,8 +126,21 @@ PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_webgazer.py  --env local_dock
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_video.py  --env local
 PYTHONPATH=`pwd` pipenv run python3 client-api-master\tests\Testcase_webgazer.py  --env local
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_video_stimuli.py  --env local
-
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_radiobutton.py  --env local
 
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local
 
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local_docker
+
+PYTHONPATH=`pwd` python3 tests/Testcase_webgazer.py  --env local
+
+PYTHONPATH=`pwd` python3 tests/Testcase_instrument_stimuli.py  --env local
+PYTHONPATH=`pwd` python3 tests/Testcase_webgazer.py  --env local
+PYTHONPATH=`pwd` python3 tests/Testcase_video.py  --env local
+
+sudo apt-get install python3-distutils
+PYTHONPATH=`pwd` find tests -iname 'Testcase*' | xargs -I{} python3 {} --env local
+
+PYTHONPATH=`pwd` python3 tests/Testcase_landmarker.py  --env local
+
+```

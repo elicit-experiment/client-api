@@ -3,6 +3,7 @@ Example for dumping the results of a study.
 """
 import sys
 sys.path.append('../../')
+sys.path.append('.')
 
 import csv
 import pprint
@@ -72,7 +73,7 @@ client = el.client
 # Double-check that we have the right user
 #
 
-user = el.assert_admin()
+user = el.assert_investigator()
 
 study_results = el.find_study_results(study_definition_id=args.study_id)
 print(study_results)
@@ -276,6 +277,9 @@ for study_result in study_results:
             if len(time_series) < 1:
                 print("No time series for stage %d (user %d)\n" % (stage_id, user_id))
                 continue
+
+            print("Got %d time series for  stage %d (user %d)" % (len(time_series), stage_id, user_id))
+            print(time_series)
 
             time_series = time_series[0]
 

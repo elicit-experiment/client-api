@@ -23,6 +23,7 @@ class ElicitApi:
                  api_url=PRODUCTION_URL,
                  send_opt=dict(verify=True)):
         print("Initialize Elicit client library for %s options:" % api_url)
+        print("Initialize Elicit client library for {} {} options:".format(creds.admin_user, creds.admin_password))
         print(send_opt)
 
         if ((not send_opt['verify']) and api_url.startswith("https")):
@@ -51,8 +52,10 @@ class ElicitApi:
                             grant_type='password',
                             email=self.creds.admin_user,
                             password=self.creds.admin_password)
+        print(auth_request)
         resp = self.client.request(self.app.op['getAuthToken'](auth_request=auth_request))
 
+        print(resp.status)
         assert resp.status == 200
 
         self.auth = resp.data

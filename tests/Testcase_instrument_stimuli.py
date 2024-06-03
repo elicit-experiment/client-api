@@ -195,6 +195,7 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                 CheckBoxGroup=component_parameters))]
     elif component_type == 'Freetext':
         component_parameters = dict(
+                                    HeaderLabel='freetext',
                                     BoxHeight=None,
                                     BoxWidth=None,
                                     Label="Please write what you think about this excerpts",

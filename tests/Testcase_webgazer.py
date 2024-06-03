@@ -17,7 +17,7 @@ from pyelicit import elicit
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# get the elicit object to define the experiment
+# get the Elicit object to define the experiment
 elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
@@ -62,11 +62,15 @@ protocol_object = elicit_object.add_protocol_definition(
 # Add users to protocol
 #
 
-# Get a list of users who can participate in the study (the ones that have already registered in the system)
-users = elicit_object.get_all_users()
+#
+# Get list of users who will use the study
+#
+NUM_AUTO_CREATED_USERS = 10
+NUM_ANONYMOUS_USERS = 5
+NUM_REGISTERED_USERS = 5
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
-# find registered users
-study_participants = list(filter(lambda usr: usr.role == 'anonymous_user', users))
+pp.pprint(study_participants)
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)
@@ -162,6 +166,13 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            protocol_definition_id=protocol_object.id,
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
+
+monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
 
 #%% add a little butterfly video
 #

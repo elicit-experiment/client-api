@@ -6,13 +6,13 @@
 
 ```bash
 # local server
-PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/build_study.py --env local
+PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/create_investigator.py --env local
 
 # local server on Docker
-PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/build_study.py --env local_docker --ignore_https true
+PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/create_investigator.py --env local_docker --ignore_https true
 
 # production server
-PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/build_study.py --env prod
+PYTHONPATH=`pwd` pipenv run python3 examples/learning_study/create_investigator.py --env prod
 ```
 
 ### Dump Results

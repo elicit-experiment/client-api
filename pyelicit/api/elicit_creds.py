@@ -4,7 +4,7 @@ class ElicitCreds:
     """
     PUBLIC_CLIENT_ID = 'admin_public'
     PUBLIC_CLIENT_SECRET = 'czZCaGRSa3F0MzpnWDFmQmF0M2JW'
-    ADMIN_USER = 'admin@elicit.dk'
+    ADMIN_USER = 'pi@elicit.com'
     ADMIN_PASSWORD = 'password'
 
     def __init__(self,

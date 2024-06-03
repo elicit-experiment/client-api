@@ -5,6 +5,7 @@ Example testing the radiobuttons
 
 import sys
 sys.path.append("../")
+sys.path.append("../../client-api/")
 
 import pprint
 import sys
@@ -26,11 +27,10 @@ elicit_object = elicit.Elicit(parse_command_line_args())
 
 
 # Double-check that we have the right user: we need to be admin to create a study
-user_admin = elicit_object.assert_admin()
-#user_admin = elicit_object.assert_investigator()
+user_investigator = elicit_object.assert_investigator()
 
 #
-# Add a new Study Definition
+# Add a new Study Definitionx
 #
 
 # Define study
@@ -44,7 +44,7 @@ study_definition_description = dict(title='Radiobutton test',
                         footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                         redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
-                        principal_investigator_user_id=user_admin.id)
+                        principal_investigator_user_id=user_investigator.id)
 
 
 study_object = elicit_object.add_study(study=dict(study_definition=study_definition_description))
@@ -464,7 +464,7 @@ for anonymous_participant in range(0,10):
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 
 phase_order_specification = dict(phase_order=dict(sequence_data=phase_sequence_data,
-                                               user_id=user_admin.id))
+                                               user_id=user_investigator.id))
 
 phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_specification,
                                      study_definition_id=study_object.id,

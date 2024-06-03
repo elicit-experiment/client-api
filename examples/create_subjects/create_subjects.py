@@ -4,10 +4,6 @@ Example for dumping the results of a study.
 
 import pprint
 
-import sys
-import csv
-import json
-
 from examples_base import *
 from pyelicit import elicit
 from pyelicit import api
@@ -28,7 +24,7 @@ el = elicit.Elicit(args)
 
 user = el.assert_admin()
 
-investigator = el.find_or_create_user('MagnumPI', 'bad_password', 'investigator3@elicit.dk', 'investigator')
+investigator = el.find_or_create_user('MagnumPI', 'bad_password', 'subject@elicit.com', 'registered_user')
 
 pp.pprint(investigator)
 
