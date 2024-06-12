@@ -281,25 +281,25 @@ for study_result in study_results:
             print("Got %d time series for  stage %d (user %d)" % (len(time_series), stage_id, user_id))
             print(time_series)
 
-            time_series = time_series[0]
+            for time_series in time_series:
 
-            # url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
-            url = el.api_url() + json.loads(time_series.file.replace("'", '"'))['url']
+                # url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
+                url = el.api_url() + json.loads(time_series.file.replace("'", '"'))['url']
 
-            headers = {
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Accept': 'text/tab-separated-values',
-                'Authorization': el.auth_header(),
-            }
-            with requests.get(url, headers=headers, stream=True, verify=args.send_opt['verify']) as r:
-                content_disposition = r.headers.get('Content-Disposition')
-                query_filename = ("user_%d_" % user_id) + os.path.basename(url)
-                if content_disposition:
-                    value, params = cgi.parse_header(content_disposition)
-                    query_filename = ("user_%d_" % user_id) + params['filename']
-                with open(query_filename, 'wb') as fd:
-                    for chunk in r.iter_content(chunk_size=128):
-                        fd.write(chunk)
+                headers = {
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Accept': 'text/tab-separated-values',
+                    'Authorization': el.auth_header(),
+                }
+                with requests.get(url, headers=headers, stream=True, verify=args.send_opt['verify']) as r:
+                    content_disposition = r.headers.get('Content-Disposition')
+                    query_filename = ("user_%d_" % user_id) + os.path.basename(url)
+                    if content_disposition:
+                        value, params = cgi.parse_header(content_disposition)
+                        query_filename = ("user_%d_" % user_id) + params['filename']
+                    with open(query_filename, 'wb') as fd:
+                        for chunk in r.iter_content(chunk_size=128):
+                            fd.write(chunk)
 
 with open('video.csv', 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
