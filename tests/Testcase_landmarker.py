@@ -47,15 +47,15 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='Landmarker test',
-                                        definition_data="whatever you want here",
-                                        summary="This summary will be shown on the webpage? \n This is a test to show off all the capabilities of Elicit",
-                                        description='This tests the Landmarker trial plugin',
-                                        active=True)
+protocol_definition_description = dict(name='Landmarker test',
+                                       definition_data="whatever you want here",
+                                       summary="This summary will be shown on the webpage? \n This is a test to show off all the capabilities of Elicit",
+                                       description='This tests the Landmarker trial plugin',
+                                       active=True)
 
 # Add protocol
 protocol_object = elicit_object.add_protocol_definition(
-    protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
+    protocol_definition=dict(protocol_definition=protocol_definition_description),
     study_definition_id=study_object.id)
 
 #
@@ -101,8 +101,16 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                             definition_data=dict(
                                                                     TrialType='Calibration',
                                                                     type='NewComponent::FaceLandmark',
-                                                                    MaxNoOfAttempts='2',
-                                                                    MinCalibrationAccuracyPct='20'
+                                                                    # number of faces expected in the interface
+                                                                    NumberOfFaces=2,
+                                                                    Landmarks=True,  # return Landmark data
+                                                                    Blendshapes=True,  # return Blendshape data
+                                                                    FaceTransformation=True,
+                                                                    # indicate if the affine transform should be performed or not
+                                                                    CalibrationDuration=5,
+                                                                    # duration of face within view measured in seconds
+                                                                    StripZCoordinates=True,
+                                                                    IncludeBlandshapes='eyeLookInRight,eyeLookInLeft',
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -167,12 +175,12 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
 
-monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-elicit_object.add_component(component=dict(component=monitor),
-                             study_definition_id=study_object.id,
-                             protocol_definition_id=protocol_object.id,
-                             phase_definition_id=phase_object.id,
-                             trial_definition_id=trial_object.id)
+# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+# elicit_object.add_component(component=dict(component=monitor),
+#                              study_definition_id=study_object.id,
+#                              protocol_definition_id=protocol_object.id,
+#                              phase_definition_id=phase_object.id,
+#                              trial_definition_id=trial_object.id)
 
 #%% add a little butterfly video
 #
@@ -219,12 +227,13 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            protocol_definition_id=protocol_object.id,
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
-monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-elicit_object.add_component(component=dict(component=monitor),
-                             study_definition_id=study_object.id,
-                             protocol_definition_id=protocol_object.id,
-                             phase_definition_id=phase_object.id,
-                             trial_definition_id=trial_object.id)
+# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+# elicit_object.add_component(component=dict(component=monitor),
+#                              study_definition_id=study_object.id,
+#                              protocol_definition_id=protocol_object.id,
+#                              phase_definition_id=phase_object.id,
+#                              trial_definition_id=trial_object.id)
+
 #%% Trial 3: Radiobutton group
 
 # Trial definition
@@ -255,7 +264,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 # Component definition: Monitor
-component_definition_description = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
+# component_definition_description = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
