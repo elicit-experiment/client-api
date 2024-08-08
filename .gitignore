@@ -6,3 +6,4 @@
 /*.csv
 /questions.json
 *.csv
+pyelicit/api/elicit_creds.py
