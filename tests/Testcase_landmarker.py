@@ -110,7 +110,7 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     CalibrationDuration=5,
                                                                     # duration of face within view measured in seconds
                                                                     StripZCoordinates=True,
-                                                                    IncludeBlandshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
