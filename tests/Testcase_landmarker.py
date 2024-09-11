@@ -100,7 +100,7 @@ trials = []
 trial_definition_specification = dict(trial_definition=dict(name='Landmarker calibration',
                                                             definition_data=dict(
                                                                     TrialType='Calibration',
-                                                                    type='NewComponent::FaceLandmark',
+                                                                    type='NewComponent::FaceLandmarkCalibration',
                                                                     # number of faces expected in the interface
                                                                     NumberOfFaces=2,
                                                                     Landmarks=True,  # return Landmark data
@@ -110,7 +110,8 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     CalibrationDuration=5,
                                                                     # duration of face within view measured in seconds
                                                                     StripZCoordinates=True,
-                                                                    IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    # IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    IncludeLandmarks = '1,2,5,100,346'
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
