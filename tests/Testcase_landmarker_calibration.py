@@ -107,15 +107,15 @@ trials = []
 trial_definition_specification = dict(trial_definition=dict(name='Landmarker calibration',
                                                             definition_data=dict(
                                                                     TrialType='Calibration',
-                                                                    type='NewComponent::FaceLandmark',
+                                                                    type='NewComponent::FaceLandmarkCalibration',
                                                                     # number of faces expected in the interface
-                                                                    NumberOfFaces=1,
+                                                                    NumberOfFaces=2,
                                                                     Landmarks=True,  # return Landmark data
                                                                     Blendshapes=True,  # return Blendshape data
-                                                                    FaceTransformation=True, # indicate if the affine transform should be performed or not                                                                    
-                                                                    CalibrationDuration=5, # duration of face within view measured in seconds                                                                    
-                                                                    StripZCoordinates=True,
-                                                                    IncludeBlandshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    FaceTransformation=True, # indicate if the affine transform should be performed or not
+                                                                    CalibrationDuration=5, # duration of face within view measured in seconds
+                                                                    StripZCoordinates=True,# IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    IncludeLandmarks = '1,2,5,100,346'
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -125,14 +125,6 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
                                                   )
 
 trials.append(trial_object)
-
-#new_component_config = dict(name='Label component',
-#                            definition_data=json.dumps(dict(MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80')))
-#new_component = elicit_object.add_component(component=dict(component=new_component_config),
-#                                            study_definition_id=study_object.id,
-#                                            protocol_definition_id=protocol_object.id,
-#                                            phase_definition_id=phase_object.id,
-#                                            trial_definition_id=trial_object.id)
 
 #%% add a little butterfly video
 #

@@ -16,8 +16,8 @@ from random import shuffle
 ## Stimuli URLs
 audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
 video_youtube_url = 'https://youtu.be/zr9leP_Dcm8'
-video_mp4_url = 'https://cdn.muse.ai/w/1d51a75d0e66f71ac1be9adabe7109a9675a1bf7e8639389569258c5d255b5d7/videos/video.mp4'
-test_image_url = 'https://i.picsum.photos/id/1019/200/300.jpg?hmac=HLUPqgTMOzQ6-GDkgZZ3NXQqJyl5m6iX_MXvS3Xqt3Q'
+video_mp4_url = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+test_image_url = 'https://dummyimage.com/750x550/996633/fff'
 
 ##
 
@@ -175,7 +175,6 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                 RadioButtonGroup=component_parameters))]
     elif component_type == 'CheckboxGroup':
         component_parameters = dict(
-            AlignForStimuli='1',
             HeaderLabel='checkboxgroup',
             MaxNoOfSelections='1',
             MinNoOfSelections='1',
@@ -251,8 +250,8 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                                                    protocol_definition_id=protocol_object.id,
                                                    phase_definition_id=phase_object.id,
                                                    trial_definition_id=trial_object.id)
-
-
+    
+# %% RadiobuttonGroup
 make_trial('RadiobuttonGroup', None, 'row')
 make_trial('RadiobuttonGroup', None, 'column')
 make_trial('RadiobuttonGroup', 'video', 'row')
@@ -265,16 +264,6 @@ make_trial('RadiobuttonGroup', 'audio', 'column')
 make_trial('RadiobuttonGroup', 'image', 'column')
 
 # %% CheckBoxGroup
-
-# Define phase
-# phase_definition_description = dict(
-#    phase_definition=dict(name='CheckBoxGroup', definition_data=dict(PhaseType='CheckBoxGroup')))
-
-# Add phase
-#phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-#                                                  study_definition_id=study_object.id,
-#                                                  protocol_definition_id=protocol_object.id)
-#phases.append(phase_object)
 
 make_trial('CheckboxGroup', None, 'row')
 make_trial('CheckboxGroup', None, 'column')
@@ -289,15 +278,6 @@ make_trial('CheckboxGroup', 'image', 'column')
 
 # %% FreeText
 
-# Define phase
-# phase_definition_description = dict(phase_definition=dict(name='FreeText', definition_data=dict(PhaseType='FreeText')))
-
-# Add phase
-# phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-#                                                  study_definition_id=study_object.id,
-#                                                  protocol_definition_id=protocol_object.id)
-# phases.append(phase_object)
-
 make_trial('Freetext', None, 'row')
 make_trial('Freetext', None, 'column')
 make_trial('Freetext', 'video', 'row', dict(BoxWidth='10',BoxHeight='5',Resizeable=True))
@@ -311,17 +291,6 @@ make_trial('Freetext', 'image', 'column')
 
 # %% End of experiment
 
-# Define phase
-# phase_definition_description = dict(
-#    phase_definition=dict(name='EndOfExperiment', definition_data=dict(PhaseType='EndOfExperiment')))
-
-# Add phase
-# phase_object = elicit_object.add_phase_definition(phase_definition=phase_definition_description,
-#                                                  study_definition_id=study_object.id,
-#                                                  protocol_definition_id=protocol_object.id)
-#phases.append(phase_object)
-
-#
 # Trial 5: End of experiment page
 #
 # Trial definition
