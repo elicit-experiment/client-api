@@ -3,6 +3,20 @@
 
 This is the client API access code for Elicit.  It lets you write (Python) code to create experiments.
 
+## Install Python
+
+After installing ASDF:
+
+
+```bash
+
+sudo apt-get install lzma
+sudo apt-get install liblzma-dev
+sudo apt-get install libbz2-dev
+
+asdf install python 3.9.19
+```
+
 ## Setup
 
 ```
@@ -142,5 +156,8 @@ sudo apt-get install python3-distutils
 PYTHONPATH=`pwd` find tests -iname 'Testcase*' | xargs -I{} python3 {} --env local
 
 PYTHONPATH=`pwd` python3 tests/Testcase_landmarker.py  --env local
+
+PYTHONPATH=`pwd` pipenv run python learning_study/dump_results.py --study_id 13 --env local
+
 
 ```
