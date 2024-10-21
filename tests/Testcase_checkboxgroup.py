@@ -292,13 +292,14 @@ component_definition_description = dict(name='CheckboxGroup',
                                         Instruments=[dict(
                                             Instrument=dict(
                                                 CheckBoxGroup=dict(
-                                                    AlignForStimuli='1',
                                                     HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=3)',
                                                     MaxNoOfSelections=3,
                                                     MinNoOfSelections=2,
                                                     RandomizeOrder=False,
                                                     FeedbackCorrect='Good job',
                                                     FeedbackIncorrect='bad job',
+                                                    Layout='column',
+                                                    ColumnWidthPercent='30',
                                                     Items=dict(
                                                         Item=[
                                                             dict(Id='0',Label='bla1',Selected='0'),
@@ -335,6 +336,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
+
 #%%  Trial 2: End of experiment page
 #
 # Trial definition

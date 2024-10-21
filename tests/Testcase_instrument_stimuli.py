@@ -58,7 +58,7 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='Components with stimuli and instruments',
+protocol_definition_description = dict(name='Components with stimuli and instruments',
                                         definition_data="whatever you want here",
                                         summary="This is a test of Components with stimuli and instruments",
                                         description='This is a test of Components with stimuli and instruments',
@@ -66,7 +66,7 @@ protocol_definition_descriptiopn = dict(name='Components with stimuli and instru
 
 # Add protocol
 protocol_object = elicit_object.add_protocol_definition(
-    protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
+    protocol_definition=dict(protocol_definition=protocol_definition_description),
     study_definition_id=study_object.id)
 
 #

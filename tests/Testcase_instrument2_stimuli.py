@@ -16,8 +16,8 @@ from random import shuffle
 ## Stimuli URLs
 audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
 video_youtube_url = 'https://youtu.be/zr9leP_Dcm8'
-video_mp4_url = 'https://cdn.muse.ai/w/1d51a75d0e66f71ac1be9adabe7109a9675a1bf7e8639389569258c5d255b5d7/videos/video.mp4'
-test_image_url = 'https://i.picsum.photos/id/1019/200/300.jpg?hmac=HLUPqgTMOzQ6-GDkgZZ3NXQqJyl5m6iX_MXvS3Xqt3Q'
+video_mp4_url = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+test_image_url = 'https://dummyimage.com/750x550/996633/fff'
 
 ##
 
@@ -32,7 +32,7 @@ elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
 # user_admin = elicit_object.assert_investigator()
-user_admin = elicit_object.assert_admin()
+user_admin = elicit_object.assert_investigator()
 
 #
 # Add a new Study Definition
@@ -368,7 +368,6 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
                                                    trial_definition_id=trial_object.id)
 
 
-"""
 make_trial('LikertScale', None, 'row')
 make_trial('LikertScale', None, 'column')
 make_trial('LikertScale', 'video', 'row')
@@ -391,6 +390,18 @@ make_trial('OneDScale', 'video_youtube', 'column')
 make_trial('OneDScale', 'audio', 'column')
 make_trial('OneDScale', 'image', 'column')
 
+make_trial('OneDScaleT', None, 'row')
+make_trial('OneDScaleT', None, 'column')
+make_trial('OneDScaleT', 'video', 'row')
+make_trial('OneDScaleT', 'video_youtube', 'row')
+make_trial('OneDScaleT', 'audio', 'row')
+make_trial('OneDScaleT', 'image', 'row')
+make_trial('OneDScaleT', 'video', 'column')
+make_trial('OneDScaleT', 'video_youtube', 'column')
+make_trial('OneDScaleT', 'audio', 'column')
+make_trial('OneDScaleT', 'image', 'column')
+
+"""
 make_trial('TwoDScaleK', None, 'row')
 make_trial('TwoDScaleK', None, 'column')
 make_trial('TwoDScaleK', 'video', 'row')
@@ -437,17 +448,6 @@ make_trial('TwoDScale', 'audio', 'column')
 make_trial('TwoDScale', 'image', 'column')
 
 """
-
-make_trial('OneDScaleT', None, 'row')
-make_trial('OneDScaleT', None, 'column')
-make_trial('OneDScaleT', 'video', 'row')
-make_trial('OneDScaleT', 'video_youtube', 'row')
-make_trial('OneDScaleT', 'audio', 'row')
-make_trial('OneDScaleT', 'image', 'row')
-make_trial('OneDScaleT', 'video', 'column')
-make_trial('OneDScaleT', 'video_youtube', 'column')
-make_trial('OneDScaleT', 'audio', 'column')
-make_trial('OneDScaleT', 'image', 'column')
 
 
 # %% End of experiment
