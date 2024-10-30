@@ -56,10 +56,10 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 
 # Define protocol
 protocol_definition_descriptiopn = dict(name='FreeText test',
-                               definition_data="whatever you want here",
-                               summary="This is a test of the FreeText component",
-                               description='This is a test of the FreeText component',
-                               active=True)
+                                       definition_data="whatever you want here",
+                                       summary="This is a test of the FreeText component",
+                                       description='This is a test of the FreeText component',
+                                       active=True)
 
 # Add protocol
 protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
@@ -129,6 +129,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="Freetext (LabelPosition=top)",
@@ -148,6 +150,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="Freetext (LabelPosition=left)",
@@ -167,6 +171,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="Freetext (LabelPosition=right)",
@@ -186,6 +192,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="Freetext (LabelPosition=bottom)",
@@ -239,6 +247,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight='5',
                                                                         BoxWidth='10',
                                                                         Label="10 x 5",
@@ -258,6 +268,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight='2',
                                                                         BoxWidth='5',
                                                                         Label="2 x 5",
@@ -277,6 +289,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight='10',
                                                                         BoxWidth='50',
                                                                         Label="50 x 10",
@@ -296,6 +310,8 @@ component_definition_description =  dict(name='Freetext',
                                                 Instruments=[dict(
                                                         Instrument=dict(
                                                                 Freetext=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight='10',
                                                                         BoxWidth='100',
                                                                         Label="100 x 10",
