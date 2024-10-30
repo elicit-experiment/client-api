@@ -16,6 +16,8 @@ from random import shuffle
 from examples_base import parse_command_line_args
 from pyelicit import elicit
 
+study_url = 'https://elicit-experiment.com/studies/'
+
 ##
 ## MAIN
 ##
@@ -269,7 +271,7 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
                                                    study_definition_id=study_object.id,
                                                    protocol_definition_id=protocol_object.id)
 
-# %% print some basic details about the experiment
+# print some basic details about the experiment
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
@@ -281,13 +283,6 @@ for trial_id in range(0, len(trials)):
     print(str(trials[trial_id].id) + ', ', end='')
 print('')    
 
-print('Added ' + str(len(study_participants)) + ' users to the protocol')
-print('User ids: ', end='')
-for user_id in range(0, len(study_participants)):
-    print(str(study_participants[user_id].id) + ', ', end='')
-print('')
-
 print('Study link: ', end='')
-print(('https://elicit-experiment.com/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
-
+print((study_url + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
 
