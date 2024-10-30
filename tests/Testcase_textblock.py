@@ -43,7 +43,7 @@ study_definition_description = dict(title='TextBlock test',
                                     footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                                     redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                                     data="Put some data here, we don't really care about it.",
-                                    principal_investigator_user_id=user_admin.id)
+                                    principal_investigator_user_id=user_investigator.id)
 
 study_object = elicit_object.add_study(study=dict(study_definition=study_definition_description))
 
@@ -263,13 +263,13 @@ for anonymous_participant in range(0,10):
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 
 phase_order_specification = dict(phase_order=dict(sequence_data=phase_sequence_data,
-                                                  user_id=user_admin.id))
+                                                  user_id=user_investigator.id))
 
 phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_specification,
                                                    study_definition_id=study_object.id,
                                                    protocol_definition_id=protocol_object.id)
 
-# print some basic details about the experiment
+# %% print some basic details about the experiment
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
@@ -286,8 +286,8 @@ print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
 print('')
-#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
 print('Study link: ', end='')
-print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
+print(('https://elicit-experiment.com/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
+
 

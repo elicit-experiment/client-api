@@ -5,7 +5,6 @@ Example testing the radiobuttons
 
 import sys
 sys.path.append("../")
-sys.path.append("../../client-api/")
 
 import pprint
 import sys
@@ -130,10 +129,11 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='1',
                                                             HeaderLabel='IsOptional=1 {{n}} (i.e. has to be answered to proceed)',
                                                             IsOptional='1',
+                                                            Layout='column',
+                                                            ColumnWidthPercent='30',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -162,14 +162,15 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
-                                                            QuestionsPerRow='3',
                                                             HeaderLabel='IsOptional=0 (i.e. does not have to be answered) {{n}} 3 options per row',
+                                                            QuestionsPerRow='3',
                                                             IsOptional='0',
                                                             AnswerOnce=True,
                                                             MustAnswerCorrectly=False,
                                                             ShowFeedback=False,
                                                             ShowCorrectness=True,
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=False,Feedback='No no no!'),
@@ -199,13 +200,14 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='IsOptional=1 {{n}} 3 options per row',
                                                             IsOptional='1',
                                                             MustAnswerCorrectly=True,
                                                             ShowFeedback=True,
                                                             ShowCorrectness=True,
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True,Feedback='You know!'),
@@ -267,10 +269,11 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='{{style|font-size: 100px;| {{b|What do you think of this image}}}}{{n}}{{n}}{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}',
                                                             IsOptional='0',
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='{{mark|Neutral}}',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='{{style|color: red;font-size: 20px;|Super}}',Selected='0',Correct=True),
@@ -307,10 +310,11 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of pre selected options',
                                                             IsOptional='0',
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1 (pre)',Selected='1',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -345,11 +349,12 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order)',
                                                             IsOptional='0',
                                                             RandomizeOrder=True,
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',                                                            
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
@@ -371,11 +376,12 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            AlignForStimuli='0',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order (pre-selected)))',
                                                             IsOptional='0',
                                                             RandomizeOrder=True,
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='0',Label='answer 0'      ,Selected='0',Correct=True),
                                                                           dict(Id='1',Label='answer 1'      ,Selected='0',Correct=True),
@@ -470,7 +476,7 @@ phase_order_object = elicit_object.add_phase_order(phase_order=phase_order_speci
                                      study_definition_id=study_object.id,
                                      protocol_definition_id=protocol_object.id)
 
-# print some basic details about the experiment
+# %% print some basic details about the experiment
 print('Study id: ' + str(study_object.id))
 print('Protocol id: ' + str(str(protocol_object.id)))
 print('Phase ids: ' , end='')
@@ -487,8 +493,6 @@ print('User ids: ', end='')
 for user_id in range(0, len(study_participants)):
     print(str(study_participants[user_id].id) + ', ', end='')
 print('')
-#print(('https://elicit.compute.dtu.dk/api/v1/study_definitions/' + str(study_object.id) + '/protocol_definitions/' + str(protocol_object.id) + '/preview?phase_definition_id='  + str(phases[0].id) + '&trial_definition_id=' + str(trials[0].id)))    
 
 print('Study link: ', end='')
-print(('https://elicit.compute.dtu.dk/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
-
+print(('https://elicit-experiment.com/studies/' + str(study_object.id) + '/protocols/'  + str(protocol_object.id)))
