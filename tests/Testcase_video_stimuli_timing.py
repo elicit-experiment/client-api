@@ -19,6 +19,9 @@ from random import shuffle
 ## MAIN
 ##
 
+NUM_ANONYMOUS_USERS = 10
+NUM_REGISTERED_USERS = 0
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the elicit object to define the experiment
@@ -42,7 +45,7 @@ study_definition_description = dict(title='Video timing test',
                         footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
                         redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
                         data="Put some data here, we don't really care about it.",
-                        principal_investigator_user_id=user_admin.id)
+                        principal_investigator_user_id=user_investigator.id)
 
 
 study_object = elicit_object.add_study(study=dict(study_definition=study_definition_description))
@@ -68,10 +71,8 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 #
 
 # Get a list of users who can participate in the study (the ones that have already registered in the system)
-users = elicit_object.get_all_users()
 
-# find registered users
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)

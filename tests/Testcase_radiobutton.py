@@ -19,6 +19,9 @@ from pyelicit import elicit
 ## MAIN
 ##
 
+NUM_REGISTERED_USERS = 0
+NUM_ANONYMOUS_USERS = 10
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the elicit object to define the experiment
@@ -67,11 +70,9 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 # Add users to protocol
 #
 
-# Get a list of users who can participate in the study (the ones that have already registered in the system)
-users = elicit_object.get_all_users()
+# Get a list of users who can participate in the study
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
-# find registered users
-study_participants = list(filter(lambda usr: usr.role == 'registered_user', users))
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)

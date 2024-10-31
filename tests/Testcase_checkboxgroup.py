@@ -118,11 +118,12 @@ component_definition_description = dict(name='CheckboxGroup',
     Instruments=[dict(
         Instrument=dict(
             CheckBoxGroup=dict(
-                AlignForStimuli='0',
                 HeaderLabel='checkboxgroup (MinNoOfSelections=0)',
                 MaxNoOfSelections='1',
                 MinNoOfSelections='0',
                 RandomizeOrder=False,
+                Layout='column',
+                ColumnWidthPercent='30',
                 Items=dict(
                     Item=[
                           dict(Id='0',Label='yes',Selected='0'),
@@ -143,7 +144,6 @@ component_definition_description = dict(name='CheckboxGroup',
                                                     Instruments=[dict(
                                                         Instrument=dict(
                                                             CheckBoxGroup=dict(
-                                                                AlignForStimuli='0',
                                                                 HeaderLabel='checkboxgroup (pre selected options, [1 3 5])',
                                                                 MaxNoOfSelections='2',
                                                                 MinNoOfSelections='0',
@@ -152,6 +152,8 @@ component_definition_description = dict(name='CheckboxGroup',
                                                                 ShowCorrectness=True,
                                                                 FeedbackCorrect='',
                                                                 FeedbackIncorrect='',
+                                                                Layout='column',
+                                                                ColumnWidthPercent='30',
                                                                 Items=dict(
                                                                     Item=[
                                                                           dict(Id='0',Label='yes',Selected='1',Correct=False),
@@ -186,11 +188,12 @@ component_definition_description = dict(name='CheckboxGroup',
     Instruments=[dict(
         Instrument=dict(
             CheckBoxGroup=dict(
-                AlignForStimuli='0',
                 HeaderLabel='checkboxgroup (MinNoOfSelections=0)',
                 MaxNoOfSelections='1',
                 MinNoOfSelections='0',
                 RandomizeOrder=False,
+                Layout='column',
+                ColumnWidthPercent='30',
                 Items=dict(
                     Item=[
                           dict(Id='0',Label='yes',Selected='0'),
@@ -219,6 +222,8 @@ component_definition_description = dict(name='CheckboxGroup',
                                                                 ShowCorrectness=True,
                                                                 FeedbackCorrect='Good job',
                                                                 FeedbackIncorrect='bad job',
+                                                                Layout='column',
+                                                                ColumnWidthPercent='30',
                                                                 Items=dict(
                                                                     Item=[
                                                                           dict(Id='0',Label='yes',Correct=False, Feedback="Not Right"),
@@ -242,7 +247,7 @@ component_definition_description = dict(name='CheckboxGroup',
                                         Instruments=[dict(
                                             Instrument=dict(
                                                 CheckBoxGroup=dict(
-                                                    HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=10)',
+                                                    HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=10)',
                                                     MaxNoOfSelections=10,
                                                     MinNoOfSelections=2,
                                                     RandomizeOrder=False,
@@ -292,7 +297,7 @@ component_definition_description = dict(name='CheckboxGroup',
                                         Instruments=[dict(
                                             Instrument=dict(
                                                 CheckBoxGroup=dict(
-                                                    HeaderLabel='checkboxgroup {{n}} (AlignForStimuli=1,minSelect=2,maxSelect=3)',
+                                                    HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=3)',
                                                     MaxNoOfSelections=3,
                                                     MinNoOfSelections=2,
                                                     RandomizeOrder=False,

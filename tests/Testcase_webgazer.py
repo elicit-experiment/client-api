@@ -15,6 +15,10 @@ from pyelicit import elicit
 ## MAIN
 ##
 
+NUM_ANONYMOUS_USERS = 10
+NUM_REGISTERED_USERS = 0
+# NUM_AUTO_CREATED_USERS = 10
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the Elicit object to define the experiment
@@ -65,9 +69,7 @@ protocol_object = elicit_object.add_protocol_definition(
 #
 # Get list of users who will use the study
 #
-NUM_AUTO_CREATED_USERS = 10
-NUM_ANONYMOUS_USERS = 5
-NUM_REGISTERED_USERS = 5
+
 study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
 
 pp.pprint(study_participants)

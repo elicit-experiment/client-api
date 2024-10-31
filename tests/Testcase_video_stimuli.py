@@ -18,6 +18,9 @@ experiment_URL = 'https://elicit-experiment.com'
 ## MAIN
 ##
 
+NUM_ANONYMOUS_USERS = 10
+NUM_REGISTERED_USERS = 0
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the elicit object to define the experiment
