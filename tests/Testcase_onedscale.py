@@ -2,7 +2,6 @@
 """
 Example testing the OneDScale
 """
-
 import sys
 sys.path.append("../")
 
@@ -15,16 +14,12 @@ from examples_base import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
 
-## URLs
-audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
-study_url = 'https://elicit-experiment.com/studies/'
-
 ##
 ## MAIN
 ##
 
-
-NUM_ANONYMOUS_USERS = 10
+study_url = 'https://elicit-experiment.com/studies/'
+audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -41,7 +36,7 @@ user_investigator = elicit_object.assert_investigator()
 
 # Define study
 study_definition_description = dict(title='OneDScale test',
-                        description="""This is a test of the LikertScale component""",
+                        description="""This is a test of the FreeText component""",
                         version=1,
                         lock_question=1,
                         enable_previous=1,
@@ -61,10 +56,10 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 
 # Define protocol
 protocol_definition_descriptiopn = dict(name='OneDScale test',
-                               definition_data="whatever you want here",
-                               summary="This is a test of the RadiobuttonGroup component",
-                               description='This is a test of the RadiobuttonGroup component',
-                               active=True)
+                                       definition_data="whatever you want here",
+                                       summary="This is a test of the FreeText component",
+                                       description='This is a test of the FreeText component',
+                                       active=True)
 
 # Add protocol
 protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
@@ -74,9 +69,11 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 # Add users to protocol
 #
 
-# Get a list of users who can participate in the study
-study_participants = elicit_object.ensure_users(0, NUM_ANONYMOUS_USERS)
+# Get a list of users who can participate in the study (the ones that have already registered in the system)
+users = elicit_object.get_all_users()
 
+# find registered users
+study_participants = list(filter(lambda usr: usr.role == 'anonymous_user', users))
 
 # add users to protocol
 elicit_object.add_users_to_protocol(study_object, protocol_object, study_participants)
@@ -98,12 +95,10 @@ phases = [phase_object]
 
 trials = []
 
-
-#%% Trial 1: LikertScale
+#%% Trial 1: OneDScale
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='AlignForStimuli test', definition_data=dict(TrialType='OneDScale')))
-
+trial_definition_specification =  dict(trial_definition=dict(name='Label position', definition_data=dict(TrialType='OneDScale page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -118,7 +113,7 @@ component_definition_description = dict(name='HeaderLabel',
                                         definition_data=dict(
                                                 Instruments=[dict(
                                                         Instrument=dict(
-                                                                Header=dict(HeaderLabel='{{center|This is a test of a OneDScale instrument}}')))]))
+                                                                Header=dict(HeaderLabel='{{center|This is a test of a OneDScale component}}')))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -128,12 +123,13 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
+                                      definition_data=dict(
                                          Instruments=[dict(
                                                   Instrument=dict(
                                                            OneDScale=dict(
                                                                     Layout='column',
                                                                     ColumnWidthPercent='30',
-                                                                    HeaderLabel='No position with stimuli',
+                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=None)',
                                                                     Position=None,                                             
                                                                     X1AxisLabel='Label for X1 axis',
                                                                     X1AxisTicks=dict(
@@ -150,14 +146,75 @@ component_definition_description=dict(name='OneDScale',
                                                                             Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
                                                                     Y2AxisLabel='Label for Y2 axis',
                                                                     Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))],
+                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
+
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+#%% Trial 2: OneDScale
+
+# Trial definition
+trial_definition_specification =  dict(trial_definition=dict(name='Label position', definition_data=dict(TrialType='OneDScale page')))
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|This is a test of a OneDScale component}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+component_definition_description=dict(name='OneDScale',
+                                      definition_data=dict(
+                                         Instruments=[dict(
+                                                  Instrument=dict(
+                                                           OneDScale=dict(
+                                                                    HeaderLabel='(Audio) Position=-0.3',
+                                                                    IsOptional='0',
+                                                                    Position='-0.3',                                             
+                                                                    X1AxisLabel='Label for X1 axis',
+                                                                    X2AxisLabel='Label for X2 axis',
+                                                                    X1AxisTicks=dict(
+                                                                        X1AxisTick=[dict(dictId='1', Position='-1.0', Label='good'),
+                                                                                    dict(Id='2', Position='0.0', Label='indifferent'),
+                                                                                    dict(Id='3', Position='1.0', Label='bad')]),
+                                                                    X2AxisTicks=dict(
+                                                                        X2AxisTick=[dict(dictId='1', Position='-1.0', Label='red'),
+                                                                                    dict(Id='2', Position='0.0', Label='green'),
+                                                                                    dict(Id='3', Position='1.0', Label='blue')]),
+                                                                    Y1AxisTicks=dict(
+                                                                        Y1AxisTick=[dict(dictId='1', Position='-1.0', Label='top'),
+                                                                                    dict(Id='2', Position='0.0', Label='middle'),
+                                                                                    dict(Id='3', Position='1.0', Label='bottom')]),
+                                                                    Y2AxisTicks=dict(
+                                                                        Y2AxisTick=[dict(dictId='1', Position='0.0', Label='up'),
+                                                                                    dict(Id='2', Position='0.0', Label='center'),
+                                                                                    dict(Id='3', Position='1.0', Label='down')])
+                                                                    )))],
                                         Stimuli=[dict(
                                                 Label='This is my stimuli Label',
                                                 Type='audio/mpeg',
                                                 isOptional='0',
                                                 isPausable='1',
                                                 noPlays='1',
-                                                URI=audio_url)])
+                                                URI=audio_url)]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -166,14 +223,41 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
+#%% Trial 3: OneDScale
+
+# Trial definition
+trial_definition_specification =  dict(trial_definition=dict(name='Label position', definition_data=dict(TrialType='OneDScale page')))
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|This is a test of a OneDScale component}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
+                                      definition_data=dict(
                                          Instruments=[dict(
                                                   Instrument=dict(
                                                            OneDScale=dict(
                                                                     Layout='column',
                                                                     ColumnWidthPercent='30',
-                                                                    HeaderLabel='No stimuli (AlignForStimuli=0)',
+                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=none)',
                                                                     Position=None,                                             
                                                                     X1AxisLabel='Label for X1 axis',
                                                                     X1AxisTicks=dict(
@@ -190,39 +274,7 @@ component_definition_description=dict(name='OneDScale',
                                                                             Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
                                                                     Y2AxisLabel='Label for Y2 axis',
                                                                     Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))])
-
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
-component_definition_description=dict(name='OneDScale',
-                                         Instruments=[dict(
-                                                  Instrument=dict(
-                                                           OneDScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
-                                                                    HeaderLabel='No stimuli (AlignForStimuli=1)',
-                                                                    Position=None,                                             
-                                                                    X1AxisLabel='Label for X1 axis',
-                                                                    X1AxisTicks=dict(
-                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
-                                                                                        dict(Label='Second x1 tick', Position='0.0'),
-                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
-                                                                    X2AxisLabel='Label for X2 axis',
-                                                                    X2AxisTicks=dict(
-                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
-                                                                                        dict(Label='Second x2 tick', Position='0.0'),
-                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
-                                                                    Y1AxisLabel='Label for Y1 axis',
-                                                                    Y1AxisTicks=dict(
-                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
-                                                                    Y2AxisLabel='Label for Y2 axis',
-                                                                    Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))])
+                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -231,6 +283,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
+                                      definition_data=dict(
                                          Instruments=[dict(
                                                   Instrument=dict(
                                                            OneDScale=dict(
@@ -253,7 +306,7 @@ component_definition_description=dict(name='OneDScale',
                                                                             Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
                                                                     Y2AxisLabel='Label for Y2 axis',
                                                                     Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))])
+                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -261,7 +314,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-#%%  Trial 3: End of experiment page
+#%%  Trial 4: End of experiment page
 #
 # Trial definition
 trial_definition_specification =  dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))
@@ -300,11 +353,21 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object_eoe.id)
 
 #%% Add Trial Orders to the study
+
+#trail_orders for specific users
+for study_participant in study_participants:
+    trial_order_specification_user = dict(trial_order=dict(sequence_data=",".join([str(trial.id) for trial in trials]),user_id=study_participant.id))
+    print(trial_order_specification_user)
+    
+    # Trial order addition
+    trial_order_object = elicit_object.add_trial_order(trial_order=trial_order_specification_user,
+                                                       study_definition_id=study_object.id,
+                                                       protocol_definition_id=protocol_object.id,
+                                                       phase_definition_id=phase_object.id)
 #trail_orders for anonymous users
-for anonymous_participant in range(0,NUM_ANONYMOUS_USERS):
+for anonymous_participant in range(0,10):
     trial_id = [int(trial.id) for trial in trials]
     shuffle(trial_id)
-    trial_id.append(trial_object_eoe.id)
 
     trial_order_specification_anonymous = dict(trial_order=dict(sequence_data=",".join(map(str,trial_id))))
     print(trial_order_specification_anonymous)
@@ -314,6 +377,8 @@ for anonymous_participant in range(0,NUM_ANONYMOUS_USERS):
                                                        study_definition_id=study_object.id,
                                                        protocol_definition_id=protocol_object.id,
                                                        phase_definition_id=phase_object.id)
+    
+
 
 #%% Add a new Phase Order
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])

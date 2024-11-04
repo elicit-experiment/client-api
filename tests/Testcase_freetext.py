@@ -96,7 +96,7 @@ phases = [phase_object]
 trials = []
 
 #
-#%% Trial 1: Radiobutton group
+#%% Trial 1: Freetext
 #
 
 # Trial definition
@@ -209,7 +209,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 
-#%% Trial 2: Radiobutton group
+#%% Trial 2: Freetext
 #
 
 # Trial definition
@@ -327,7 +327,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 
-#%% Trial 3:
+#%% Trial 3: Freetext
 trial_definition_specification =  dict(trial_definition=dict(name='Input requirements', definition_data=dict(TrialType='FreeText page')))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -371,29 +371,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
-
-# component_definition_description =  dict(name='Freetext',
-#                                         definition_data=dict(
-#                                                 Instruments=[dict(
-#                                                         Instrument=dict(
-#                                                                 Freetext=dict(
-#                                                                         BoxHeight=None,
-#                                                                         BoxWidth=None,
-#                                                                         Label="This needs 10 words and max 20",
-#                                                                         LabelPosition='top',
-#                                                                         Resizable=None,
-#                                                                         Validation='^(?:\w+\W+){10,20}(?:\w+)$')))]))
-
-# # Component addition: add the component to the trial
-# component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-#                                                study_definition_id=study_object.id,
-#                                                protocol_definition_id=protocol_object.id,
-#                                                phase_definition_id=phase_object.id,
-#                                                trial_definition_id=trial_object.id)
-
-
-
 
 
 component_definition_description =  dict(name='Freetext',
