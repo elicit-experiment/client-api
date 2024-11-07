@@ -98,7 +98,7 @@ trials = []
 #%% Trial 1: Radiobutton group
 
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='IsOptional test', definition_data=dict(TrialType='RadiobuttonGroup page')))
+trial_definition_specification = dict(trial_definition=dict(name='IsOptional test',definition_data=dict(TrialType='RadioButtonGroup page')))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
@@ -130,9 +130,49 @@ component_definition = dict(name='RadioButtonGroup',
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            QuestionsPerRow='1',
+                                                            QuestionsPerRow=1,
                                                             HeaderLabel='IsOptional=1 {{n}} (i.e. does not have to be answered to proceed)',
-                                                            IsOptional='1',
+                                                            IsOptional=True,
+                                                            AnswerOnce=False,
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=False,
+                                                            Layout='column',
+                                                            ColumnWidthPercent='30',
+                                                            Items=dict(
+                                                                    Item=[dict(Id='1',Label='answer 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
+                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=True),
+                                                                          dict(Id='3',Label='answer 3',Selected='0',Correct=True),
+                                                                          dict(Id='4',Label='answer 4 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True),
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True),
+                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=True),
+                                                                          dict(Id='8',Label='answer 8',Selected='0',Correct=True),
+                                                                          dict(Id='9',Label='answer 9',Selected='0',Correct=True),
+                                                                          dict(Id='10',Label='answer 10',Selected='0',Correct=True),
+                                                                          dict(Id='11',Label='answer 11',Selected='0',Correct=True),
+                                                                          dict(Id='12',Label='answer 12',Selected='0',Correct=True),
+                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True)]))))]))
+                        
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+# 13 answer options
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                    Instruments=[dict(
+                                            Instrument=dict(
+                                                    RadioButtonGroup=dict(
+                                                            QuestionsPerRow='1',
+                                                            HeaderLabel='IsOptional=False {{n}} (i.e. has to be answered to proceed)',
+                                                            IsOptional=False,
+                                                            AnswerOnce=False,
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=False,
                                                             Layout='column',
                                                             ColumnWidthPercent='30',
                                                             Items=dict(
@@ -157,19 +197,49 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
+#%% Trial 2: Radiobutton group (feedback )
+
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='feedback test', definition_data=dict(TrialType='RadiobuttonGroup page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|This is a test of the RadiobuttonGroup feedback}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+
 # 13 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
                                     Instruments=[dict(
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            HeaderLabel='IsOptional=0 (i.e. has to be answered) {{n}} 3 options per row',
+                                                            HeaderLabel='AnswerOnce=True, MustAnswerCorrectly=False',
                                                             QuestionsPerRow='3',
                                                             IsOptional='0',
-                                                            AnswerOnce=True,
-                                                            MustAnswerCorrectly=False,
-                                                            ShowFeedback=False,
-                                                            ShowCorrectness=True,
+                                                            RandomizeOrder = False, # randomize the order of the Items
+                                                            AnswerOnce = True, # allow the user to only answer once and then disable the instrument
+                                                            MustAnswerCorrectly = False, # user can only progress if they answered correctly
+                                                            ShowFeedback = False, # show feedback about the instrument
+                                                            ShowCorrectness = False, # show which one was correct or incorrect                                                 
                                                             ColumnWidthPercent='30',
                                                             Layout='column',
                                                             Items=dict(
@@ -202,11 +272,13 @@ component_definition = dict(name='RadioButtonGroup',
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
-                                                            HeaderLabel='IsOptional=0 {{n}} 3 options per row',
+                                                            HeaderLabel='MustAnswerCorrectly=True,ShowCorrectness=True,ShowFeedback=False',
                                                             IsOptional='0',
-                                                            MustAnswerCorrectly=True,
-                                                            ShowFeedback=True,
-                                                            ShowCorrectness=True,
+                                                            RandomizeOrder = False, # randomize the order of the Items
+                                                            AnswerOnce = False,     # allow the user to only answer once and then disable the instrument
+                                                            MustAnswerCorrectly = True, # user can only progress if they answered correctly
+                                                            ShowFeedback = False,   # show feedback about the instrument
+                                                            ShowCorrectness = True, # show which one was correct or incorrect
                                                             ColumnWidthPercent='30',
                                                             Layout='column',
                                                             Items=dict(
@@ -230,12 +302,9 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-
-
-
-#%% Trial 2
+#%% Trial 3
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='Options formatting', definition_data=dict(TrialType='RadiobuttonGroup page')))
+trial_definition_specification = dict(trial_definition=dict(name='Options ordering and formatting', definition_data=dict(TrialType='RadiobuttonGroup page')))
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                study_definition_id=study_object.id,
                                                protocol_definition_id=protocol_object.id,
@@ -262,8 +331,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 
-
-
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
@@ -273,8 +340,13 @@ component_definition = dict(name='RadioButtonGroup',
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='{{style|font-size: 100px;| {{b|What do you think of this image}}}}{{n}}{{n}}{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}',
                                                             IsOptional='0',
-                                                            ColumnWidthPercent='30',
-                                                            Layout='column',
+                                                            RandomizeOrder=False, # randomize the order of the Items
+                                                            AnswerOnce=False, # allow the user to only answer once and then disable the instrument
+                                                            MustAnswerCorrectly=False, # user can only progress if they answered correctly
+                                                            ShowFeedback=False, # show feedback about the instrument
+                                                            ShowCorrectness=False, # show which one was correct or incorrect
+                                                            ColumnWidthPercent='30', # layout of the component
+                                                            Layout='column', # layout of the component
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='{{mark|Neutral}}',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='{{style|color: red;font-size: 20px;|Super}}',Selected='0',Correct=True),
@@ -293,7 +365,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
-
 #%% Trial 3
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Pre-selection', definition_data=dict(TrialType='RadiobuttonGroup page')))
@@ -305,6 +376,21 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 trials.append(trial_object)
 
 
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|Pre-selection}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
@@ -312,8 +398,12 @@ component_definition = dict(name='RadioButtonGroup',
                                             Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
-                                                            HeaderLabel='This is a test of pre selected options',
-                                                            IsOptional='0',
+                                                            HeaderLabel='Pre selected options, IsOptional=False',
+                                                            IsOptional=False,
+                                                            RandomizeOrder=False,
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=False,
                                                             ColumnWidthPercent='30',
                                                             Layout='column',
                                                             Items=dict(
@@ -331,8 +421,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
-
-
 #%% Trial 3
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='Random orders', definition_data=dict(TrialType='RadiobuttonGroup page')))
@@ -343,6 +431,19 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 # save trial to later define trial orders
 trials.append(trial_object)
 
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|Random orders}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
 
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
@@ -354,6 +455,9 @@ component_definition = dict(name='RadioButtonGroup',
                                                             HeaderLabel='This is a test of randomized order)',
                                                             IsOptional='0',
                                                             RandomizeOrder=True,
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=False,
                                                             ColumnWidthPercent='30',
                                                             Layout='column',                                                            
                                                             Items=dict(
