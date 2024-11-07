@@ -239,7 +239,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                             AnswerOnce = True, # allow the user to only answer once and then disable the instrument
                                                             MustAnswerCorrectly = False, # user can only progress if they answered correctly
                                                             ShowFeedback = False, # show feedback about the instrument
-                                                            ShowCorrectness = False, # show which one was correct or incorrect                                                 
+                                                            ShowCorrectness = False, # show which one was correct or incorrect
                                                             ColumnWidthPercent='30',
                                                             Layout='column',
                                                             Items=dict(
@@ -295,6 +295,43 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='11',Label='answer 11',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='12',Label='answer 12',Selected='0',Correct=True,Feedback='You know it!'),
                                                                           dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='You know it!')]))))]))
+                        
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+# 13 answer options
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                    Instruments=[dict(
+                                            Instrument=dict(
+                                                    RadioButtonGroup=dict(
+                                                            HeaderLabel='AnswerOnce=False, MustAnswerCorrectly=False,ShowFeedback=True',
+                                                            QuestionsPerRow='3',
+                                                            IsOptional='0',
+                                                            RandomizeOrder = False, # randomize the order of the Items
+                                                            AnswerOnce = False, # allow the user to only answer once and then disable the instrument
+                                                            MustAnswerCorrectly = False, # user can only progress if they answered correctly
+                                                            ShowFeedback = True, # show feedback about the instrument
+                                                            ShowCorrectness = False, # show which one was correct or incorrect
+                                                            ColumnWidthPercent='30',
+                                                            Layout='column',
+                                                            Items=dict(
+                                                                    Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='2',Label='answer 2',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='3',Label='answer 3',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='4',Label='answer 4',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=False,Feedback='No no no!'),
+                                                                          dict(Id='8',Label='answer 8',Selected='0',Correct=True,Feedback='CORRECT!'),
+                                                                          dict(Id='9',Label='answer 9',Selected='0',Correct=True,Feedback='CORRECT!'),
+                                                                          dict(Id='10',Label='answer 10',Selected='0',Correct=True,Feedback='CORRECT!'),
+                                                                          dict(Id='11',Label='answer 11',Selected='0',Correct=True,Feedback='CORRECT!'),
+                                                                          dict(Id='12',Label='answer 12',Selected='0',Correct=True,Feedback='CORRECT!'),
+                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='CORRECT!')]))))]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -453,7 +490,7 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order)',
-                                                            IsOptional='0',
+                                                            IsOptional=False,
                                                             RandomizeOrder=True,
                                                             MustAnswerCorrectly=False,
                                                             ShowFeedback=False,
@@ -483,8 +520,11 @@ component_definition = dict(name='RadioButtonGroup',
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order (pre-selected)))',
-                                                            IsOptional='0',
+                                                            IsOptional=False,
                                                             RandomizeOrder=True,
+                                                            MustAnswerCorrectly=False,
+                                                            ShowFeedback=False,
+                                                            ShowCorrectness=False,
                                                             ColumnWidthPercent='30',
                                                             Layout='column',
                                                             Items=dict(
