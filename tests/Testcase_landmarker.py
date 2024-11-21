@@ -99,6 +99,48 @@ phases = [phase_object]
 
 trials = []
 
+
+#%%
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='welcome', definition_data=dict(TrialType='Video page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    Header=dict(
+                                                        HeaderLabel='{{center|Welcome to this test of Landmarker calibration}}')))]))
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                                           study_definition_id=study_object.id,
+                                           protocol_definition_id=protocol_object.id,
+                                           phase_definition_id=phase_object.id,
+                                           trial_definition_id=trial_object.id)
+
+
+
+monitor = dict(name='Monitor', definition_data=dict(
+                                        Instruments=[dict(
+                                               Instrument=dict(
+                                                       Monitor=dict(
+                                                           MouseTracking=True,
+                                                           KeyboardTracking=True,
+                                                           )))]))
+
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
+
 #%%
 # Trial 1: Landmarker calibration
 #
@@ -115,8 +157,8 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     FaceTransformation=True, # indicate if the affine transform should be performed or not                                                                    
                                                                     CalibrationDuration=5, # duration of face within view measured in seconds                                                                    
                                                                     StripZCoordinates=True,
-                                                                    # IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
-                                                                    IncludeLandmarks = '1,2,5,100,346'
+                                                                    IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    IncludeLandmarks = '1,2,5,100,346',
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -127,13 +169,19 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 
 trials.append(trial_object)
 
-#new_component_config = dict(name='Label component',
-#                            definition_data=json.dumps(dict(MaxNoOfAttempts='2', MinCalibrationAccuracyPct='80')))
-#new_component = elicit_object.add_component(component=dict(component=new_component_config),
-#                                            study_definition_id=study_object.id,
-#                                            protocol_definition_id=protocol_object.id,
-#                                            phase_definition_id=phase_object.id,
-#                                            trial_definition_id=trial_object.id)
+monitor = dict(name='Monitor', definition_data=dict(
+                                        Instruments=[dict(
+                                               Instrument=dict(
+                                                       Monitor=dict(
+                                                           MouseTracking=True,
+                                                           KeyboardTracking=True,
+                                                           )))]))
+
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
 
 #%% add a little butterfly video
 #
@@ -181,13 +229,6 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
 
-# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-# elicit_object.add_component(component=dict(component=monitor),
-#                              study_definition_id=study_object.id,
-#                              protocol_definition_id=protocol_object.id,
-#                              phase_definition_id=phase_object.id,
-#                              trial_definition_id=trial_object.id)
-
 #%% add a little butterfly video
 #
 # Trial definition
@@ -233,12 +274,6 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            protocol_definition_id=protocol_object.id,
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
-# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-# elicit_object.add_component(component=dict(component=monitor),
-#                              study_definition_id=study_object.id,
-#                              protocol_definition_id=protocol_object.id,
-#                              phase_definition_id=phase_object.id,
-#                              trial_definition_id=trial_object.id)
 
 #%% Trial 3: Radiobutton group
 

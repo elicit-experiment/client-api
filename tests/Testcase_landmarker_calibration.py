@@ -109,13 +109,14 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     TrialType='Calibration',
                                                                     type='NewComponent::FaceLandmarkCalibration',
                                                                     # number of faces expected in the interface
-                                                                    NumberOfFaces=2,
+                                                                    NumberOfFaces=1,
                                                                     Landmarks=True,  # return Landmark data
                                                                     Blendshapes=True,  # return Blendshape data
                                                                     FaceTransformation=True, # indicate if the affine transform should be performed or not
                                                                     CalibrationDuration=5, # duration of face within view measured in seconds
-                                                                    StripZCoordinates=True,# IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
-                                                                    IncludeLandmarks = '1,2,5,100,346'
+                                                                    StripZCoordinates=True, # 
+                                                                    IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    IncludeLandmarks = '1,2,5,100,346',
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
@@ -224,6 +225,7 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            protocol_definition_id=protocol_object.id,
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
+
 # monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
 # elicit_object.add_component(component=dict(component=monitor),
 #                              study_definition_id=study_object.id,

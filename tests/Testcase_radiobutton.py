@@ -94,7 +94,6 @@ phases = [phase_object]
 
 trials = []
 
-
 #%% Trial 1: Radiobutton group
 
 # Trial definition
@@ -196,6 +195,20 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
+
+monitor = dict(name='Monitor', definition_data=dict(
+                                        Instruments=[dict(
+                                               Instrument=dict(
+                                                       Monitor=dict(
+                                                           MouseTracking=True,
+                                                           KeyboardTracking=True,
+                                                           )))]))
+
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
 
 #%% Trial 2: Radiobutton group (feedback )
 
