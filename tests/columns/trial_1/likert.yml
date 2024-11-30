@@ -1,0 +1,27 @@
+definition_data:
+  Instruments:
+  - Instrument:
+      LikertScale:
+        ColumnWidthPercent: 30
+        HeaderLabel: This is a LikertScale with video_youtube stimuli (column, 30%)
+        IsOptional: '0'
+        Items:
+          Item:
+          - Id: '1'
+            Label: good
+          - Id: '2'
+            Label: indifferent
+          - Id: '3'
+            Label: bad
+        Layout: column
+        MinNoOfScalings: '10'
+        QuestionsPerRow: '1'
+  Stimuli:
+  - IsOptional: true
+    IsPausable: true
+    IsReplayable: true
+    Label: Stimulus (column, 70%)
+    MaxReplayCount: 2
+    Type: video/youtube
+    URI: https://youtu.be/zr9leP_Dcm8
+name: LikertScale

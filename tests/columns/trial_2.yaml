@@ -1,0 +1,4 @@
+trial_definition:
+  definition_data:
+    PhaseType: 'RadioButtonGroup'
+  name: Trial 2 - RadioButtonGroup

@@ -1,0 +1,4 @@
+trial_definition:
+  definition_data:
+    PhaseType: 'CheckBoxGroup'
+  name: Trial 3 - CheckBoxGroup

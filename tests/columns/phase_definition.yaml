@@ -1,0 +1,4 @@
+phase_definition:
+  definition_data:
+    PhaseType: 'Generic Instruments & Stimulus'
+  name: Generic

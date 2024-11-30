@@ -1,0 +1,8 @@
+definition_data:
+  Instruments:
+  - Instrument:
+      Header:
+        HeaderLabel: LikertScale column layouts
+  Stimuli:
+  - null
+name: Label
