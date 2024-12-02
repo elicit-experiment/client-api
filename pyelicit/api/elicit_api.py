@@ -2,6 +2,17 @@ from pyswagger import App, Security
 from pyswagger.contrib.client.requests import Client
 import ssl
 from . import elicit_creds
+from contextlib import contextmanager
+import urllib
+import urllib.request
+
+@contextmanager
+def user_agent_context(user_agent):
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-Agent', user_agent)]
+    urllib.request.install_opener(opener)
+    yield
+    urllib.request.install_opener(None)
 
 # HACK to work around self-signed SSL certs used in development
 def dont_check_ssl():
@@ -31,8 +42,10 @@ class ElicitApi:
             dont_check_ssl()
 
         self.api_url = api_url
-        self.swagger_url = self.api_url + '/apidocs/v1/swagger.json'
-        self.app = App._create_(self.swagger_url)
+        with user_agent_context('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0'):
+            self.swagger_url = self.api_url + '/apidocs/v1/swagger.json'
+            print(self.swagger_url)
+            self.app = App._create_(self.swagger_url)
         self.auth = Security(self.app)
         self.creds = creds
 

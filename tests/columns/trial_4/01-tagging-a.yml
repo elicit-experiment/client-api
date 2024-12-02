@@ -1,0 +1,52 @@
+definition_data:
+  Layout:
+    Type: column
+    ColumnWidthPercent: [ 30, 70 ]
+  Instruments:
+  - Instrument:
+      TaggingA:
+        HeaderLabel: This is a TaggingA with image stimuli
+        IsOptional: '0'
+        Items:
+          Item:
+          - Id: '1'
+            Label: good
+          - Id: '2'
+            Label: indifferent
+          - Id: '3'
+            Label: bad
+        Layout: row
+        Position: '-0.3'
+        QuestionsPerRow: '6'
+        SelectionTagBoxLabel: SelectionTagBoxLabel
+        SelectionTags:
+          Item:
+          - Label: good
+            Position: '-1.0'
+            dictId: '1'
+          - Id: '2'
+            Label: indifferent
+            Position: '0.0'
+          - Id: '3'
+            Label: bad
+            Position: '1.0'
+        TextField: TextField
+        UserTagBoxLabel: UserTagBoxLabel
+        UserTags:
+          Item:
+          - Label: top
+            Position: '-1.0'
+            dictId: '1'
+          - Id: '2'
+            Label: middle
+            Position: '0.0'
+          - Id: '3'
+            Label: bottom
+            Position: '1.0'
+  Stimuli:
+  - Height: 100%
+    Label: This is a full size
+    Type: image
+    URI: https://dummyimage.com/750x550/996633/fff
+    Width: 100%
+name: TaggingA

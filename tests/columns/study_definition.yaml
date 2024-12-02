@@ -1,0 +1,11 @@
+allow_anonymous_users: true
+data: Put some data here, we don't really care about it.
+description: Generic Column Layout Examples
+enable_previous: 1
+footer_label: If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}
+lock_question: 1
+principal_investigator_user_id: 2
+redirect_close_on_url: http://localhost:3000/participant
+show_in_study_list: false
+title: Generic Column Layout Examples
+version: 1

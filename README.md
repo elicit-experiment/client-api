@@ -143,6 +143,7 @@ PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_video_stimuli.py  --env local
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_radiobutton.py  --env local
 
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument2_stimuli.py  --env local
 
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local_docker
 

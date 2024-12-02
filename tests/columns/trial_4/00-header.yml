@@ -1,0 +1,8 @@
+definition_data:
+  Instruments:
+  - Instrument:
+      Header:
+        HeaderLabel: This is a TaggingA with image stimuli (column)
+  Stimuli:
+  - null
+name: Label

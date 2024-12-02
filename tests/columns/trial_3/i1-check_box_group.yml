@@ -1,0 +1,32 @@
+definition_data:
+  Instruments:
+  - Instrument:
+      CheckBoxGroup:
+        ColumnWidthPercent: '40'
+        HeaderLabel: checkboxgroup
+        Items:
+          Item:
+          - Id: '0'
+            Label: 'yes lorem50 Lorem ipsum dolor sit amet, consectetur adipiscing
+              elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco '
+            Selected: '0'
+          - Id: '1'
+            Label: 'no Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+              do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+              ad minim veniam, quis nostrud exercitation ullamco '
+            Selected: '0'
+        Layout: column
+        MaxNoOfSelections: '1'
+        MinNoOfSelections: '1'
+        QuestionsPerRow: '1'
+        RandomizeOrder: false
+  Stimuli:
+  - IsOptional: true
+    IsPausable: true
+    IsReplayable: true
+    Label: Audio Excerpt
+    MaxReplayCount: 2
+    Type: audio/mpeg
+    URI: https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3
+name: CheckboxGroup

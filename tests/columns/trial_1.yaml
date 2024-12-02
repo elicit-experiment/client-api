@@ -1,0 +1,4 @@
+trial_definition:
+  definition_data:
+    PhaseType: 'LikertScale'
+  name: Trial 1 - Likert

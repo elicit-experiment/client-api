@@ -1,0 +1,74 @@
+definition_data:
+  Layout:
+    Type: column
+    ColumnWidthPercent: [ 30, 70 ]
+  Instruments:
+  - Instrument:
+      RadioButtonGroup:
+        HeaderLabel: This is a RadiobuttonGroup with video stimuli (column, 70%)
+        IsOptional: '0'
+        Items:
+          Item:
+          - Correct: true
+            Id: '1'
+            Label: answer 1
+            Selected: '0'
+          - Correct: true
+            Id: '2'
+            Label: answer 2
+            Selected: '0'
+          - Correct: true
+            Id: '3'
+            Label: answer 3
+            Selected: '0'
+          - Correct: true
+            Id: '4'
+            Label: answer 4
+            Selected: '0'
+          - Correct: true
+            Id: '5'
+            Label: answer 5
+            Selected: '0'
+          - Correct: true
+            Id: '6'
+            Label: answer 6
+            Selected: '0'
+          - Correct: true
+            Id: '7'
+            Label: answer 7
+            Selected: '0'
+          - Correct: true
+            Id: '8'
+            Label: answer 8
+            Selected: '0'
+          - Correct: true
+            Id: '9'
+            Label: answer 9
+            Selected: '0'
+          - Correct: true
+            Id: '10'
+            Label: answer 10
+            Selected: '0'
+          - Correct: true
+            Id: '11'
+            Label: answer 11
+            Selected: '0'
+          - Correct: true
+            Id: '12'
+            Label: answer 12
+            Selected: '0'
+          - Correct: true
+            Id: '13'
+            Label: answer 13
+            Selected: '0'
+        Layout: row
+        QuestionsPerRow: '6'
+  Stimuli:
+  - IsOptional: true
+    IsPausable: true
+    IsReplayable: true
+    Label: Video Stimulus (column, 30%)
+    MaxReplayCount: 2
+    Type: video/mp4
+    URI: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4
+name: RadiobuttonGroup

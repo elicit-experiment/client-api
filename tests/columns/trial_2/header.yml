@@ -1,0 +1,8 @@
+definition_data:
+  Instruments:
+  - Instrument:
+      Header:
+        HeaderLabel: This is a RadioButtonGroup with video_youtube stimuli (column)
+  Stimuli:
+  - null
+name: Label

@@ -1,0 +1,16 @@
+definition_data:
+  Layout:
+    Type: column
+    ColumnWidthPercent: [70, 30]
+  Instruments:
+  - Instrument:
+      SoloStimulus: {}
+  Stimuli:
+  - IsOptional: true
+    IsPausable: true
+    IsReplayable: true
+    Label: Solo Stimulus (column, 70/30)
+    MaxReplayCount: 2
+    Type: video/youtube
+    URI: https://youtu.be/soTEnpcn0ig
+name: SoloStimulus
