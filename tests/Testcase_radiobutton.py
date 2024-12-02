@@ -611,7 +611,7 @@ for study_participant in study_participants:
 #trail_orders for anonymous users
 for anonymous_participant in range(0,10):
     trial_id = [int(trial.id) for trial in trials]
-    shuffle(trial_id)
+    #shuffle(trial_id)
 
     trial_order_specification_anonymous = dict(trial_order=dict(sequence_data=",".join(map(str,trial_id))))
     print(trial_order_specification_anonymous)
