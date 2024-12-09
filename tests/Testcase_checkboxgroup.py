@@ -115,20 +115,23 @@ trials.append(trial_object)
 # Component definition: CheckboxGroup
 component_definition_description = dict(name='CheckboxGroup',
                                         definition_data=dict(
-    Instruments=[dict(
-        Instrument=dict(
-            CheckBoxGroup=dict(
-                HeaderLabel='checkboxgroup (MinNoOfSelections=0)',
-                MaxNoOfSelections='1',
-                MinNoOfSelections='0',
-                RandomizeOrder=False,
-                Layout='column',
-                ColumnWidthPercent='30',
-                Items=dict(
-                    Item=[
-                          dict(Id='0',Label='yes',Selected='0'),
-                          dict(Id='1',Label='no',Selected='0'), 
-                          dict(Id='2',Label='dont know',Selected='0')]))))]))
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                        CheckBoxGroup=dict(
+                                                            HeaderLabel='checkboxgroup (MinNoOfSelections=0)',
+                                                            MaxNoOfSelections='1',
+                                                            MinNoOfSelections='0',
+                                                            RandomizeOrder=False,
+                                                            Layout='column',
+                                                            ColumnWidthPercent='30',
+                                                            Items=dict(
+                                                                Item=[
+                                                                      dict(Id='0',Label='yes',Selected='0'),
+                                                                      dict(Id='1',Label='no',Selected='0'), 
+                                                                      dict(Id='2',Label='dont know',Selected='0')]))))],
+                                      Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -141,7 +144,9 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # Component definition: CheckboxGroup
 component_definition_description = dict(name='CheckboxGroup',
                                         definition_data=dict(
-                                                    Instruments=[dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
                                                         Instrument=dict(
                                                             CheckBoxGroup=dict(
                                                                 HeaderLabel='checkboxgroup (pre selected options, [1 3 5])',
@@ -160,8 +165,8 @@ component_definition_description = dict(name='CheckboxGroup',
                                                                           dict(Id='1',Label='no',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='dont know',Selected='1',Correct=True),
                                                                           dict(Id='3',Label='kinda',Selected='0',Correct=False),
-                                                                          dict(Id='4',Label='a little',Selected='1', Correct=False)]))))]))
-
+                                                                          dict(Id='4',Label='a little',Selected='1', Correct=False)]))))],
+                                          Stimuli=[]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                                study_definition_id=study_object.id,
@@ -211,7 +216,9 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # Component definition: CheckboxGroup
 component_definition_description = dict(name='CheckboxGroup',
                                         definition_data=dict(
-                                                    Instruments=[dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
                                                         Instrument=dict(
                                                             CheckBoxGroup=dict(
                                                                 HeaderLabel='checkboxgroup w. feedback',
@@ -230,7 +237,8 @@ component_definition_description = dict(name='CheckboxGroup',
                                                                           dict(Id='1',Label='no',Correct=True, Feedback="Right"),
                                                                           dict(Id='2',Label='dont know',Correct=True, Feedback="Right"),
                                                                           dict(Id='3',Label='kinda',Correct=False, Feedback="Not Right"),
-                                                                          dict(Id='4',Label='a little', Correct=False, Feedback="Not Right")]))))]))
+                                                                          dict(Id='4',Label='a little', Correct=False, Feedback="Not Right")]))))],
+                                          Stimuli=[]))
 
 
 
@@ -241,49 +249,50 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
 
-
 component_definition_description = dict(name='CheckboxGroup',
-                                    definition_data=dict(
-                                        Instruments=[dict(
-                                            Instrument=dict(
-                                                CheckBoxGroup=dict(
-                                                    HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=10)',
-                                                    MaxNoOfSelections=10,
-                                                    MinNoOfSelections=2,
-                                                    RandomizeOrder=False,
-                                                    FeedbackCorrect='Good job',
-                                                    FeedbackIncorrect='bad job',
-                                                    Layout='column',
-                                                    ColumnWidthPercent='30',
-                                                    Items=dict(
-                                                        Item=[
-                                                            dict(Id='0',Label='bla1',Selected='0'),
-                                                            dict(Id='1',Label='bla12',Selected='0'),
-                                                            dict(Id='2',Label='bla123',Selected='0'),
-                                                            dict(Id='3',Label='bla1234',Selected='0'),
-                                                            dict(Id='4',Label='bla12345',Selected='0'),
-                                                            dict(Id='5',Label='bla123456',Selected='0'),
-                                                            dict(Id='6',Label='bla1234567',Selected='0'),
-                                                            dict(Id='7',Label='bla12345678',Selected='0'),
-                                                            dict(Id='8',Label='bla123456789',Selected='0'),
-                                                            dict(Id='9',Label='bla1234567890',Selected='0'),
-                                                            dict(Id='10',Label='blablabla',Selected='0'),
-                                                            dict(Id='11',Label='blablablabla',Selected='0'),
-                                                            dict(Id='12',Label='blablablabla',Selected='0'),
-                                                            dict(Id='13',Label='blablablabla',Selected='0'),
-                                                            dict(Id='14',Label='blablablabla',Selected='0'),
-                                                            dict(Id='15',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='16',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='17',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='18',Label='{{b|bold bla}}',Selected='0'),
-                                                            dict(Id='19',Label='{{i|italic bla}}',Selected='0'),
-                                                            dict(Id='20',Label='{{style|color: red;font-size: 20px;|Red large bla}}',Selected='0'),
-                                                            dict(Id='21',Label='{{link|http://www.google.com|Link}}',Selected='0'),
-                                                            dict(Id='22',Label='this should be flush{{n}}this should be flush{{n}}this should be flush',Selected='0'),
-                                                            dict(Id='23',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
-                                                            dict(Id='24',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
-                                                            dict(Id='25',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0')
-                                                            ]))))]))
+                                        definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                        Instrument=dict(
+                                                            CheckBoxGroup=dict(
+                                                                HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=10)',
+                                                                MaxNoOfSelections=10,
+                                                                MinNoOfSelections=2,
+                                                                RandomizeOrder=False,
+                                                                FeedbackCorrect='Good job',
+                                                                FeedbackIncorrect='bad job',
+                                                                Layout='column',
+                                                                ColumnWidthPercent='30',
+                                                                Items=dict(
+                                                                    Item=[
+                                                                        dict(Id='0',Label='bla1',Selected='0'),
+                                                                        dict(Id='1',Label='bla12',Selected='0'),
+                                                                        dict(Id='2',Label='bla123',Selected='0'),
+                                                                        dict(Id='3',Label='bla1234',Selected='0'),
+                                                                        dict(Id='4',Label='bla12345',Selected='0'),
+                                                                        dict(Id='5',Label='bla123456',Selected='0'),
+                                                                        dict(Id='6',Label='bla1234567',Selected='0'),
+                                                                        dict(Id='7',Label='bla12345678',Selected='0'),
+                                                                        dict(Id='8',Label='bla123456789',Selected='0'),
+                                                                        dict(Id='9',Label='bla1234567890',Selected='0'),
+                                                                        dict(Id='10',Label='blablabla',Selected='0'),
+                                                                        dict(Id='11',Label='blablablabla',Selected='0'),
+                                                                        dict(Id='12',Label='blablablabla',Selected='0'),
+                                                                        dict(Id='13',Label='blablablabla',Selected='0'),
+                                                                        dict(Id='14',Label='blablablabla',Selected='0'),
+                                                                        dict(Id='15',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                        dict(Id='16',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                        dict(Id='17',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                        dict(Id='18',Label='{{b|bold bla}}',Selected='0'),
+                                                                        dict(Id='19',Label='{{i|italic bla}}',Selected='0'),
+                                                                        dict(Id='20',Label='{{style|color: red;font-size: 20px;|Red large bla}}',Selected='0'),
+                                                                        dict(Id='21',Label='{{link|http://www.google.com|Link}}',Selected='0'),
+                                                                        dict(Id='22',Label='this should be flush{{n}}this should be flush{{n}}this should be flush',Selected='0'),
+                                                                        dict(Id='23',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                                        dict(Id='24',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                                        dict(Id='25',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0')]))))],
+                                        Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -293,47 +302,49 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description = dict(name='CheckboxGroup',
-                                    definition_data=dict(
-                                        Instruments=[dict(
-                                            Instrument=dict(
-                                                CheckBoxGroup=dict(
-                                                    HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=3)',
-                                                    MaxNoOfSelections=3,
-                                                    MinNoOfSelections=2,
-                                                    RandomizeOrder=False,
-                                                    FeedbackCorrect='Good job',
-                                                    FeedbackIncorrect='bad job',
-                                                    Layout='column',
-                                                    ColumnWidthPercent='30',
-                                                    Items=dict(
-                                                        Item=[
-                                                            dict(Id='0',Label='bla1',Selected='0'),
-                                                            dict(Id='1',Label='bla12',Selected='0'),
-                                                            dict(Id='2',Label='bla123',Selected='0'),
-                                                            dict(Id='3',Label='bla1234',Selected='0'),
-                                                            dict(Id='4',Label='bla12345',Selected='0'),
-                                                            dict(Id='5',Label='bla123456',Selected='0'),
-                                                            dict(Id='6',Label='bla1234567',Selected='0'),
-                                                            dict(Id='7',Label='bla12345678',Selected='0'),
-                                                            dict(Id='8',Label='bla123456789',Selected='0'),
-                                                            dict(Id='9',Label='bla1234567890',Selected='0'),
-                                                            dict(Id='10',Label='blablabla',Selected='0'),
-                                                            dict(Id='11',Label='blablablabla',Selected='0'),
-                                                            dict(Id='12',Label='blablablabla',Selected='0'),
-                                                            dict(Id='13',Label='blablablabla',Selected='0'),
-                                                            dict(Id='14',Label='blablablabla',Selected='0'),
-                                                            dict(Id='15',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='16',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='17',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
-                                                            dict(Id='18',Label='{{b|bold bla}}',Selected='0'),
-                                                            dict(Id='19',Label='{{i|italic bla}}',Selected='0'),
-                                                            dict(Id='20',Label='{{style|color: red;font-size: 20px;|Red large bla}}',Selected='0'),
-                                                            dict(Id='21',Label='{{link|http://www.google.com|Link}}',Selected='0'),
-                                                            dict(Id='22',Label='this should be flush{{n}}this should be flush{{n}}this should be flush',Selected='0'),
-                                                            dict(Id='23',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
-                                                            dict(Id='24',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
-                                                            dict(Id='25',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0')
-                                                            ]))))]))
+                                        definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    CheckBoxGroup=dict(
+                                                        HeaderLabel='checkboxgroup {{n}} (ColumnWidthPercent=30,minSelect=2,maxSelect=3)',
+                                                        MaxNoOfSelections=3,
+                                                        MinNoOfSelections=2,
+                                                        RandomizeOrder=False,
+                                                        FeedbackCorrect='Good job',
+                                                        FeedbackIncorrect='bad job',
+                                                        Layout='column',
+                                                        ColumnWidthPercent='30',
+                                                        Items=dict(
+                                                            Item=[
+                                                                dict(Id='0',Label='bla1',Selected='0'),
+                                                                dict(Id='1',Label='bla12',Selected='0'),
+                                                                dict(Id='2',Label='bla123',Selected='0'),
+                                                                dict(Id='3',Label='bla1234',Selected='0'),
+                                                                dict(Id='4',Label='bla12345',Selected='0'),
+                                                                dict(Id='5',Label='bla123456',Selected='0'),
+                                                                dict(Id='6',Label='bla1234567',Selected='0'),
+                                                                dict(Id='7',Label='bla12345678',Selected='0'),
+                                                                dict(Id='8',Label='bla123456789',Selected='0'),
+                                                                dict(Id='9',Label='bla1234567890',Selected='0'),
+                                                                dict(Id='10',Label='blablabla',Selected='0'),
+                                                                dict(Id='11',Label='blablablabla',Selected='0'),
+                                                                dict(Id='12',Label='blablablabla',Selected='0'),
+                                                                dict(Id='13',Label='blablablabla',Selected='0'),
+                                                                dict(Id='14',Label='blablablabla',Selected='0'),
+                                                                dict(Id='15',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                dict(Id='16',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                dict(Id='17',Label='This is some really long text which should test the wrapping of the content in this box and i could go on and on',Selected='0'),
+                                                                dict(Id='18',Label='{{b|bold bla}}',Selected='0'),
+                                                                dict(Id='19',Label='{{i|italic bla}}',Selected='0'),
+                                                                dict(Id='20',Label='{{style|color: red;font-size: 20px;|Red large bla}}',Selected='0'),
+                                                                dict(Id='21',Label='{{link|http://www.google.com|Link}}',Selected='0'),
+                                                                dict(Id='22',Label='this should be flush{{n}}this should be flush{{n}}this should be flush',Selected='0'),
+                                                                dict(Id='23',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                                dict(Id='24',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0'),
+                                                                dict(Id='25',Label='{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|68|23|center}}',Selected='0')]))))],
+                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -364,7 +375,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  protocol_definition_id=protocol_object.id,
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object_eoe.id)
-
 
 
 component_definition_description = dict(name='End of experiment',

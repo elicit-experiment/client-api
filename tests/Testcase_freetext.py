@@ -125,18 +125,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight=None,
-                                                                        BoxWidth=None,
-                                                                        Label="Freetext (LabelPosition=top)",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                        Freetext=dict(
+                                                                BoxHeight=None,
+                                                                BoxWidth=None,
+                                                                Label="Freetext (LabelPosition=top)",
+                                                                LabelPosition='top',
+                                                                Resizable=None,
+                                                                Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -146,18 +147,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight=None,
-                                                                        BoxWidth=None,
-                                                                        Label="Freetext (LabelPosition=left)",
-                                                                        LabelPosition='left',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                            Freetext=dict(
+                                                                    BoxHeight=None,
+                                                                    BoxWidth=None,
+                                                                    Label="Freetext (LabelPosition=left)",
+                                                                    LabelPosition='left',
+                                                                    Resizable=None,
+                                                                    Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -167,18 +169,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
+                                 definition_data=dict(
+                                                 Layout=dict(Type='column',
+                                                             ColumnWidthPercent=['30', '70']),
+                                                 Instruments=[dict(
+                                                         Instrument=dict(
                                                                 Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="Freetext (LabelPosition=right)",
                                                                         LabelPosition='right',
                                                                         Resizable=None,
-                                                                        Validation='.+')))]))
+                                                                        Validation='.+')))],
+                                                 Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -188,18 +191,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight=None,
-                                                                        BoxWidth=None,
-                                                                        Label="Freetext (LabelPosition=bottom)",
-                                                                        LabelPosition='bottom',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                            Freetext=dict(
+                                                                    BoxHeight=None,
+                                                                    BoxWidth=None,
+                                                                    Label="Freetext (LabelPosition=bottom)",
+                                                                    LabelPosition='bottom',
+                                                                    Resizable=None,
+                                                                    Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -207,7 +211,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
 
 #%% Trial 2: Freetext
 #
@@ -237,24 +240,20 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-
-
-
-
-
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight='5',
-                                                                        BoxWidth='10',
-                                                                        Label="10 x 5",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                            Freetext=dict(
+                                                                    BoxHeight='5',
+                                                                    BoxWidth='10',
+                                                                    Label="10 x 5",
+                                                                    LabelPosition='top',
+                                                                    Resizable=None,
+                                                                    Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -264,18 +263,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight='2',
-                                                                        BoxWidth='5',
-                                                                        Label="2 x 5",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                            Freetext=dict(
+                                                                    BoxHeight='2',
+                                                                    BoxWidth='5',
+                                                                    Label="2 x 5",
+                                                                    LabelPosition='top',
+                                                                    Resizable=None,
+                                                                    Validation='.+')))],
+                                        Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -285,18 +285,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
-                                                                        BoxHeight='10',
-                                                                        BoxWidth='50',
-                                                                        Label="50 x 10",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='.+')))]))
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
+                                                            Freetext=dict(
+                                                                    BoxHeight='10',
+                                                                    BoxWidth='50',
+                                                                    Label="50 x 10",
+                                                                    LabelPosition='top',
+                                                                    Resizable=None,
+                                                                    Validation='.+')))],
+                                        Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -306,18 +307,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
                                                                 Freetext=dict(
-                                                                        Layout='column',
-                                                                        ColumnWidthPercent='30',
                                                                         BoxHeight='10',
                                                                         BoxWidth='100',
                                                                         Label="100 x 10",
                                                                         LabelPosition='top',
                                                                         Resizable=None,
-                                                                        Validation='.+')))]))
+                                                                        Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -325,7 +327,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
 
 #%% Trial 3: Freetext
 trial_definition_specification =  dict(trial_definition=dict(name='Input requirements', definition_data=dict(TrialType='FreeText page')))
@@ -354,16 +355,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        BoxHeight=None,
-                                                                        BoxWidth=None,
-                                                                        Label="This only accepts an email",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}')))]))
+                                            definition_data=dict(
+                                                            Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                                Freetext=dict(
+                                                                                        BoxHeight=None,
+                                                                                        BoxWidth=None,
+                                                                                        Label="This only accepts an email",
+                                                                                        LabelPosition='top',
+                                                                                        Resizable=None,
+                                                                                        Validation='[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}')))],
+                                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -374,16 +378,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Freetext=dict(
-                                                                        BoxHeight=None,
-                                                                        BoxWidth=None,
-                                                                        Label="This only wants 1s",
-                                                                        LabelPosition='top',
-                                                                        Resizable=None,
-                                                                        Validation='1')))]))
+                                            definition_data=dict(
+                                                            Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                                Freetext=dict(
+                                                                                        BoxHeight=None,
+                                                                                        BoxWidth=None,
+                                                                                        Label="This only wants 1s",
+                                                                                        LabelPosition='top',
+                                                                                        Resizable=None,
+                                                                                        Validation='1')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -393,16 +400,19 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                trial_definition_id=trial_object.id)
 
 component_definition_description =  dict(name='Freetext',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
+                            definition_data=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                    Instrument=dict(
                                                                 Freetext=dict(
                                                                         BoxHeight=None,
                                                                         BoxWidth=None,
                                                                         Label="This wants any char",
                                                                         LabelPosition='top',
                                                                         Resizable=None,
-                                                                        Validation='.+')))]))
+                                                                        Validation='.+')))],
+                                            Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -410,9 +420,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
-
-
 #
 #%% Trial 3: End of experiment page
 #
@@ -482,8 +489,6 @@ for anonymous_participant in range(0,10):
                                                        protocol_definition_id=protocol_object.id,
                                                        phase_definition_id=phase_object.id)
     
-
-
 #%% Add a new Phase Order
 phase_sequence_data = ",".join([str(phase_definition.id) for phase_definition in phases])
 

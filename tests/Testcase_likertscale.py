@@ -132,12 +132,12 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 component_definition_description=dict(name='LikertScale',
-                                      definition_data=dict(
-                                              dict(Instruments=[ dict(
-                                                      Instrument=dict(
+                                            definition_data=dict(
+                                                      Layout=dict(Type='column',
+                                                                  ColumnWidthPercent=['30', '70']),
+                                                      Instruments=[dict(
+                                                          Instrument=dict(
                                                               LikertScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
                                                                     MaxNoOfScalings='1',
                                                                     MinNoOfScalings='1',
                                                                     HeaderLabel='No stimuli (ColumnWidthPercent=30)',
@@ -150,41 +150,8 @@ component_definition_description=dict(name='LikertScale',
                                                                                   dict(Id='5',Label='6',Selected='0'),
                                                                                   dict(Id='6',Label='7',Selected='0'),
                                                                                   dict(Id='7',Label='8',Selected='0'),
-                                                                                  dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))])))
-# Component addition: add the component to the trial
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-component_definition_description=dict(name='LikertScale+stimuli',
-                                      definition_data=dict(
-                                              dict(Instruments=[ dict(
-                                                      Instrument=dict(
-                                                              LikertScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
-                                                                    MaxNoOfScalings='1',
-                                                                    MinNoOfScalings='1',
-                                                                    HeaderLabel='(audio) ColumnWidthPercent=30',
-                                                                    Items=dict(
-                                                                            Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
-                                                                                  dict(Id='1',Label='2',Selected='0'),
-                                                                                  dict(Id='2',Label='3',Selected='0'),
-                                                                                  dict(Id='3',Label='4',Selected='0'),
-                                                                                  dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
-                                                                                  dict(Id='5',Label='6',Selected='0'),
-                                                                                  dict(Id='6',Label='7',Selected='0'),
-                                                                                  dict(Id='7',Label='8',Selected='0'),
                                                                                   dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))],
-                                                  Stimuli=[dict(
-                                                          Label='This is my stimuli Label',
-                                                          Type='audio/mpeg',
-                                                          isOptional='0',
-                                                          isPausable='1',
-                                                          noPlays='1',
-                                                          URI=audio_url)])))
+                                                   Stimuli=[]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -194,32 +161,67 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='LikertScale+stimuli',
-                                      definition_data=dict(
-                                              dict(Instruments=[ dict(
-                                                      Instrument=dict(
-                                                              LikertScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='80',
-                                                                    MaxNoOfScalings='1',
-                                                                    MinNoOfScalings='1',
-                                                                    HeaderLabel='(audio) ColumnWidthPercent=80',
-                                                                    Items=dict(
-                                                                            Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
-                                                                                  dict(Id='1',Label='2',Selected='0'),
-                                                                                  dict(Id='2',Label='3',Selected='0'),
-                                                                                  dict(Id='3',Label='4',Selected='0'),
-                                                                                  dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
-                                                                                  dict(Id='5',Label='6',Selected='0'),
-                                                                                  dict(Id='6',Label='7',Selected='0'),
-                                                                                  dict(Id='7',Label='8',Selected='0'),
-                                                                                  dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))],
+                                            definition_data=dict(
+                                                      Layout=dict(Type='column',
+                                                                  ColumnWidthPercent=['30', '70']),
+                                                      Instruments=[dict(
+                                                          Instrument=dict(
+                                                                  LikertScale=dict(
+                                                                        MaxNoOfScalings='1',
+                                                                        MinNoOfScalings='1',
+                                                                        HeaderLabel='(audio) ColumnWidthPercent=30',
+                                                                        Items=dict(
+                                                                                Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
+                                                                                      dict(Id='1',Label='2',Selected='0'),
+                                                                                      dict(Id='2',Label='3',Selected='0'),
+                                                                                      dict(Id='3',Label='4',Selected='0'),
+                                                                                      dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
+                                                                                      dict(Id='5',Label='6',Selected='0'),
+                                                                                      dict(Id='6',Label='7',Selected='0'),
+                                                                                      dict(Id='7',Label='8',Selected='0'),
+                                                                                      dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))],
+                                                      Stimuli=[dict(
+                                                              Label='This is my stimuli Label',
+                                                              Type='audio/mpeg',
+                                                              isOptional='0',
+                                                              isPausable='1',
+                                                              noPlays='1',
+                                                              URI=audio_url)]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+component_definition_description=dict(name='LikertScale+stimuli',
+                                            definition_data=dict(
+                                                      Layout=dict(Type='column',
+                                                                  ColumnWidthPercent=['20', '80']),
+                                                      Instruments=[dict(
+                                                          Instrument=dict(
+                                                                  LikertScale=dict(
+                                                                        MaxNoOfScalings='1',
+                                                                        MinNoOfScalings='1',
+                                                                        HeaderLabel='(audio) ColumnWidthPercent=80',
+                                                                        Items=dict(
+                                                                                Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
+                                                                                      dict(Id='1',Label='2',Selected='0'),
+                                                                                      dict(Id='2',Label='3',Selected='0'),
+                                                                                      dict(Id='3',Label='4',Selected='0'),
+                                                                                      dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
+                                                                                      dict(Id='5',Label='6',Selected='0'),
+                                                                                      dict(Id='6',Label='7',Selected='0'),
+                                                                                      dict(Id='7',Label='8',Selected='0'),
+                                                                                      dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))],
                                                   Stimuli=[dict(
                                                           Label='This is my stimuli Label',
                                                           Type='audio/mpeg',
                                                           isOptional='0',
                                                           isPausable='1',
                                                           noPlays='1',
-                                                          URI=audio_url)])))
+                                                          URI=audio_url)]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -231,25 +233,29 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 
 component_definition_description=dict(name='LikertScale',
-                                      definition_data=dict(
-                                              dict(Instruments=[ dict(
-                                                      Instrument=dict(
-                                                              LikertScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='80',
-                                                                    MaxNoOfScalings='1',
-                                                                    MinNoOfScalings='1',
-                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=80)',
-                                                                    Items=dict(
-                                                                            Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
-                                                                                  dict(Id='1',Label='2',Selected='0'),
-                                                                                  dict(Id='2',Label='3',Selected='0'),
-                                                                                  dict(Id='3',Label='4',Selected='0'),
-                                                                                  dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
-                                                                                  dict(Id='5',Label='6',Selected='0'),
-                                                                                  dict(Id='6',Label='7',Selected='0'),
-                                                                                  dict(Id='7',Label='8',Selected='0'),
-                                                                                  dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))])))
+                                            definition_data=dict(
+                                                      Layout=dict(Type='column',
+                                                                  ColumnWidthPercent=['30', '70']),
+                                                      Instruments=[dict(
+                                                          Instrument=dict(
+                                                                  LikertScale=dict(
+                                                                        Layout='column',
+                                                                        ColumnWidthPercent='80',
+                                                                        MaxNoOfScalings='1',
+                                                                        MinNoOfScalings='1',
+                                                                        HeaderLabel='No stimuli (ColumnWidthPercent=80)',
+                                                                        Items=dict(
+                                                                                Item=[dict(Id='0',Label='1{{n}}{{b|sleepy}}{{n}}{{b|tired}}{{n}}{{b|drowsy}}',Selected='0'),
+                                                                                      dict(Id='1',Label='2',Selected='0'),
+                                                                                      dict(Id='2',Label='3',Selected='0'),
+                                                                                      dict(Id='3',Label='4',Selected='0'),
+                                                                                      dict(Id='4',Label='5{{n}}{{b|neutral}}',Selected='0'),
+                                                                                      dict(Id='5',Label='6',Selected='0'),
+                                                                                      dict(Id='6',Label='7',Selected='0'),
+                                                                                      dict(Id='7',Label='8',Selected='0'),
+                                                                                      dict(Id='8',Label='9{{n}}{{b|alert}}{{n}}{{b|wakeful}}{{n}}{{b|awake}}',Selected='0')]))))],
+                                                     Stimuli=[]))
+
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,

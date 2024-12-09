@@ -123,30 +123,31 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
-                                      definition_data=dict(
-                                         Instruments=[dict(
-                                                  Instrument=dict(
-                                                           OneDScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
-                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=None)',
-                                                                    Position=None,                                             
-                                                                    X1AxisLabel='Label for X1 axis',
-                                                                    X1AxisTicks=dict(
-                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
-                                                                                        dict(Label='Second x1 tick', Position='0.0'),
-                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
-                                                                    X2AxisLabel='Label for X2 axis',
-                                                                    X2AxisTicks=dict(
-                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
-                                                                                        dict(Label='Second x2 tick', Position='0.0'),
-                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
-                                                                    Y1AxisLabel='Label for Y1 axis',
-                                                                    Y1AxisTicks=dict(
-                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
-                                                                    Y2AxisLabel='Label for Y2 axis',
-                                                                    Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
+                                            definition_data=dict(
+                                                            Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                  Instrument=dict(
+                                                                           OneDScale=dict(
+                                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=None)',
+                                                                                    Position=None,                                             
+                                                                                    X1AxisLabel='Label for X1 axis',
+                                                                                    X1AxisTicks=dict(
+                                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
+                                                                                                        dict(Label='Second x1 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
+                                                                                    X2AxisLabel='Label for X2 axis',
+                                                                                    X2AxisTicks=dict(
+                                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
+                                                                                                        dict(Label='Second x2 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
+                                                                                    Y1AxisLabel='Label for Y1 axis',
+                                                                                    Y1AxisTicks=dict(
+                                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
+                                                                                    Y2AxisLabel='Label for Y2 axis',
+                                                                                    Y2AxisTicks=dict(
+                                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))],
+                                                            Stimuli=[]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -182,39 +183,41 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
-                                      definition_data=dict(
-                                         Instruments=[dict(
-                                                  Instrument=dict(
-                                                           OneDScale=dict(
-                                                                    HeaderLabel='(Audio) Position=-0.3',
-                                                                    IsOptional='0',
-                                                                    Position='-0.3',                                             
-                                                                    X1AxisLabel='Label for X1 axis',
-                                                                    X2AxisLabel='Label for X2 axis',
-                                                                    X1AxisTicks=dict(
-                                                                        X1AxisTick=[dict(dictId='1', Position='-1.0', Label='good'),
-                                                                                    dict(Id='2', Position='0.0', Label='indifferent'),
-                                                                                    dict(Id='3', Position='1.0', Label='bad')]),
-                                                                    X2AxisTicks=dict(
-                                                                        X2AxisTick=[dict(dictId='1', Position='-1.0', Label='red'),
-                                                                                    dict(Id='2', Position='0.0', Label='green'),
-                                                                                    dict(Id='3', Position='1.0', Label='blue')]),
-                                                                    Y1AxisTicks=dict(
-                                                                        Y1AxisTick=[dict(dictId='1', Position='-1.0', Label='top'),
-                                                                                    dict(Id='2', Position='0.0', Label='middle'),
-                                                                                    dict(Id='3', Position='1.0', Label='bottom')]),
-                                                                    Y2AxisTicks=dict(
-                                                                        Y2AxisTick=[dict(dictId='1', Position='0.0', Label='up'),
-                                                                                    dict(Id='2', Position='0.0', Label='center'),
-                                                                                    dict(Id='3', Position='1.0', Label='down')])
-                                                                    )))],
-                                        Stimuli=[dict(
-                                                Label='This is my stimuli Label',
-                                                Type='audio/mpeg',
-                                                isOptional='0',
-                                                isPausable='1',
-                                                noPlays='1',
-                                                URI=audio_url)]))
+                                            definition_data=dict(
+                                                            Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                  Instrument=dict(
+                                                                           OneDScale=dict(
+                                                                                    HeaderLabel='(Audio) Position=-0.3',
+                                                                                    IsOptional='0',
+                                                                                    Position='-0.3',                                             
+                                                                                    X1AxisLabel='Label for X1 axis',
+                                                                                    X2AxisLabel='Label for X2 axis',
+                                                                                    X1AxisTicks=dict(
+                                                                                        X1AxisTick=[dict(dictId='1', Position='-1.0', Label='good'),
+                                                                                                    dict(Id='2', Position='0.0', Label='indifferent'),
+                                                                                                    dict(Id='3', Position='1.0', Label='bad')]),
+                                                                                    X2AxisTicks=dict(
+                                                                                        X2AxisTick=[dict(dictId='1', Position='-1.0', Label='red'),
+                                                                                                    dict(Id='2', Position='0.0', Label='green'),
+                                                                                                    dict(Id='3', Position='1.0', Label='blue')]),
+                                                                                    Y1AxisTicks=dict(
+                                                                                        Y1AxisTick=[dict(dictId='1', Position='-1.0', Label='top'),
+                                                                                                    dict(Id='2', Position='0.0', Label='middle'),
+                                                                                                    dict(Id='3', Position='1.0', Label='bottom')]),
+                                                                                    Y2AxisTicks=dict(
+                                                                                        Y2AxisTick=[dict(dictId='1', Position='0.0', Label='up'),
+                                                                                                    dict(Id='2', Position='0.0', Label='center'),
+                                                                                                    dict(Id='3', Position='1.0', Label='down')])
+                                                                                    )))],
+                                                            Stimuli=[dict(
+                                                                    Label='This is my stimuli Label',
+                                                                    Type='audio/mpeg',
+                                                                    isOptional='0',
+                                                                    isPausable='1',
+                                                                    noPlays='1',
+                                                                    URI=audio_url)]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -251,30 +254,31 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
-                                      definition_data=dict(
-                                         Instruments=[dict(
-                                                  Instrument=dict(
-                                                           OneDScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
-                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=none)',
-                                                                    Position=None,                                             
-                                                                    X1AxisLabel='Label for X1 axis',
-                                                                    X1AxisTicks=dict(
-                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
-                                                                                        dict(Label='Second x1 tick', Position='0.0'),
-                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
-                                                                    X2AxisLabel='Label for X2 axis',
-                                                                    X2AxisTicks=dict(
-                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
-                                                                                        dict(Label='Second x2 tick', Position='0.0'),
-                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
-                                                                    Y1AxisLabel='Label for Y1 axis',
-                                                                    Y1AxisTicks=dict(
-                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
-                                                                    Y2AxisLabel='Label for Y2 axis',
-                                                                    Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
+                                            definition_data=dict(
+                                                           Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                           Instruments=[dict(
+                                                                  Instrument=dict(
+                                                                           OneDScale=dict(
+                                                                                    HeaderLabel='No stimuli (ColumnWidthPercent=30,Position=none)',
+                                                                                    Position=None,                                             
+                                                                                    X1AxisLabel='Label for X1 axis',
+                                                                                    X1AxisTicks=dict(
+                                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
+                                                                                                        dict(Label='Second x1 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
+                                                                                    X2AxisLabel='Label for X2 axis',
+                                                                                    X2AxisTicks=dict(
+                                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
+                                                                                                        dict(Label='Second x2 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
+                                                                                    Y1AxisLabel='Label for Y1 axis',
+                                                                                    Y1AxisTicks=dict(
+                                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
+                                                                                    Y2AxisLabel='Label for Y2 axis',
+                                                                                    Y2AxisTicks=dict(
+                                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))],
+                                                           Stimuli=[]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
@@ -283,30 +287,31 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 component_definition_description=dict(name='OneDScale',
-                                      definition_data=dict(
-                                         Instruments=[dict(
-                                                  Instrument=dict(
-                                                           OneDScale=dict(
-                                                                    Layout='column',
-                                                                    ColumnWidthPercent='30',
-                                                                    HeaderLabel='No stimuli (position=-0.5)',
-                                                                    Position='-0.5',                                             
-                                                                    X1AxisLabel='Label for X1 axis',
-                                                                    X1AxisTicks=dict(
-                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
-                                                                                        dict(Label='Second x1 tick', Position='0.0'),
-                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
-                                                                    X2AxisLabel='Label for X2 axis',
-                                                                    X2AxisTicks=dict(
-                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
-                                                                                        dict(Label='Second x2 tick', Position='0.0'),
-                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
-                                                                    Y1AxisLabel='Label for Y1 axis',
-                                                                    Y1AxisTicks=dict(
-                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
-                                                                    Y2AxisLabel='Label for Y2 axis',
-                                                                    Y2AxisTicks=dict(
-                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))]))
+                                            definition_data=dict(
+                                                            Layout=dict(Type='column',
+                                                                        ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                  Instrument=dict(
+                                                                           OneDScale=dict(
+                                                                                    HeaderLabel='No stimuli (position=-0.5)',
+                                                                                    Position='-0.5',                                             
+                                                                                    X1AxisLabel='Label for X1 axis',
+                                                                                    X1AxisTicks=dict(
+                                                                                            X1AxisTick=[dict(Label='First x1 tick',Position='-0.5'),
+                                                                                                        dict(Label='Second x1 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x1 tick', Position='0.5')]),
+                                                                                    X2AxisLabel='Label for X2 axis',
+                                                                                    X2AxisTicks=dict(
+                                                                                            X2AxisTick=[dict(Label='First x2 tick', Position='-1.0'),
+                                                                                                        dict(Label='Second x2 tick', Position='0.0'),
+                                                                                                        dict(Label='Third x2 tick', Position='1.0')]),
+                                                                                    Y1AxisLabel='Label for Y1 axis',
+                                                                                    Y1AxisTicks=dict(
+                                                                                            Y1AxisTick=dict(Label='Only y1 tick',Position='0.5')),
+                                                                                    Y2AxisLabel='Label for Y2 axis',
+                                                                                    Y2AxisTicks=dict(
+                                                                                             Y2AxisTick=dict(Label='Only y2 tick',Position='-0.5')))))],
+                                                            Stimuli=[]))
 
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,

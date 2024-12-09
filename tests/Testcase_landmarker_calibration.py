@@ -17,6 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 response = requests.get('https://api.elicit-experiment.com', verify=False)
 
+butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 
 ##
 ## MAIN
@@ -99,10 +100,49 @@ phases = [phase_object]
 
 trials = []
 
-#%%
-# Trial 1: Landmarker calibration
-#
+#%% Trial 1: Welcome page and start Monitor component
 
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='Start with the Monitor component', definition_data=dict(TrialType='Video page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    Header=dict(
+                                                        HeaderLabel='{{center|Welcome to this Facelandmarker test}}')))]))
+
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                                           study_definition_id=study_object.id,
+                                           protocol_definition_id=protocol_object.id,
+                                           phase_definition_id=phase_object.id,
+                                           trial_definition_id=trial_object.id)
+
+monitor = dict(name='Monitor', definition_data=dict(
+                                        Instruments=[dict(
+                                               Instrument=dict(
+                                                       Monitor=dict(
+                                                           MouseTracking=True,
+                                                           KeyboardTracking=True,
+                                                           )))]))
+
+elicit_object.add_component(component=dict(component=monitor),
+                             study_definition_id=study_object.id,
+                             protocol_definition_id=protocol_object.id,
+                             phase_definition_id=phase_object.id,
+                             trial_definition_id=trial_object.id)
+
+#%% Trial 2: Landmarker calibration
+#
 
 trial_definition_specification = dict(trial_definition=dict(name='Landmarker calibration',
                                                             definition_data=dict(
@@ -127,7 +167,33 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 
 trials.append(trial_object)
 
-#%% add a little butterfly video
+#%% Trial 2 test
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='Trial 2', definition_data=dict(TrialType='Video page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                            Instruments=[dict(
+                                                Instrument=dict(
+                                                    Header=dict(
+                                                        HeaderLabel='{{center|Second screen}}')))]))
+
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                                           study_definition_id=study_object.id,
+                                           protocol_definition_id=protocol_object.id,
+                                           phase_definition_id=phase_object.id,
+                                           trial_definition_id=trial_object.id)
+
+#%% Trial 3: add a little butterfly video
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='butterflies', definition_data=dict(TrialType='Video page')))
@@ -153,19 +219,17 @@ elicit_object.add_component(component=dict(component=header_component_definition
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)
 # Define video component
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
-stimulus = dict(
-                                          Label='butterflies',
-                                          Type='video/youtube',
-                                          IsPausable=False, 
-                                          IsOptional=True, 
-                                          IsReplayable=True, 
-                                          MaxReplayCount=2,
-                                          URI=butterfly_video_url);
 
 video_component_definition = dict(name='butterflies',
-                                  definition_data=dict(
-                                      Stimuli=[stimulus]))
+                                      definition_data=dict(
+                                          Stimuli=[dict(
+                                                        Label='butterflies',
+                                                        Type='video/youtube',
+                                                        IsPausable=False, 
+                                                        IsOptional=True, 
+                                                        IsReplayable=True, 
+                                                        MaxReplayCount=2,
+                                                        URI=butterfly_video_url)]))
 
 elicit_object.add_component(component=dict(component=video_component_definition),
                                            study_definition_id=study_object.id,
@@ -173,14 +237,7 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
 
-# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-# elicit_object.add_component(component=dict(component=monitor),
-#                              study_definition_id=study_object.id,
-#                              protocol_definition_id=protocol_object.id,
-#                              phase_definition_id=phase_object.id,
-#                              trial_definition_id=trial_object.id)
-
-#%% add a little butterfly video
+#%% Trial 4: add a little butterfly video
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='butterflies', definition_data=dict(TrialType='Video page')))
@@ -206,7 +263,6 @@ elicit_object.add_component(component=dict(component=header_component_definition
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)
 # Define video component
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 stimulus = dict(
                                           Label='butterflies',
                                           Type='video/youtube',
@@ -226,14 +282,7 @@ elicit_object.add_component(component=dict(component=video_component_definition)
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)    
 
-# monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-# elicit_object.add_component(component=dict(component=monitor),
-#                              study_definition_id=study_object.id,
-#                              protocol_definition_id=protocol_object.id,
-#                              phase_definition_id=phase_object.id,
-#                              trial_definition_id=trial_object.id)
-
-#%% Trial 3: Radiobutton group
+#%% Trial 5: Radiobutton group
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='IsOptional test', definition_data=dict(TrialType='RadiobuttonGroup page')))
@@ -260,10 +309,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  protocol_definition_id=protocol_object.id,
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
-
-
-# Component definition: Monitor
-# component_definition_description = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -373,7 +418,7 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-#%% Trial 2: End of experiment page
+#%% Trial 6: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='End of experiment', definition_data=dict(TrialType='EOE')))

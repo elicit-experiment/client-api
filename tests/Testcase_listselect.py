@@ -140,7 +140,8 @@ component_definition_description = dict(name='ListSelect',
                                                                             HeaderLabel='This is Listselect with image stimuli',
                                                                             IsOptional='0',
                                                                             TextField='Other',
-                                                                            UserInput = True,
+                                                                            UserTextInput = True,
+                                                                            UserInputBox = 'Inside',
                                                                             MaxNoOfSelections='2',
                                                                             MinNoOfSelections='0',
                                                                             Items=dict(
@@ -149,16 +150,13 @@ component_definition_description = dict(name='ListSelect',
                                                                                       dict(Id='1',Label='Item-1',Selected='0',Correct=False),
                                                                                       dict(Id='2',Label='Item-2',Selected='1',Correct=False),
                                                                                       dict(Id='3',Label='Item-3',Selected='0',Correct=False),
-                                                                                      dict(Id='4',Label='Item-4',Selected='1', Correct=False)])
-                                                                            )))],
-                                                            Stimuli=[
-                                                                dict(
-                                                                    Height='100%',
-                                                                    Width='100%',
-                                                                    Label='This is a full size',
-                                                                    Type='image',
-                                                                    URI='https://dummyimage.com/750x550/996633/fff',
-                                                                    )]))
+                                                                                      dict(Id='4',Label='Item-4',Selected='1', Correct=False),
+                                                                                      dict(Id='5',Label='Item-5',Selected='1', Correct=False)]))))],
+                                                            Stimuli=[dict(Height='100%',
+                                                                          Width='100%',
+                                                                          Label='This is a full size',
+                                                                          Type='image',
+                                                                          URI='https://dummyimage.com/750x550/996633/fff')]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -167,6 +165,36 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
+
+
+component_definition_description = dict(name='ListSelect',
+                                        definition_data=dict(Layout=dict(Type='column',
+                                                                         ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                        ListSelect=dict(
+                                                                            HeaderLabel='This is Listselect with image stimuli',
+                                                                            IsOptional='0',
+                                                                            TextField='TextField',
+                                                                            UserTextInput = True,
+                                                                            UserInputBox = 'Outside',
+                                                                            MaxNoOfAnswers ='2',
+                                                                            MinNoOfAnswers ='0',
+                                                                            Items=dict(
+                                                                                Item=[
+                                                                                      dict(Id='0',Label='Item-0',Selected='1',Correct=False),
+                                                                                      dict(Id='1',Label='Item-1',Selected='0',Correct=False)]))))],
+                                                            Stimuli=[dict(Height='100%',
+                                                                          Width='100%',
+                                                                          Label='This is a full size',
+                                                                          Type='image',
+                                                                          URI='https://dummyimage.com/750x550/996633/fff')]))
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
 
 #%%  Trial 6: End of experiment page
 #

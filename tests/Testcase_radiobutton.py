@@ -19,6 +19,8 @@ from pyelicit import elicit
 ## MAIN
 ##
 
+butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
+
 NUM_REGISTERED_USERS = 0
 NUM_ANONYMOUS_USERS = 10
 
@@ -123,35 +125,35 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
-# 13 answer options
+# 5 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            QuestionsPerRow=1,
-                                                            HeaderLabel='IsOptional=1 {{n}} (i.e. does not have to be answered to proceed)',
                                                             IsOptional=True,
+                                                            QuestionsPerRow=1,
+                                                            HeaderLabel='IsOptional=True {{n}} (i.e. does not have to be answered to proceed)',                                                            
                                                             AnswerOnce=False,
                                                             MustAnswerCorrectly=False,
                                                             ShowFeedback=False,
                                                             ShowCorrectness=False,
-                                                            Layout='column',
-                                                            ColumnWidthPercent='30',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
-                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True),
-                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=True),
-                                                                          dict(Id='8',Label='answer 8',Selected='0',Correct=True),
-                                                                          dict(Id='9',Label='answer 9',Selected='0',Correct=True),
-                                                                          dict(Id='10',Label='answer 10',Selected='0',Correct=True),
-                                                                          dict(Id='11',Label='answer 11',Selected='0',Correct=True),
-                                                                          dict(Id='12',Label='answer 12',Selected='0',Correct=True),
-                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True)]))))]))
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True)]))))],
+                                          Stimuli=[dict(
+                                                        Label='butterflies',
+                                                        Type='video/youtube',
+                                                        IsPausable=False, 
+                                                        IsOptional=True, 
+                                                        IsReplayable=True, 
+                                                        MaxReplayCount=2,
+                                                        URI=butterfly_video_url)]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -159,35 +161,35 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-# 13 answer options
+# 5 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
-                                                            QuestionsPerRow='1',
-                                                            HeaderLabel='IsOptional=False {{n}} (i.e. has to be answered to proceed)',
                                                             IsOptional=False,
+                                                            QuestionsPerRow=1,
+                                                            HeaderLabel='IsOptional=False {{n}} (i.e. does not have to be answered to proceed)',                                                            
                                                             AnswerOnce=False,
                                                             MustAnswerCorrectly=False,
                                                             ShowFeedback=False,
                                                             ShowCorrectness=False,
-                                                            Layout='column',
-                                                            ColumnWidthPercent='30',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True),
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ',Selected='0',Correct=True),
-                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True),
-                                                                          dict(Id='7',Label='answer 7',Selected='0',Correct=True),
-                                                                          dict(Id='8',Label='answer 8',Selected='0',Correct=True),
-                                                                          dict(Id='9',Label='answer 9',Selected='0',Correct=True),
-                                                                          dict(Id='10',Label='answer 10',Selected='0',Correct=True),
-                                                                          dict(Id='11',Label='answer 11',Selected='0',Correct=True),
-                                                                          dict(Id='12',Label='answer 12',Selected='0',Correct=True),
-                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True)]))))]))
+                                                                          dict(Id='5',Label='answer 5',Selected='0',Correct=True)]))))],
+                                          Stimuli=[dict(
+                                                        Label='butterflies',
+                                                        Type='video/youtube',
+                                                        IsPausable=False, 
+                                                        IsOptional=True, 
+                                                        IsReplayable=True, 
+                                                        MaxReplayCount=2,
+                                                        URI=butterfly_video_url)]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -210,7 +212,7 @@ elicit_object.add_component(component=dict(component=monitor),
                              phase_definition_id=phase_object.id,
                              trial_definition_id=trial_object.id)
 
-#%% Trial 2: Radiobutton group (feedback )
+#%% Trial 2: Radiobutton group (feedback)
 
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='feedback test', definition_data=dict(TrialType='RadiobuttonGroup page')))
@@ -242,8 +244,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # 13 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             HeaderLabel='AnswerOnce=True, MustAnswerCorrectly=False',
                                                             QuestionsPerRow='3',
@@ -253,8 +257,6 @@ component_definition = dict(name='RadioButtonGroup',
                                                             MustAnswerCorrectly = False, # user can only progress if they answered correctly
                                                             ShowFeedback = False, # show feedback about the instrument
                                                             ShowCorrectness = False, # show which one was correct or incorrect
-                                                            ColumnWidthPercent='30',
-                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=False,Feedback='No no no!'),
@@ -268,7 +270,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='10',Label='answer 10',Selected='0',Correct=True,Feedback='CORRECT!'),
                                                                           dict(Id='11',Label='answer 11',Selected='0',Correct=True,Feedback='CORRECT!'),
                                                                           dict(Id='12',Label='answer 12',Selected='0',Correct=True,Feedback='CORRECT!'),
-                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='CORRECT!')]))))]))
+                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='CORRECT!')]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -276,13 +279,13 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-
-
 # 13 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='MustAnswerCorrectly=True,ShowCorrectness=True,ShowFeedback=False',
@@ -292,8 +295,6 @@ component_definition = dict(name='RadioButtonGroup',
                                                             MustAnswerCorrectly = True, # user can only progress if they answered correctly
                                                             ShowFeedback = False,   # show feedback about the instrument
                                                             ShowCorrectness = True, # show which one was correct or incorrect
-                                                            ColumnWidthPercent='30',
-                                                            Layout='column',
                                                             Items=dict(
                                                                     Item=[dict(Id='1',Label='answer 1',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='2',Label='answer 2',Selected='0',Correct=True,Feedback='You know it!'),
@@ -307,7 +308,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='10',Label='answer 10',Selected='0',Correct=True,Feedback='You know it!'),
                                                                           dict(Id='11',Label='answer 11',Selected='0',Correct=False,Feedback='No no no!'),
                                                                           dict(Id='12',Label='answer 12',Selected='0',Correct=True,Feedback='You know it!'),
-                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='You know it!')]))))]))
+                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='You know it!')]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -318,8 +320,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # 13 answer options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             HeaderLabel='AnswerOnce=False, MustAnswerCorrectly=False,ShowFeedback=True',
                                                             QuestionsPerRow='3',
@@ -344,7 +348,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='10',Label='answer 10',Selected='0',Correct=True,Feedback='CORRECT!'),
                                                                           dict(Id='11',Label='answer 11',Selected='0',Correct=True,Feedback='CORRECT!'),
                                                                           dict(Id='12',Label='answer 12',Selected='0',Correct=True,Feedback='CORRECT!'),
-                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='CORRECT!')]))))]))
+                                                                          dict(Id='13',Label='answer 13',Selected='0',Correct=True,Feedback='CORRECT!')]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -384,8 +389,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='{{style|font-size: 100px;| {{b|What do you think of this image}}}}{{n}}{{n}}{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}',
@@ -405,8 +412,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='5',Label='{{b|Something}}',Selected='0',Correct=True),
                                                                           dict(Id='6',Label='Multiline{{n}}{{b|Multiline}}{{n}}{{color|red|Multiline}}{{n}}{{color|blue|Multiline}}{{n}}{{color|yellow|Multiline}}',Selected='0',Correct=True), 
                                                                           dict(Id='7',Label='{{link|http://www.google.com|Link}}',Selected='0',Correct=True),
-                                                                          dict(Id='8',Label='{{style|color: green;font-size: 20px;|Unpleasant is the options here}}{{n}}{{i|Negative}}{{n}} Bad',Selected='0',Correct=True),
-                                                                          ]))))]))
+                                                                          dict(Id='8',Label='{{style|color: green;font-size: 20px;|Unpleasant is the options here}}{{n}}{{i|Negative}}{{n}} Bad',Selected='0',Correct=True)]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -444,8 +451,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='Pre selected options, IsOptional=False',
@@ -462,7 +471,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4',Selected='0',Correct=True),
                                                                           dict(Id='5',Label='answer 5',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True)]))))]))
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True)]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -498,8 +508,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 # with images and wierd options
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order)',
@@ -516,7 +528,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='3',Label='answer 3',Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4',Selected='0',Correct=True),
                                                                           dict(Id='5',Label='answer 5',Selected='0',Correct=True),
-                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True)]))))]))
+                                                                          dict(Id='6',Label='answer 6',Selected='0',Correct=True)]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
@@ -528,8 +541,10 @@ component_object = elicit_object.add_component(component=dict(component=componen
 
 component_definition = dict(name='RadioButtonGroup',
                             definition_data=dict(
-                                    Instruments=[dict(
-                                            Instrument=dict(
+                                            Layout=dict(Type='column',
+                                                        ColumnWidthPercent=['30', '70']),
+                                            Instruments=[dict(
+                                                Instrument=dict(
                                                     RadioButtonGroup=dict(
                                                             QuestionsPerRow='3',
                                                             HeaderLabel='This is a test of randomized order (pre-selected)))',
@@ -546,7 +561,8 @@ component_definition = dict(name='RadioButtonGroup',
                                                                           dict(Id='2',Label='answer 2 (pre)',Selected='1',Correct=True),
                                                                           dict(Id='3',Label='answer 3'      ,Selected='0',Correct=True),
                                                                           dict(Id='4',Label='answer 4'      ,Selected='0',Correct=True),
-                                                                          dict(Id='5',Label='answer 5'      ,Selected='0',Correct=True)]))))]))
+                                                                          dict(Id='5',Label='answer 5'      ,Selected='0',Correct=True)]))))],
+                                          Stimuli=[]))
                         
 component_object = elicit_object.add_component(component=dict(component=component_definition),
                                  study_definition_id=study_object.id,
