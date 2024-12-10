@@ -109,15 +109,16 @@ trials.append(trial_object)
 
 # Component definition: Text Block
 component_definition_description = dict(name='TextBlock',
-                                        definition_data=dict(
-                                            Instruments=[dict(
-                                                Instrument=dict(
-                                                    TextBlock=dict(
-                                                        Text=("{{center|Some centered text here}}{{n}}{{n}}{{n}}" + 
-                                                              "{{right|{{b|Some right justified bold text after some next lines}}}}{{n}}{{n}}{{n}}" + 
-                                                              "{{left|{{b|Some left justified bold text after some next lines}}}}{{n}}{{n}}{{n}}"  +                                                            
-                                                              "{{center|{{b|Some centered bold text after some next lines}}}}{{n}}{{n}}{{n}}" 
-                                                              ))))]))
+                                        definition_data=dict(Layout=dict(Type='column',
+                                                                         ColumnWidthPercent=['30', '70']),
+                                                             Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                        TextBlock=dict(
+                                                                            Text=("{{center|Some centered text here}}{{n}}{{n}}{{n}}" + 
+                                                                                  "{{right|{{b|Some right justified bold text after some next lines}}}}{{n}}{{n}}{{n}}" + 
+                                                                                  "{{left|{{b|Some left justified bold text after some next lines}}}}{{n}}{{n}}{{n}}"  +                                                            
+                                                                                  "{{center|{{b|Some centered bold text after some next lines}}}}{{n}}{{n}}{{n}}" 
+                                                                                  ))))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -137,20 +138,21 @@ trials.append(trial_object)
 
 
 component_definition_description = dict(name='TextBlock',
-                                        definition_data=dict(
-                                            Instruments=[dict(
-                                                Instrument=dict(
-                                                    TextBlock=dict(
-                                                        Text=("{{mark|Neutral}}{{n}}" + 
-                                                              "{{style|color: red;font-size: 20px;|Red with fontsize 20}}{{n}}" +
-                                                              "{{style|color: green;font-size: 100px;|Green with fontsize 100}}{{n}}" +
-                                                              "Subscript{{sub|Subscript}}{{n}}" +
-                                                              "Superscript{{super|Superscript}}{{n}}" +
-                                                              "{{b|Bold}}{{n}}" +
-                                                              "{{i|Italic}}{{n}}" +
-                                                              "Different colors: {{color|red|Red}}, {{color|blue|Blue}}, {{color|yellow|Yellow}}{{n}}" +
-                                                              "{{link|http://www.google.com|Link}}{{n}}"
-                                                              ))))]))
+                                        definition_data=dict(Layout=dict(Type='column',
+                                                                         ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                        TextBlock=dict(
+                                                                            Text=("{{mark|Neutral}}{{n}}" + 
+                                                                                  "{{style|color: red;font-size: 20px;|Red with fontsize 20}}{{n}}" +
+                                                                                  "{{style|color: green;font-size: 100px;|Green with fontsize 100}}{{n}}" +
+                                                                                  "Subscript{{sub|Subscript}}{{n}}" +
+                                                                                  "Superscript{{super|Superscript}}{{n}}" +
+                                                                                  "{{b|Bold}}{{n}}" +
+                                                                                  "{{i|Italic}}{{n}}" +
+                                                                                  "Different colors: {{color|red|Red}}, {{color|blue|Blue}}, {{color|yellow|Yellow}}{{n}}" +
+                                                                                  "{{link|http://www.google.com|Link}}{{n}}"
+                                                                                  ))))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -170,17 +172,18 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 trials.append(trial_object)
 
 component_definition_description = dict(name='TextBlock',
-                                        definition_data=dict(
-                                            Instruments=[dict(
-                                                Instrument=dict(
-                                                    TextBlock=dict(
-                                                        Text=("{{style|color: black;font-size: 50px;|Large centered 800x400 google image}}{{n}}{{n}}" +
-                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}{{n}}{{n}}" +
-                                                              "{{style|color: black;font-size: 40px;|Smaller left 400x200 google image}}{{n}}{{n}}" +
-                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|400|200|left}}{{n}}{{n}}" +
-                                                              "{{style|color: black;font-size: 30px;|Smaller left 200x100 google image}}{{n}}{{n}}" +
-                                                              "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|200|100|right}}{{n}}{{n}}"
-                                                              ))))]))
+                                        definition_data=dict(Layout=dict(Type='column',
+                                                                         ColumnWidthPercent=['30', '70']),
+                                                            Instruments=[dict(
+                                                                    Instrument=dict(
+                                                                        TextBlock=dict(
+                                                                            Text=("{{style|color: black;font-size: 50px;|Large centered 800x400 google image}}{{n}}{{n}}" +
+                                                                                  "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|800|400|center}}{{n}}{{n}}" +
+                                                                                  "{{style|color: black;font-size: 40px;|Smaller left 400x200 google image}}{{n}}{{n}}" +
+                                                                                  "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|400|200|left}}{{n}}{{n}}" +
+                                                                                  "{{style|color: black;font-size: 30px;|Smaller left 200x100 google image}}{{n}}{{n}}" +
+                                                                                  "{{image|https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png|200|100|right}}{{n}}{{n}}"
+                                                                                  ))))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -188,10 +191,6 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                                protocol_definition_id=protocol_object.id,
                                                phase_definition_id=phase_object.id,
                                                trial_definition_id=trial_object.id)
-
-
-
-
 
 #%% Trial 3: End of experiment page
 #

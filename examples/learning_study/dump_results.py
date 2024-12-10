@@ -75,7 +75,7 @@ client = el.client
 
 user = el.assert_investigator()
 
-study_results = el.find_study_results(study_definition_id=1177) #args.study_id
+study_results = el.find_study_results(study_definition_id=1233) #args.study_id
 print(study_results)
 all_answers = []
 raw_questions = dict()

@@ -45,16 +45,16 @@ user_investigator = elicit_object.assert_investigator()
 
 # Define study
 study_definition_description = dict(title='Tagging-A test',
-                        description="""This is a test of the Tagging-A component""",
-                        version=1,
-                        lock_question=1,
-                        enable_previous=1,
-                        allow_anonymous_users=True,  # allow taking the study without login
-                        show_in_study_list=False,  # show in the (public) study list for anonymous protocols
-                        footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
-                        redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
-                        data="Put some data here, we don't really care about it.",
-                        principal_investigator_user_id=user_investigator.id)
+                                    description="""This is a test of the Tagging-A component""",
+                                    version=1,
+                                    lock_question=1,
+                                    enable_previous=1,
+                                    allow_anonymous_users=True,  # allow taking the study without login
+                                    show_in_study_list=False,  # show in the (public) study list for anonymous protocols
+                                    footer_label="If you have any questions, you can email {{link|mailto:neuroccny@gmail.com|here}}",
+                                    redirect_close_on_url=elicit_object.elicit_api.api_url + "/participant",
+                                    data="Put some data here, we don't really care about it.",
+                                    principal_investigator_user_id=user_investigator.id)
 
 
 study_object = elicit_object.add_study(study=dict(study_definition=study_definition_description))
@@ -65,10 +65,10 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 
 # Define protocol
 protocol_definition_descriptiopn = dict(name='Tagging-A test',
-                               definition_data="whatever you want here",
-                               summary="This is a test of the Tagging-A component",
-                               description='This is a test of the Tagging-A component',
-                               active=True)
+                                        definition_data="whatever you want here",
+                                        summary="This is a test of the Tagging-A component",
+                                        description='This is a test of the Tagging-A component',
+                                        active=True)
 
 # Add protocol
 protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict(protocol_definition=protocol_definition_descriptiopn),
@@ -155,14 +155,12 @@ component_definition_description = dict(name='TaggingA',
                                                                                     dict(Id='1', Label='User-1'),
                                                                                     dict(Id='2', Label='User-2'),
                                                                                     dict(Id='3', Label='User-3')]))))],
-                                                            Stimuli=[
-                                                                dict(
-                                                                    Height='100%',
-                                                                    Width='100%',
-                                                                    Label='This is a full size',
-                                                                    Type='image',
-                                                                    URI='https://dummyimage.com/750x550/996633/fff',
-                                                                    )]))
+                                                            Stimuli=[dict(Height='100%',
+                                                                          Width='100%',
+                                                                          Label='This is a full size',
+                                                                          Type='image',
+                                                                          URI='https://dummyimage.com/750x550/996633/fff',
+                                                                          )]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
@@ -195,10 +193,10 @@ component_definition_description = dict(name='HeaderLabel',
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
+                                                                 study_definition_id=study_object.id,
+                                                                 protocol_definition_id=protocol_object.id,
+                                                                 phase_definition_id=phase_object.id,
+                                                                 trial_definition_id=trial_object.id)
 
 
 component_definition_description = dict(name='TaggingA',
@@ -285,7 +283,6 @@ component_definition_description = dict(name='TaggingA',
                                                                             UserTags=dict(
                                                                                 Item=[]))))],
                                                             Stimuli=[]))
-
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
