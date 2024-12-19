@@ -95,125 +95,6 @@ phase_object = elicit_object.add_phase_definition(phase_definition=phase_definit
 phases = [phase_object]
 
 trials = []
-
-
-#%% Trial 1: 2 videos on the same page
-
-# Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='Multi-video page', definition_data=dict(TrialType='Video page')))
-trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
-                                               study_definition_id=study_object.id,
-                                               protocol_definition_id=protocol_object.id,
-                                               phase_definition_id=phase_object.id)
-# save trial to later define trial orders
-trials.append(trial_object)
-
-
-
-# Component definition: Header Label
-component_definition_description = dict(name='HeaderLabel',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Header=dict(HeaderLabel='{{center|This is a test of multi videos per page}}')))]))
-
-# Component addition: add the component to the trial
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
-
-# Video 1
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
-video_component_definition = dict(name='This video is pausable',
-                            definition_data=dict(
-                                    Stimuli=[dict(
-                                            Label='This video is pausable (smol)',
-                                            Type='video/youtube',
-                                            Width='50',
-                                            Height='50',
-                                            IsPausable=True,
-                                            URI=butterfly_video_url)]))
-
-component_object = elicit_object.add_component(component=dict(component=video_component_definition),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-#Video 2
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
-video_component_definition = dict(name='This video is NOT pausable',
-                            definition_data=dict(
-                                    Stimuli=[dict(
-                                            Label='This video is NOT pausable',
-                                            Type='video/youtube',
-                                            IsPausable=False,
-                                            URI=butterfly_video_url)]))
-
-component_object = elicit_object.add_component(component=dict(component=video_component_definition),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
-
-monitor = dict(name='Monitor', definition_data=dict(Instruments=[dict(Instrument=dict(Monitor=dict()))]))
-elicit_object.add_component(component=dict(component=monitor),
-                             study_definition_id=study_object.id,
-                             protocol_definition_id=protocol_object.id,
-                             phase_definition_id=phase_object.id,
-                             trial_definition_id=trial_object.id)
-
-#%% Trial 2: Single pausable video
-
-# Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='Pausable video page', definition_data=dict(TrialType='Video page')))
-trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
-                                               study_definition_id=study_object.id,
-                                               protocol_definition_id=protocol_object.id,
-                                               phase_definition_id=phase_object.id)
-
-# save trial to later define trial orders
-trials.append(trial_object)
-
-# Component definition: Header Label
-component_definition_description = dict(name='HeaderLabel',
-                                        definition_data=dict(
-                                                Instruments=[dict(
-                                                        Instrument=dict(
-                                                                Header=dict(HeaderLabel='{{center|Pausable video page}}')))]))
-
-# Component addition: add the component to the trial
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
-# Define video component (pausable)
-butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
-video_component_definition = dict(name='This video is pausable',
-                            definition_data=dict(
-                                    Stimuli=[dict(
-                                            Label='This video is pausable',
-                                            Type='video/youtube',
-                                            IsPausable=True,
-                                            URI=butterfly_video_url)]))
-
-#add video component to trial
-component_object = elicit_object.add_component(component=dict(component=video_component_definition),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
-
-
 def video_test(test_name, video_label, video_params):
     #
     # Trial definition
@@ -259,22 +140,22 @@ def video_test(test_name, video_label, video_params):
 
 
 #
-#%% Trial 3: Single non pausable video
+#%% Trial 1: Single non pausable video
 video_test(test_name='Non-Pausable video page', video_label='This video is NOT pausable', video_params=dict(IsPausable=False))
 
 #
-#%% Trial 4: Single replayable video
+#%% Trial 2: Single replayable video
 video_test(test_name='Replayable video page', video_label='This video is replayable', video_params=dict(IsReplayable=True))
 
 #
-#%% Trial 5: Single optional video
+#%% Trial 3: Single optional video
 video_test(test_name='Optional video page', video_label='This video is optional', video_params=dict(IsOptional=True))
 
-#%% Trial 6: Single optional video
+#%% Trial 4: Single optional video
 video_test(test_name='NOT Optional video page', video_label='This video is optional', video_params=dict(IsOptional=False))
 #
 
-#%% Trial 7: Single replayable (2X) video
+#%% Trial 5: Single replayable (2X) video
 video_test(test_name='Replayable video page', video_label='This video is replayable (2 times)', video_params=dict(IsReplayable=True, MaxReplayCount=2))
 
 #%% Trial 6: Single optional video

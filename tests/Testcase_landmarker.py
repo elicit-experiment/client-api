@@ -36,7 +36,7 @@ user_admin = elicit_object.assert_investigator()
 #
 
 # Define study
-study_definition_description = dict(title='Landmarker test (Blendshapes)',
+study_definition_description = dict(title='Landmarker test (Blendshapes + Landmarks)',
                                     description="""This study tests the Landmarker trial component""",
                                     version=1,
                                     lock_question=1,
@@ -55,7 +55,7 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_description = dict(name='Landmarker test (Blendshapes)',
+protocol_definition_description = dict(name='Landmarker test (Blendshapes + Landmarks)',
                                        definition_data="whatever you want here",
                                        summary="This summary will be shown on the webpage? \n This is a test to show off all the capabilities of Elicit",
                                        description='This tests the Landmarker trial plugin',
@@ -101,9 +101,10 @@ phases = [phase_object]
 trials = []
 
 
-#%%
+#%% Welcone slide
+#
 # Trial definition
-trial_definition_specification = dict(trial_definition=dict(name='welcome', definition_data=dict(TrialType='Video page')))
+trial_definition_specification = dict(trial_definition=dict(name='welcome', definition_data=dict(TrialType='Welcome')))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
@@ -118,7 +119,7 @@ header_component_definition = dict(name='HeaderLabel',
                                             Instruments=[dict(
                                                 Instrument=dict(
                                                     Header=dict(
-                                                        HeaderLabel='{{center|Welcome to this test of Landmarker calibration}}')))]))
+                                                        HeaderLabel='{{center|Welcome to this experiment}}')))]))
 # Component addition: add the component to the trial
 elicit_object.add_component(component=dict(component=header_component_definition),
                                            study_definition_id=study_object.id,
@@ -126,24 +127,7 @@ elicit_object.add_component(component=dict(component=header_component_definition
                                            phase_definition_id=phase_object.id,
                                            trial_definition_id=trial_object.id)
 
-
-
-monitor = dict(name='Monitor', definition_data=dict(
-                                        Instruments=[dict(
-                                               Instrument=dict(
-                                                       Monitor=dict(
-                                                           MouseTracking=True,
-                                                           KeyboardTracking=True,
-                                                           )))]))
-
-elicit_object.add_component(component=dict(component=monitor),
-                             study_definition_id=study_object.id,
-                             protocol_definition_id=protocol_object.id,
-                             phase_definition_id=phase_object.id,
-                             trial_definition_id=trial_object.id)
-
-#%%
-# Trial 1: Landmarker calibration
+#%% Trial 2: Landmarker calibration
 #
 trial_definition_specification = dict(trial_definition=dict(name='Landmarker calibration',
                                                             definition_data=dict(
@@ -151,7 +135,7 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     type='NewComponent::FaceLandmarkCalibration',
                                                                     # number of faces expected in the interface
                                                                     NumberOfFaces=1,
-                                                                    Landmarks=False,  # return Landmark data
+                                                                    Landmarks=True,  # return Landmark data
                                                                     Blendshapes=True,  # return Blendshape data
                                                                     FaceTransformation=True, # indicate if the affine transform should be performed or not                                                                    
                                                                     CalibrationDuration=5, # duration of face within view measured in seconds                                                                    
@@ -168,20 +152,8 @@ trial_object = elicit_object.add_trial_definition(trial_definition=trial_definit
 
 trials.append(trial_object)
 
-monitor = dict(name='Monitor', definition_data=dict(
-                                        Instruments=[dict(
-                                               Instrument=dict(
-                                                       Monitor=dict(
-                                                           MouseTracking=True,
-                                                           KeyboardTracking=True,
-                                                           )))]))
-
-elicit_object.add_component(component=dict(component=monitor),
-                             study_definition_id=study_object.id,
-                             protocol_definition_id=protocol_object.id,
-                             phase_definition_id=phase_object.id,
-                             trial_definition_id=trial_object.id)
-
+#%% Trial 3: Radiobuttons
+#
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='IsOptional test',definition_data=dict(TrialType='RadioButtonGroup page')))
 
@@ -296,7 +268,7 @@ elicit_object.add_component(component=dict(component=monitor),
                              phase_definition_id=phase_object.id,
                              trial_definition_id=trial_object.id)
 
-#%% add a little butterfly video
+#%% Trial 5 - video page
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='butterflies', definition_data=dict(TrialType='Video page')))
