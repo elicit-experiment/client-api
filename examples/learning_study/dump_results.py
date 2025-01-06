@@ -75,7 +75,7 @@ client = el.client
 
 user = el.assert_investigator()
 
-study_results = el.find_study_results(study_definition_id=1233) #args.study_id
+study_results = el.find_study_results(study_definition_id=args.study_id)
 print(study_results)
 all_answers = []
 raw_questions = dict()
@@ -282,23 +282,31 @@ for study_result in study_results:
             print(time_series)
 
             for time_series in time_series:
-
-                # url = elicit.api_url + "/api/v1/study_results/time_series/%d/content"%(time_series["id"])
-                url = el.api_url() + json.loads(time_series.file.replace("'", '"'))['url']
+                url = time_series.file_url
 
                 headers = {
                     'Accept-Encoding': 'gzip, deflate, br',
-                    'Accept': 'text/tab-separated-values',
+                    'Accept': 'text/tab-separated-values' if time_series.file_type == 'tsv' else 'application/json',
+                    'Content-Type': 'text/tab-separated-values' if time_series.file_type == 'tsv' else 'application/json',
                     'Authorization': el.auth_header(),
                 }
                 with requests.get(url, headers=headers, stream=True, verify=args.send_opt['verify']) as r:
                     content_disposition = r.headers.get('Content-Disposition')
-                    query_filename = ("user_%d_" % user_id) + os.path.basename(url)
+                    location = r.headers.get('Location')
+                    print(r.headers)
+                    #print(r.body)
+                    print(r.status_code)
+                    if r.status_code == 500:
+                        exit()
+                    print(location)
+                    base_filename = ("user_%d_%d_" % (user_id, time_series.id))
+                    query_filename = base_filename + time_series.series_type + "." + time_series.file_type
                     if content_disposition:
                         value, params = cgi.parse_header(content_disposition)
-                        query_filename = ("user_%d_" % user_id) + params['filename']
+                        query_filename = base_filename + params['filename']
                     with open(query_filename, 'wb') as fd:
                         for chunk in r.iter_content(chunk_size=128):
+                            #print(chunk)
                             fd.write(chunk)
 
 with open('video.csv', 'w', newline='') as csvfile:
@@ -382,14 +390,17 @@ with open('demographics.csv', 'w', newline='') as csvfile:
         answerwriter.writerow(answer)
 
 
-df = pd.DataFrame.from_records(all_datapoints)
+if len(all_datapoints) > 0:
+    df = pd.DataFrame.from_records(all_datapoints)
 
-print(all_datapoints[0])
-print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
-csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
+    #print(all_datapoints[0])
+    print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
+    csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
 
-with open('datapoints.csv', 'w', newline='') as csvfile:
-    csvfile.write(csv)
+    with open('datapoints.csv', 'w', newline='') as csvfile:
+        csvfile.write(csv)
+else:
+    pp.pprint('No datapoints')
 
 pp.pprint(object_counts)
 #pp.pprint(object_ids)
