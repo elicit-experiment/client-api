@@ -99,11 +99,10 @@ phases = [phase_object]
 
 trials = []
 
-# %% add a list select
-#
-# Trial definition
+# %% Trial 1: ListSelect Inside
+
 trial_definition_specification = dict(
-    trial_definition=dict(name='butterflies', definition_data=dict(TrialType='ListSelect page')))
+    trial_definition=dict(name='ListSelect Inside, No. Selections 0..2', definition_data=dict(TrialType='ListSelect page')))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
@@ -118,7 +117,7 @@ header_component_definition = dict(name='HeaderLabel',
                                        Instruments=[dict(
                                            Instrument=dict(
                                                Header=dict(
-                                                   HeaderLabel='{{center|butterflies}}')))]))
+                                                   HeaderLabel='{{center|ListSelect}}')))]))
 # Component addition: add the component to the trial
 elicit_object.add_component(component=dict(component=header_component_definition),
                             study_definition_id=study_object.id,
@@ -133,7 +132,7 @@ list_select = dict(name='ListSelect',
                                         Instruments=[dict(
                                             Instrument=dict(
                                                 ListSelect=dict(
-                                                    HeaderLabel='This is Listselect with image stimuli',
+                                                    HeaderLabel='This is Listselect with image stimuli (UserInputBox=Inside, NoSelections=0..2)',
                                                     IsOptional='0',
                                                     TextField='Other',
                                                     UserTextInput=True,
@@ -142,12 +141,12 @@ list_select = dict(name='ListSelect',
                                                     MinNoOfSelections='0',
                                                     Items=dict(
                                                         Item=[
-                                                            dict(Id='0', Label='Item-0', Selected='1', Correct=False),
-                                                            dict(Id='1', Label='Item-1', Selected='0', Correct=False),
-                                                            dict(Id='2', Label='Item-2', Selected='1', Correct=False),
-                                                            dict(Id='3', Label='Item-3', Selected='0', Correct=False),
-                                                            dict(Id='4', Label='Item-4', Selected='1', Correct=False),
-                                                            dict(Id='5', Label='Item-5', Selected='1', Correct=False)])
+                                                            dict(Id='0', Label='Item-0'),
+                                                            dict(Id='1', Label='Item-1'),
+                                                            dict(Id='2', Label='Item-2'),
+                                                            dict(Id='3', Label='Item-3'),
+                                                            dict(Id='4', Label='Item-4'),
+                                                            dict(Id='5', Label='Item-5')])
                                                 )))],
                                         Stimuli=[
                                             dict(
@@ -164,7 +163,73 @@ elicit_object.add_component(component=dict(component=list_select),
                             phase_definition_id=phase_object.id,
                             trial_definition_id=trial_object.id)
 
-# %% Trial 2: End of experiment page
+
+# %% Trial 2: ListSelect Outside
+
+trial_definition_specification = dict(
+    trial_definition=dict(name='ListSelect Outside, No. Selections 2..4', definition_data=dict(TrialType='ListSelect page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                   definition_data=dict(
+                                       Instruments=[dict(
+                                           Instrument=dict(
+                                               Header=dict(
+                                                   HeaderLabel='{{center|ListSelect}}')))]))
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+# Define ListSelect component
+
+list_select = dict(name='ListSelect',
+                   definition_data=dict(Layout=dict(Type='column',
+                                                    ColumnWidthPercent=['70', '30']),
+                                        Instruments=[dict(
+                                            Instrument=dict(
+                                                ListSelect=dict(
+                                                    HeaderLabel='This is Listselect with image stimuli (UserInputBox=Outside)',
+                                                    IsOptional='0',
+                                                    TextField='Other',
+                                                    UserTextInput=True,
+                                                    UserInputBox='Outside',
+                                                    MaxNoOfSelections='4',
+                                                    MinNoOfSelections='2',
+                                                    Items=dict(
+                                                        Item=[
+                                                            dict(Id='0', Label='Item-0'),
+                                                            dict(Id='1', Label='Item-1'),
+                                                            dict(Id='2', Label='Item-2'),
+                                                            dict(Id='3', Label='Item-3'),
+                                                            dict(Id='4', Label='Item-4'),
+                                                            dict(Id='5', Label='Item-5')])
+                                                )))],
+                                        Stimuli=[
+                                            dict(
+                                                Height='100%',
+                                                Width='100%',
+                                                Label='This is a full size',
+                                                Type='image',
+                                                URI='https://dummyimage.com/750x550/996633/fff',
+                                            )]))
+
+elicit_object.add_component(component=dict(component=list_select),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+
+
+# %% Trial 3: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(
