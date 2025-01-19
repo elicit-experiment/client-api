@@ -191,8 +191,14 @@ def load_trial_definitions(file_name):
 
 class Elicit:
     def __init__(self, script_args, creds=api.ElicitCreds()):
+        # TODO: should warn if any of these other credential parameters are None
+        if script_args.username is not None:
+            self.creds = api.ElicitCreds(script_args.username, script_args.password, script_args.client_id, script_args.client_secret)
+        else:
+            self.creds = creds
+
         self.script_args = script_args  # parse_command_line_args()
-        self.elicit_api = api.ElicitApi(creds, self.script_args.apiurl, self.script_args.send_opt)
+        self.elicit_api = api.ElicitApi(self.creds, self.script_args.apiurl, self.script_args.send_opt)
         self.client = self.elicit_api.login()
 
     def api_url(self):

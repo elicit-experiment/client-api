@@ -480,6 +480,34 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
+component_definition = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                Instruments=[dict(
+                                    Instrument=dict(
+                                        RadioButtonGroup=dict(
+                                            QuestionsPerRow='3',
+                                            HeaderLabel='Pre selected options, IsOptional=True',
+                                            IsOptional=True,
+                                            RandomizeOrder=False,
+                                            MustAnswerCorrectly=False,
+                                            ShowFeedback=False,
+                                            ShowCorrectness=False,
+                                            ColumnWidthPercent='30',
+                                            Layout='column',
+                                            Items=dict(
+                                                Item=[dict(Id='1', Label='answer 1 (pre)', Selected='1', Correct=True),
+                                                      dict(Id='2', Label='answer 2', Selected='0', Correct=True),
+                                                      dict(Id='3', Label='answer 3', Selected='0', Correct=True),
+                                                      dict(Id='4', Label='answer 4', Selected='0', Correct=True),
+                                                      dict(Id='5', Label='answer 5', Selected='0', Correct=True),
+                                                      dict(Id='6', Label='answer 6', Selected='0', Correct=True)]))))]))
+
+component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id,
+                                               trial_definition_id=trial_object.id)
+
 
 #%% Trial 3
 # Trial definition
