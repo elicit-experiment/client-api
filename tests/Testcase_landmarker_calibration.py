@@ -3,7 +3,6 @@ Testcase for webcam eye tracking
 """
 
 import sys
-
 sys.path.append("../")
 
 import pprint

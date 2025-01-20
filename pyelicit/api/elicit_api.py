@@ -8,6 +8,7 @@ import urllib.request
 import requests
 import os
 from urllib.parse import urlparse
+from pathlib import Path
 
 @contextmanager
 def user_agent_context(user_agent):
@@ -60,15 +61,15 @@ class ElicitApi:
             with open('swagger.json', 'wb') as file:
                 file.write(response.content)
 
-
             # Creating an url string pointing to the local file swagger.json
             swagger_json_local_path = os.path.abspath('swagger.json')
-            swagger_json_url = f"file://{swagger_json_local_path}"
+            swagger_json_local_path = swagger_json_local_path.replace('\\', '/')
+            swagger_json_url = f"file:///{swagger_json_local_path}"
             print(swagger_json_url)
 
-            print("Connecting to Elicit API Swagger definition {}".format(self.swagger_url))
-            self.app = App.create(swagger_json_url)
-            print("Loaded API definition {}".format(self.swagger_url))
+            print(f"Connecting to Elicit API Swagger definition {self.swagger_url}")
+            self.app = App.create(swagger_json_url)  # now valid on all OS
+            print(f"Loaded API definition {self.swagger_url}")
             self.auth = Security(self.app)
             self.creds = creds
 
