@@ -142,6 +142,7 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     StripZCoordinates=True,
                                                                     IncludeBlendshapes='',
                                                                     IncludeLandmarks = '',
+                                                                    MaximumSendRateHz=9,
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
