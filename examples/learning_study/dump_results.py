@@ -26,6 +26,7 @@ import pandas as pd
 ELICIT_API_DATEFMT='%Y-%m-%dT%H:%M:%S.%fZ'
 RESULTS_OUTPUT_DATEFMT='%Y-%m-%d %H:%M:%S.%f%Z'
 video_layout_fields = frozenset(['x','y', 'width', 'height', 'top', 'bottom', 'left'])
+RESULTS_ROOT_PATH = 'results'
 
 def parse_datetime(field, state):
     state[field] = datetime.strptime(state[field], ELICIT_API_DATEFMT)
@@ -44,7 +45,6 @@ def is_video_event(data_point):
     return (data_point['point_type'] != 'State') and \
            (data_point['method'] != None) and \
            ((data_point['method'].find('audio') != -1) or (data_point['method'].find('video') != -1))
-
 
 ##
 ## MAIN
@@ -68,6 +68,13 @@ args = parse_command_line_args()
 
 el = elicit.Elicit(args)
 client = el.client
+
+
+
+def result_path_for(filename):
+    return os.path.join(RESULTS_ROOT_PATH, str(args.study_id), filename)
+
+os.makedirs(os.path.join(RESULTS_ROOT_PATH, str(args.study_id)), exist_ok=True)
 
 #
 # Double-check that we have the right user
@@ -304,19 +311,19 @@ for study_result in study_results:
                     if content_disposition:
                         value, params = cgi.parse_header(content_disposition)
                         query_filename = base_filename + params['filename']
-                    with open(query_filename, 'wb') as fd:
+                    with open(result_path_for(query_filename), 'wb') as fd:
                         for chunk in r.iter_content(chunk_size=128):
                             #print(chunk)
                             fd.write(chunk)
 
-with open('video.csv', 'w', newline='') as csvfile:
+with open(result_path_for('video.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     videowriter.writerow(
         ['user_id', 'datetime', 'event', 'experiment_id', 'phase_definition_id', 'trial_definition_id', 'component_id'])
     for video_event in all_video_events:
         videowriter.writerow(video_event)
 
-with open('video_layouts.csv', 'w', newline='') as csvfile:
+with open(result_path_for('video_layouts.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left', 'datetime', 'user_id', 'experiment_id',
               'phase_definition_id', 'trial_definition_id', 'component_id']
@@ -324,7 +331,7 @@ with open('video_layouts.csv', 'w', newline='') as csvfile:
     for video_layout_event in all_video_layout_events:
         videowriter.writerow(video_layout_event)
 
-with open('trial_events.csv', 'w', newline='') as csvfile:
+with open(result_path_for('trial_events.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['user_id', 'created_at', 'completed_at',
               'experiment_id', 'phase_definition_id', 'trial_definition_id']
@@ -332,7 +339,7 @@ with open('trial_events.csv', 'w', newline='') as csvfile:
     for trial_event in all_trial_results:
         videowriter.writerow(trial_event)
 
-with open('experiment_events.csv', 'w', newline='') as csvfile:
+with open(result_path_for('experiment_events.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['user_id', 'started_at', 'completed_at',
               'experiment_id']
@@ -340,7 +347,7 @@ with open('experiment_events.csv', 'w', newline='') as csvfile:
     for experiment_event in all_experiment_results:
         videowriter.writerow(experiment_event)
 
-with open('answer.csv', 'w', newline='') as csvfile:
+with open(result_path_for('answer.csv'), 'w', newline='') as csvfile:
     answerwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['user_id', 'user_name', 'answer_id', 'datetime', 'component_id', 'question', 'correct']
     for answer_idx in range(0, 4):
@@ -373,7 +380,7 @@ with open('answer.csv', 'w', newline='') as csvfile:
 
         answerwriter.writerow(answer + (question, correct) + tuple(answers))
 
-with open('mturk.csv', 'w', newline='') as csvfile:
+with open(result_path_for('mturk.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['user_id'] + MTURK_FIELDS
     videowriter.writerow(header)
@@ -382,7 +389,7 @@ with open('mturk.csv', 'w', newline='') as csvfile:
         videowriter.writerow(mturk_record)
 
 
-with open('demographics.csv', 'w', newline='') as csvfile:
+with open(result_path_for('demographics.csv'), 'w', newline='') as csvfile:
     answerwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     header = ['user_id', 'user_name', 'answer_id', 'datetime', 'component_id']
     answerwriter.writerow(header)
@@ -397,7 +404,7 @@ if len(all_datapoints) > 0:
     print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
     csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
 
-    with open('datapoints.csv', 'w', newline='') as csvfile:
+    with open(result_path_for('datapoints.csv'), 'w', newline='') as csvfile:
         csvfile.write(csv)
 else:
     pp.pprint('No datapoints')
