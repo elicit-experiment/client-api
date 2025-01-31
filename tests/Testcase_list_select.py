@@ -194,7 +194,7 @@ elicit_object.add_component(component=dict(component=header_component_definition
 
 list_select = dict(name='ListSelect',
                    definition_data=dict(Layout=dict(Type='column',
-                                                    ColumnWidthPercent=['70', '30']),
+                                                    ColumnWidthPercent=['60', '40']),
                                         Instruments=[dict(
                                             Instrument=dict(
                                                 ListSelect=dict(
@@ -230,7 +230,88 @@ elicit_object.add_component(component=dict(component=list_select),
                             trial_definition_id=trial_object.id)
 
 
-# %% Trial 3: End of experiment page
+# %% Trial 3: ListSelect Outside (no stimuli)
+
+trial_definition_specification = dict(
+    trial_definition=dict(name='ListSelect no stimuli', definition_data=dict(TrialType='ListSelect page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                   definition_data=dict(
+                                       Instruments=[dict(
+                                           Instrument=dict(
+                                               Header=dict(
+                                                   HeaderLabel='{{center|ListSelect with no stimuli}}')))]))
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+# Define ListSelect component
+
+list_select = dict(name='ListSelect',
+                   definition_data=dict(Layout=dict(Type='row'),
+                                        Instruments=[dict(
+                                            Instrument=dict(
+                                                ListSelect=dict(
+                                                    HeaderLabel='Enter your 5 favorite things about food',
+                                                    IsOptional='0',
+                                                    TextField='Name of favorite food',
+                                                    UserTextInput=True,
+                                                    UserInputBox='Outside',
+                                                    MaxNoOfSelections='5',
+                                                    MinNoOfSelections='5',
+                                                    Items=dict(Item=[])
+                                                )))],
+                                        Stimuli=[]))
+
+elicit_object.add_component(component=dict(component=list_select),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+
+
+# Define ListSelect component
+
+list_select = dict(name='ListSelect',
+                   definition_data=dict(Layout=dict(Type='row'),
+                                        Instruments=[dict(
+                                            Instrument=dict(
+                                                ListSelect=dict(
+                                                    HeaderLabel='Select your favorite food',
+                                                    IsOptional='0',
+                                                    TextField='Other',
+                                                    UserTextInput=True,
+                                                    UserInputBox='Inside',
+                                                    MaxNoOfSelections='1',
+                                                    MinNoOfSelections='1',
+                                                    Items=dict(
+                                                        Item=[
+                                                            dict(Id='0', Label='Ice cream'),
+                                                            dict(Id='1', Label='Chocolate'),
+                                                            dict(Id='2', Label='Steak'),
+                                                            dict(Id='3', Label='Avocado'),
+                                                            dict(Id='4', Label='Chicken'),
+                                                            dict(Id='5', Label='Artichokes')])
+                                                )))],
+                                        Stimuli=[]))
+
+elicit_object.add_component(component=dict(component=list_select),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+
+# %% Trial 4: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(
