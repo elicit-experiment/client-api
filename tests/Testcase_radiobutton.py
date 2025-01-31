@@ -212,6 +212,32 @@ elicit_object.add_component(component=dict(component=monitor),
                              phase_definition_id=phase_object.id,
                              trial_definition_id=trial_object.id)
 
+#%% Trial 2: Radiobutton group (audio)
+
+component_definition_description = dict(name='RadioButtonGroup',
+                            definition_data=dict(
+                                    Layout=dict(Type='row'),
+                                    Instruments=[dict(
+                                            Instrument=dict(
+                                                    RadioButtonGroup=dict(
+                                                            HeaderLabel='Listen to this cool excerpt',
+                                                            Items=dict(
+                                                                   Item=[dict(Id='1',Label='yes',Selected='0'),
+                                                                         dict(Id='2',Label='no',Selected='0')]))))],
+                                    Stimuli=[dict(
+                                            Label='Audio Excerpt',
+                                            Type='audio/mpeg',
+                                            IsPausable=True,
+                                            URI="www.parralab.org/experiments/education/sound/01.Why_are_Stars_Shaped_like_Stars_excerpt_8_sec.wav")]))
+                        
+    
+    # Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                                   study_definition_id=study_object.id,
+                                                   protocol_definition_id=protocol_object.id,
+                                                   phase_definition_id=phase_object.id,
+                                                   trial_definition_id=trial_object.id)
+
 #%% Trial 2: Radiobutton group (feedback)
 
 # Trial definition

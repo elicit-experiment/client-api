@@ -124,8 +124,6 @@ component_definition_description = dict(name='CheckboxGroup',
                                                             MaxNoOfSelections='1',
                                                             MinNoOfSelections='0',
                                                             RandomizeOrder=False,
-                                                            Layout='column',
-                                                            ColumnWidthPercent='30',
                                                             Items=dict(
                                                                 Item=[
                                                                       dict(Id='0',Label='yes',Selected='0'),
