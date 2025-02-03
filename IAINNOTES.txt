@@ -1,0 +1,3 @@
+```
+PYTHONPATH=`pwd` pipenv run python examples/learning_study/dump_results.py --study_id 2518 --username admin --password Daeph1eiGh7 --client_secret xzZCaGRSa3F0MzpnWDFmQmF0M2JW --client_id admin_public
+```

@@ -29,7 +29,7 @@ pp = pprint.PrettyPrinter(indent=4)
 elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
-user_admin = elicit_object.assert_investigator()
+user_admin = elicit_object.assert_creator()
 
 #
 # Add a new Study Definition

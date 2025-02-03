@@ -4,6 +4,7 @@ Example testing the components with stimuli and instruments
 """
 
 import sys
+import yaml
 
 sys.path.append("../")
 
@@ -131,11 +132,34 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                                                    phase_definition_id=phase_object.id,
                                                    trial_definition_id=trial_object.id)
 
+    header_label = "This is a {0} with {1} stimuli ({2})".format(component_type, stimulus_type, layout)
+
+    instruments = make_instrument(component_type, header_label, instrument_config, layout)
+
+    stimulus = make_stimulus(stimulus_type)
+
+    ## 13 answer options
+    stimuli = dict(Stimuli=[stimulus])
+    definition_data = {**dict(Instruments=instruments),**stimuli}
+    component_definition = dict(name=component_type,
+                                definition_data=definition_data)
+
+    with open('data_{}.yml'.format(len(trials)), 'w') as outfile:
+        yaml.dump(component_definition, outfile, default_flow_style=False)
+
+    component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                                   study_definition_id=study_object.id,
+                                                   protocol_definition_id=protocol_object.id,
+                                                   phase_definition_id=phase_object.id,
+                                                   trial_definition_id=trial_object.id)
+
+
+def make_instrument(component_type, header_label, instrument_config, layout):
     if layout == "column":
         layout_parameters = dict(
             # LAYOUT
             # Layout is 'column' or 'row'
-            # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
+            # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-which p
             Layout='column',
             ColumnWidthPercent='30',
             QuestionsPerRow='1')
@@ -145,10 +169,7 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
             # Layout is 'column' or 'row'
             # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
             Layout='row',
-            QuestionsPerRow= 1 if component_type == 'CheckboxGroup' else '6')
-
-    header_label = "This is a {0} with {1} stimuli ({2})".format(component_type, stimulus_type, layout)
-
+            QuestionsPerRow=1 if component_type == 'CheckboxGroup' else '6')
     if component_type == 'RadiobuttonGroup':
         component_parameters = dict(
             HeaderLabel=header_label,
@@ -194,16 +215,19 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                 CheckBoxGroup=component_parameters))]
     elif component_type == 'Freetext':
         component_parameters = dict(
-                                    HeaderLabel='freetext',
-                                    BoxHeight=None,
-                                    BoxWidth=None,
-                                    Label="Please write what you think about this excerpts",
-                                    LabelPosition='top',
-                                    Resizable=None,
-                                    Validation='.+')
+            HeaderLabel='freetext',
+            BoxHeight=None,
+            BoxWidth=None,
+            Label="Please write what you think about this excerpts",
+            LabelPosition='top',
+            Resizable=None,
+            Validation='.+')
         component_parameters = {**component_parameters, **layout_parameters, **instrument_config}
         instruments = [dict(Instrument=dict(Freetext=component_parameters))]
+    return instruments
 
+
+def make_stimulus(stimulus_type):
     if stimulus_type == 'video':
         stimulus = dict(Label='This video is pausable',
                         Type='video/mp4',
@@ -228,7 +252,7 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
                         IsReplayable=True,
                         MaxReplayCount=2,
                         URI=audio_url)
-        
+
     elif stimulus_type == 'image':
         stimulus = dict(
             Label='This is a full size',
@@ -238,19 +262,9 @@ def make_trial(component_type, stimulus_type, layout, instrument_config = dict()
             URI=test_image_url)
     else:
         stimulus = None
+    return stimulus
 
-    ## 13 answer options
-    stimuli = dict(Stimuli=[stimulus])
-    definition_data = {**dict(Instruments=instruments),**stimuli}
-    component_definition = dict(name=component_type,
-                                definition_data=definition_data)
 
-    component_object = elicit_object.add_component(component=dict(component=component_definition),
-                                                   study_definition_id=study_object.id,
-                                                   protocol_definition_id=protocol_object.id,
-                                                   phase_definition_id=phase_object.id,
-                                                   trial_definition_id=trial_object.id)
-    
 # %% RadiobuttonGroup
 make_trial('RadiobuttonGroup', None, 'row')
 make_trial('RadiobuttonGroup', None, 'column')

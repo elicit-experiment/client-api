@@ -101,7 +101,7 @@ phases = [phase_object]
 trials = []
 
 
-#%% Welcone slide
+#%% Welcome slide
 #
 # Trial definition
 trial_definition_specification = dict(trial_definition=dict(name='welcome', definition_data=dict(TrialType='Welcome')))
@@ -145,11 +145,39 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     MaximumSendRateHz=9,
                                                                     )))
 
+# Monitor to configure and start tracking
+# monitor = dict(name='Monitor', definition_data=dict(
+#     Instruments=[dict(
+#         Instrument=dict(
+#             Monitor=dict(
+#                 MouseTracking=True,
+#                 KeyboardTracking=True,
+#                 FaceLandmarkTracking=True,
+#                 FaceLandmarkConfiguration=dict(
+#                     MaximumSendRateHz=9,
+#                     NumberOfFaces=1,
+#                     Landmarks=True,  # return Landmark data
+#                     Blendshapes=True,  # return Blendshape data
+#                     FaceTransformation=True, # indicate if the affine transform should be performed or not
+#                     CalibrationDuration=5, # duration of face within view measured in seconds
+#                     StripZCoordinates=True,
+#                     IncludeBlendshapes='',
+#                     IncludeLandmarks = '',
+#                 )
+#             )))]))
+
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
                                                   study_definition_id=study_object.id,
                                                   protocol_definition_id=protocol_object.id,
                                                   phase_definition_id=phase_object.id,
                                                   )
+
+# elicit_object.add_component(component=dict(component=monitor),
+#                             study_definition_id=study_object.id,
+#                             protocol_definition_id=protocol_object.id,
+#                             phase_definition_id=phase_object.id,
+#                             trial_definition_id=trial_object.id)
+
 
 trials.append(trial_object)
 

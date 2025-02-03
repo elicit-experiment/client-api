@@ -4,6 +4,7 @@ Example testing the components with stimuli and instruments
 """
 
 import sys
+import yaml
 
 sys.path.append("../")
 
@@ -102,9 +103,14 @@ phases.append(phase_object)
 
 
 def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
+    column_width_percent = 30 if layout == 'column' else 100
+    column_width_percent = instrument_config['column_width_percent'] if 'column_width_percent' in instrument_config else column_width_percent
+
+    layout_text = "column %d/%d".format(100 - column_width_percent, column_width_percent) if layout == 'column' else "row"
+
     # Trial definition col order
     trial_definition_specification = dict(
-        trial_definition=dict(name="{0} with {1} Stimuli ({2} layout)".format(component_type, stimulus_type, layout),
+        trial_definition=dict(name="{0} with {1} Stimuli ({2} layout)".format(component_type, stimulus_type, layout_text),
                               definition_data=dict(
                                   TrialType='RadiobuttonGroup page')))
 
@@ -131,24 +137,35 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
                                                    phase_definition_id=phase_object.id,
                                                    trial_definition_id=trial_object.id)
 
+    component_definition = make_component(component_type, layout, stimulus_type)
+
+    with open('data_{}.yml'.format(len(trials)), 'w') as outfile:
+        yaml.dump(component_definition, outfile, default_flow_style=False)
+
+    component_object = elicit_object.add_component(component=dict(component=component_definition),
+                                                   study_definition_id=study_object.id,
+                                                   protocol_definition_id=protocol_object.id,
+                                                   phase_definition_id=phase_object.id,
+                                                   trial_definition_id=trial_object.id)
+
+
+def make_component(component_type, layout, stimulus_type, column_width_percent=30):
     if layout == "column":
         layout_parameters = dict(
             # LAYOUT
             # Layout is 'column' or 'row'
-            # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
+            # ColumnWidthPercent is the percentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
             Layout='column',
-            ColumnWidthPercent='30',
+            ColumnWidthPercent=column_width_percent,
             QuestionsPerRow='1')
     else:
         layout_parameters = dict(
             # LAYOUT
             # Layout is 'column' or 'row'
-            # ColumnWidthPercent is the precentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
+            # ColumnWidthPercent is the percentage of the width the instrument takes; the stimulus is therefore 100-ColumnWidthPercent
             Layout='row',
             QuestionsPerRow=1 if component_type == 'CheckboxGroup' else '6')
-
     header_label = "This is a {0} with {1} stimuli ({2})".format(component_type, stimulus_type, layout)
-
     if component_type == 'LikertScale':
         component_parameters = dict(
             HeaderLabel=header_label,
@@ -272,17 +289,17 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
             HeaderLabel=header_label,
             IsOptional='0',
             SelectionTagBoxLabel="SelectionTagBoxLabel",
-            UserTagBoxLabel = "UserTagBoxLabel",
-            TextField = "TextField",
-        Position='-0.3',
+            UserTagBoxLabel="UserTagBoxLabel",
+            TextField="TextField",
+            Position='-0.3',
             SelectionTags=dict(
                 Item=[dict(dictId='1', Position='-1.0', Label='good'),
-                            dict(Id='2', Position='0.0', Label='indifferent'),
-                            dict(Id='3', Position='1.0', Label='bad')]),
+                      dict(Id='2', Position='0.0', Label='indifferent'),
+                      dict(Id='3', Position='1.0', Label='bad')]),
             UserTags=dict(
                 Item=[dict(dictId='1', Position='-1.0', Label='top'),
-                            dict(Id='2', Position='0.0', Label='middle'),
-                            dict(Id='3', Position='1.0', Label='bottom')]),
+                      dict(Id='2', Position='0.0', Label='middle'),
+                      dict(Id='3', Position='1.0', Label='bottom')]),
             Items=dict(
                 Item=[dict(Id='1', Label='good'),
                       dict(Id='2', Label='indifferent'),
@@ -298,17 +315,17 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
             HeaderLabel=header_label,
             IsOptional='0',
             SelectionTagBoxLabel="SelectionTagBoxLabel",
-            UserTagBoxLabel = "UserTagBoxLabel",
-            TextField = "TextField",
-        Position='-0.3',
+            UserTagBoxLabel="UserTagBoxLabel",
+            TextField="TextField",
+            Position='-0.3',
             SelectionTags=dict(
                 Item=[dict(dictId='1', Position='-1.0', Label='good'),
-                            dict(Id='2', Position='0.0', Label='indifferent'),
-                            dict(Id='3', Position='1.0', Label='bad')]),
+                      dict(Id='2', Position='0.0', Label='indifferent'),
+                      dict(Id='3', Position='1.0', Label='bad')]),
             UserTags=dict(
                 Item=[dict(dictId='1', Position='-1.0', Label='top'),
-                            dict(Id='2', Position='0.0', Label='middle'),
-                            dict(Id='3', Position='1.0', Label='bottom')]),
+                      dict(Id='2', Position='0.0', Label='middle'),
+                      dict(Id='3', Position='1.0', Label='bottom')]),
             Items=dict(
                 Item=[dict(Id='1', Label='good'),
                       dict(Id='2', Label='indifferent'),
@@ -319,7 +336,6 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
         instruments = [dict(
             Instrument=dict(
                 TaggingB=component_parameters))]
-
     if stimulus_type == 'video':
         stimulus = dict(Label='This video is pausable',
                         Type='video/mp4',
@@ -354,18 +370,12 @@ def make_trial(component_type, stimulus_type, layout, instrument_config=dict()):
             URI=test_image_url)
     else:
         stimulus = None
-
     ## 13 answer options
     stimuli = dict(Stimuli=[stimulus])
     definition_data = {**dict(Instruments=instruments), **stimuli}
     component_definition = dict(name=component_type,
                                 definition_data=definition_data)
-
-    component_object = elicit_object.add_component(component=dict(component=component_definition),
-                                                   study_definition_id=study_object.id,
-                                                   protocol_definition_id=protocol_object.id,
-                                                   phase_definition_id=phase_object.id,
-                                                   trial_definition_id=trial_object.id)
+    return component_definition
 
 
 make_trial('LikertScale', None, 'row')
@@ -401,6 +411,19 @@ make_trial('OneDScaleT', 'video_youtube', 'column')
 make_trial('OneDScaleT', 'audio', 'column')
 make_trial('OneDScaleT', 'image', 'column')
 
+make_trial('TaggingA', None, 'row')
+make_trial('TaggingA', None, 'column')
+make_trial('TaggingA', 'video', 'row')
+make_trial('TaggingA', 'video_youtube', 'row')
+make_trial('TaggingA', 'audio', 'row')
+make_trial('TaggingA', 'image', 'row')
+make_trial('TaggingA', 'video', 'column')
+make_trial('TaggingA', 'video_youtube', 'column')
+make_trial('TaggingA', 'audio', 'column')
+make_trial('TaggingA', 'image', 'column')
+
+
+
 """
 make_trial('TwoDScaleK', None, 'row')
 make_trial('TwoDScaleK', None, 'column')
@@ -412,17 +435,6 @@ make_trial('TwoDScaleK', 'video', 'column')
 make_trial('TwoDScaleK', 'video_youtube', 'column')
 make_trial('TwoDScaleK', 'audio', 'column')
 make_trial('TwoDScaleK', 'image', 'column')
-
-make_trial('TaggingA', None, 'row')
-make_trial('TaggingA', None, 'column')
-make_trial('TaggingA', 'video', 'row')
-make_trial('TaggingA', 'video_youtube', 'row')
-make_trial('TaggingA', 'audio', 'row')
-make_trial('TaggingA', 'image', 'row')
-make_trial('TaggingA', 'video', 'column')
-make_trial('TaggingA', 'video_youtube', 'column')
-make_trial('TaggingA', 'audio', 'column')
-make_trial('TaggingA', 'image', 'column')
 
 
 make_trial('TaggingB', None, 'row')

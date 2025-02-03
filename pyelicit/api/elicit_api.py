@@ -39,7 +39,7 @@ class ElicitApi:
                  send_opt=dict(verify=True)):
 
         print("Initialize Elicit client library for %s\n" % api_url)
-        print("Initialize Elicit client library for {} {}\n".format(creds.admin_user, creds.admin_password))
+        print("Initialize Elicit client library for {} {}\n".format(creds.user, creds.password))
         print("Initialize Elicit client library for {} {}\n".format(creds.public_client_id, creds.public_client_secret))
         print("Request options: {}\n".format(send_opt))
         #print(send_opt)
@@ -102,8 +102,8 @@ class ElicitApi:
         auth_request = dict(client_id=self.creds.public_client_id,
                             client_secret=self.creds.public_client_secret,
                             grant_type='password',
-                            email=self.creds.admin_user,
-                            password=self.creds.admin_password)
+                            email=self.creds.user,
+                            password=self.creds.password)
         print(auth_request)
         resp = self.client.request(self.app.op['getAuthToken'](auth_request=auth_request))
 

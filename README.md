@@ -144,21 +144,34 @@ PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_radiobutton.py  --env local
 
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument2_stimuli.py  --env local
-
 PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument_stimuli.py  --env local_docker
 
 PYTHONPATH=`pwd` python3 tests/Testcase_webgazer.py  --env local
 
+PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_freetext.py  --env local_docker
+
+
 PYTHONPATH=`pwd` python3 tests/Testcase_instrument_stimuli.py  --env local
 PYTHONPATH=`pwd` python3 tests/Testcase_webgazer.py  --env local
 PYTHONPATH=`pwd` python3 tests/Testcase_video.py  --env local
+PYTHONPATH=`pwd` python3 tests/Testcase_likertscale.py  --env local
+
+PYTHONPATH=`pwd` python3 tests/Testcase_onedscale.py  --env local
+
+PYTHONPATH=`pwd` python3 tests/Testcase_list_select.py  --env local
+
+
+PYTHONPATH=`pwd` pipenv run python3 tests/generic.py  --env local --folder tests/columns
+
 
 sudo apt-get install python3-distutils
 PYTHONPATH=`pwd` find tests -iname 'Testcase*' | xargs -I{} python3 {} --env local
 
 PYTHONPATH=`pwd` python3 tests/Testcase_landmarker.py  --env local
+PYTHONPATH=`pwd` python3 tests/Testcase_solo_video.py  --env local
 
-PYTHONPATH=`pwd` pipenv run python learning_study/dump_results.py --study_id 13 --env local
+
+PYTHONPATH=`pwd` pipenv run python examples/learning_study/dump_results.py --study_id 78 --env local
 
 
 ```
