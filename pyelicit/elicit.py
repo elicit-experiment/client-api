@@ -5,6 +5,7 @@ import re
 import json
 import random
 import string
+import yaml
 
 _pp = pp = pprint.PrettyPrinter(indent=4)
 
@@ -46,8 +47,6 @@ def parse_pagination_links(link_header):
     next_page_link = list(filter(lambda link: link['rel'] == 'next', links))
     return last_page_link, next_page_link
 
-
-
 def assert_role(client, elicit, role = 'admin'):
     resp = client.request(elicit['getCurrentUser']())
 
@@ -58,10 +57,12 @@ def assert_role(client, elicit, role = 'admin'):
 
     user = resp.data
 
-    assert (resp.data.role == role)
+    if isinstance(role, list):
+        assert (resp.data.role in role)
+    else:
+        assert (resp.data.role == role)
 
     return user
-
 
 def add_users_to_protocol(client, elicit, new_study, new_protocol_definition, study_participants, group_name_map=None):
     protocol_users = []
@@ -189,15 +190,33 @@ def load_trial_definitions(file_name):
         exec(td, globals(), _locals)
         return _locals['trial_components']
 
+def load_yaml_from_env(env):
+    # Construct the filename dynamically based on env
+    yaml_file = f"{env}.yaml"
+
+    # Load and parse the YAML file
+    try:
+        with open(yaml_file, 'r') as file:
+            data = yaml.safe_load(file)
+        return data
+    except FileNotFoundError:
+        print(f"Error: File '{yaml_file}' not found.")
+        return None
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file '{yaml_file}': {e}")
+        return None
+
+
 class Elicit:
     def __init__(self, script_args, creds=api.ElicitCreds()):
         # TODO: should warn if any of these other credential parameters are None
         if script_args.username is not None:
             self.creds = api.ElicitCreds(script_args.username, script_args.password, script_args.client_id, script_args.client_secret)
         else:
-            self.creds = creds
+            cred_env_config = load_yaml_from_env(script_args.env)
+            self.creds = api.ElicitCreds.from_env(cred_env_config)
 
-        self.script_args = script_args  # parse_command_line_args()
+        self.script_args = script_args
         self.elicit_api = api.ElicitApi(self.creds, self.script_args.apiurl, self.script_args.send_opt)
         self.client = self.elicit_api.login()
 
@@ -295,6 +314,9 @@ class Elicit:
 
     def assert_investigator(self):
         return assert_role(self.client, self.elicit_api, 'investigator')
+
+    def assert_creator(self):
+        return assert_role(self.client, self.elicit_api, ['admin', 'investigator'])
 
     def pp(self):
         if self.script_args.debug:

@@ -38,9 +38,9 @@ class ElicitApi:
                  api_url=PRODUCTION_URL,
                  send_opt=dict(verify=True)):
 
-        print("Initialize Elicit client library for %s\n" % api_url)
-        print("Initialize Elicit client library for {} {}\n".format(creds.admin_user, creds.admin_password))
-        print("Initialize Elicit client library for {} {}\n".format(creds.public_client_id, creds.public_client_secret))
+        print("Initialize Elicit client library for %s" % api_url)
+        print("Initialize Elicit client library for {} {}".format(creds.user, creds.password))
+        print("Initialize Elicit client library for {} {}".format(creds.public_client_id, creds.public_client_secret))
         print("Request options: {}\n".format(send_opt))
         #print(send_opt)
 
@@ -56,16 +56,13 @@ class ElicitApi:
 
         try:
             # Load self.swagger_url json file to local filesystem
-
             response = requests.get(self.swagger_url)
-            with open('swagger.json', 'wb') as file:
+            swagger_json_local_path = os.path.abspath('swagger.json')
+            with open(swagger_json_local_path, 'wb') as file:
                 file.write(response.content)
 
             # Creating an url string pointing to the local file swagger.json
-            swagger_json_local_path = os.path.abspath('swagger.json')
-            swagger_json_local_path = swagger_json_local_path.replace('\\', '/')
-            swagger_json_url = f"file:///{swagger_json_local_path}"
-            print(swagger_json_url)
+            swagger_json_url = f"file://{swagger_json_local_path}"
 
             print(f"Connecting to Elicit API Swagger definition {self.swagger_url}")
             self.app = App.create(swagger_json_url)  # now valid on all OS
@@ -76,7 +73,6 @@ class ElicitApi:
             # init swagger client
             self.client = Client(self.auth,
                                  send_opt=send_opt)  # HACK to work around self-signed SSL certs used in development
-            print(self.app.root)
 
             self.api_host = urlparse(self.api_url).netloc
 
@@ -102,8 +98,8 @@ class ElicitApi:
         auth_request = dict(client_id=self.creds.public_client_id,
                             client_secret=self.creds.public_client_secret,
                             grant_type='password',
-                            email=self.creds.admin_user,
-                            password=self.creds.admin_password)
+                            email=self.creds.user,
+                            password=self.creds.password)
         print(auth_request)
         resp = self.client.request(self.app.op['getAuthToken'](auth_request=auth_request))
 

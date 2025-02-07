@@ -11,3 +11,5 @@ pyelicit/api/elicit_creds.py
 __init__.py
 /pyelicit/api
 /swagger.json
+
+prod.yaml
