@@ -1,10 +1,6 @@
 """
 Example for dumping the results of a study.
 """
-import sys
-sys.path.append('../../')
-sys.path.append('.')
-
 import csv
 import pprint
 import json
@@ -12,12 +8,11 @@ import os
 import cgi
 import collections
 from datetime import datetime
-from functools import partial
 import requests
-from examples_base import *
 import functools
-from pyelicit import elicit
 import pandas as pd
+from pyelicit import elicit
+from pyelicit import command_line
 
 ##
 ## HELPERS
@@ -58,13 +53,13 @@ if os.path.isfile(questions_filename):
 
 pp = pprint.PrettyPrinter(indent=4)
 
-parser.add_argument(
+command_line.parser.add_argument(
     '--study_id', default=1, help="The study ID to dump", type=int)
-parser.add_argument(
+command_line.parser.add_argument(
     '--user_id', default=None, help="The user ID to dump", type=int)
-parser.add_argument(
+command_line.parser.add_argument(
     '--user_name', default=None, help="The user name to dump")
-args = parse_command_line_args()
+args = command_line.parse_command_line_args()
 
 el = elicit.Elicit(args)
 client = el.client

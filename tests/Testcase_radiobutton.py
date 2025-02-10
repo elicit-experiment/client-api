@@ -3,16 +3,13 @@
 Example testing the radiobuttons
 """
 
-import sys
-sys.path.append("../")
-
 import pprint
 import sys
 import csv
 import json
 from random import shuffle
 
-from examples_base import parse_command_line_args
+from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 
 ##

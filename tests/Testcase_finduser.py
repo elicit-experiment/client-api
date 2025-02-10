@@ -2,13 +2,9 @@
 Testcase for queries
 """
 
-import sys
-
-sys.path.append("../")
-
 import pprint
 
-from examples_base import parse_command_line_args
+from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 
 ##

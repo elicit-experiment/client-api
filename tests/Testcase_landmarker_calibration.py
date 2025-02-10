@@ -2,12 +2,9 @@
 Testcase for webcam eye tracking
 """
 
-import sys
-sys.path.append("../")
-
 import pprint
 
-from examples_base import parse_command_line_args
+from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 import requests
 import urllib3
@@ -28,7 +25,7 @@ pp = pprint.PrettyPrinter(indent=4)
 elicit_object = elicit.Elicit(parse_command_line_args())
 
 # Double-check that we have the right user: we need to be admin to create a study
-user_admin = elicit_object.assert_investigator()
+user_admin = elicit_object.assert_creator()
 
 #
 # Add a new Study Definition

@@ -11,7 +11,7 @@ sys.path.append("../")
 
 import pprint
 
-from examples_base import parse_command_line_args, get_parser
+from pyelicit.command_line import parse_command_line_args, get_parser
 from pyelicit import elicit
 from random import shuffle
 

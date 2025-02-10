@@ -3,15 +3,8 @@
 Example testing the Completion code
 """
 
-import sys
-sys.path.append("../")
-
 import pprint
-import sys
-import csv
-import json
-
-from examples_base import parse_command_line_args
+from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
 

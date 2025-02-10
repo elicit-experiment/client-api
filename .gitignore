@@ -13,3 +13,4 @@ __init__.py
 /swagger.json
 
 prod.yaml
+local.yaml
