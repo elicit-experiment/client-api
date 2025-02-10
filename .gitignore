@@ -12,5 +12,7 @@ __init__.py
 /pyelicit/api
 /swagger.json
 
-prod.yaml
-local.yaml
+/prod.yaml
+/local.yaml
+/results/
+/.venv/
