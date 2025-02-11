@@ -5,14 +5,13 @@ import csv
 import pprint
 import json
 import os
-import cgi
 import collections
 from datetime import datetime
-import requests
 import functools
 import pandas as pd
 from pyelicit import elicit
 from pyelicit import command_line
+from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
 
 ##
 ## HELPERS
@@ -289,30 +288,33 @@ for study_result in study_results:
             for time_series in time_series:
                 url = time_series.file_url
 
-                headers = {
-                    'Accept-Encoding': 'gzip, deflate, br',
-                    'Accept': 'text/tab-separated-values' if time_series.file_type == 'tsv' else 'application/json',
-                    'Content-Type': 'text/tab-separated-values' if time_series.file_type == 'tsv' else 'application/json',
-                    'Authorization': el.auth_header(),
-                }
-                with requests.get(url, headers=headers, stream=True, verify=args.send_opt['verify']) as r:
-                    content_disposition = r.headers.get('Content-Disposition')
-                    location = r.headers.get('Location')
-                    print(r.headers)
-                    #print(r.body)
-                    print(r.status_code)
-                    if r.status_code == 500:
-                        exit()
-                    print(location)
-                    base_filename = ("user_%d_%d_" % (user_id, time_series.id))
-                    query_filename = base_filename + time_series.series_type + "." + time_series.file_type
-                    if content_disposition:
-                        value, params = cgi.parse_header(content_disposition)
-                        query_filename = base_filename + params['filename']
-                    with open(result_path_for(query_filename), 'wb') as fd:
-                        for chunk in r.iter_content(chunk_size=128):
-                            #print(chunk)
-                            fd.write(chunk)
+                base_filename = result_path_for("user_%d_%d_" % (user_id, time_series.id))
+                query_filename = base_filename + time_series.series_type + "." + time_series.file_type
+
+                final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename, filename=query_filename, authorization=el.auth_header(), verify=args.send_opt['verify'])
+
+                if time_series.series_type == 'face_landmark':
+                    print(time_series.file_type)
+                    if time_series.file_type == 'msgpack':
+                        ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
+
+                        convert_msgpack_to_ndjson(final_filename, ndjson_filename)
+                    else:
+                        ndjson_filename = final_filename
+
+                    with open(ndjson_filename, 'r') as ndjson_file:
+                        try:
+                            for line in ndjson_file:
+                                try:
+                                    data = json.loads(line.strip())
+
+                                    uncompressed_filename = final_filename.replace('face_landmark.json', 'face_landmark_uncompressed.json')
+                                    with open(uncompressed_filename, 'a') as uncompressed_file:
+                                        uncompressed_file.write(json.dumps(uncompress_datapoint(data)) + '\n')
+                                except json.JSONDecodeError:
+                                    print(f"Error: Line '{line.strip()}' is not valid JSON.")
+                        except Exception as e:
+                            print(f"Error maybe uncompressing file #{ndjson_filename}: {e}")
 
 with open(result_path_for('video.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

@@ -151,8 +151,9 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     FaceTransformation=True, # indicate if the affine transform should be performed or not
                                                                     CalibrationDuration=5, # duration of face within view measured in seconds
                                                                     StripZCoordinates=True, # 
-                                                                    IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
-                                                                    IncludeLandmarks = '1,2,5,100,346',
+                                                                    # IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
+                                                                    # IncludeLandmarks = '1,2,5,100,346',
+                                                                    MaximumSendRateHz=30,
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,

@@ -59,7 +59,7 @@ PYTHONPATH=`pwd` pipenv run python3 tests/Testcase_instrument2_stimuli.py  --env
 ### Facelandmarker
 
 ```bash
-PYTHONPATH=`pwd` python3 tests/Testcase_landmarker.py  --env local
+PYTHONPATH=`pwd` python3 tests/Testcase_landmarker_calibration.py  --env local
 ```
 
 ### Multiple Tests

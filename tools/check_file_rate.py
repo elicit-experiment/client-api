@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-
+import matplotlib.pyplot as plt
 
 def load_ndjson_to_dataframe(file_path):
     try:
@@ -20,7 +20,7 @@ def load_ndjson_to_dataframe(file_path):
 
 
 # Example usage
-file_path = "results/84/user_8_88_time_series_88.face_landmark.json"
+file_path = "../results/1293/user_14_1965_time_series_1965.face_landmark.json"
 df = load_ndjson_to_dataframe(file_path)
 
 def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
@@ -56,8 +56,29 @@ def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
         print(f"An unexpected error occurred: {e}")
         return None, None
 
+
 stats, df = compute_interarrival_statistics(df)
 print(stats)
 if df is not None:
     print(df.head())  # Display the first few rows
 
+
+# Plot the timeStamp column against itself
+def plot_column_against_itself(df, column="timeStamp"):
+    try:
+        if column not in df.columns:
+            raise ValueError(f"Column '{column}' not found in the DataFrame.")
+
+        df['timeStamp'] = (df['timeStamp'] - df['timeStamp'].min())/1000.0
+
+        # Plot the column against itself
+        df.plot(x=column, y=column, kind="scatter", title=f"Plot of '{column}' against itself", s=.1)
+        print(f"Plot for column '{column}' has been displayed.")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred while plotting: {e}")
+
+
+plot_column_against_itself(df)
+plt.show()
