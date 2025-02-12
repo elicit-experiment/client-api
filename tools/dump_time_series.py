@@ -5,6 +5,8 @@ import gzip
 import msgpack
 import json
 
+QUANTIZATION_AMOUNT = 100000.0 # Much match the frontend.
+
 BLENDSHAPE_CATEGORY_NAMES = [
     '_neutral',
     'browDownLeft',
@@ -132,6 +134,10 @@ def uncompress_datapoint(compressed):
             for matrix in compressed["m"]
         ]
 
+    timeStamp = None
+    if "t" in compressed:
+        timeStamp = compressed["t"]
+
     face_landmarks = []
     for compressed_landmark in compressed["l"]:
         has_z = compressed_landmark["z"]
@@ -139,9 +145,9 @@ def uncompress_datapoint(compressed):
         landmarks = []
         for i in range(0, len(compressed_landmark["p"]), point_size):
             landmark = {
-                "x": compressed_landmark["p"][i],
-                "y": compressed_landmark["p"][i + 1],
-                "z": None if not has_z else compressed_landmark["p"][i + 2],
+                "x": compressed_landmark["p"][i]/QUANTIZATION_AMOUNT,
+                "y": compressed_landmark["p"][i + 1]/QUANTIZATION_AMOUNT,
+                "z": None if not has_z else compressed_landmark["p"][i + 2]/QUANTIZATION_AMOUNT,
                 "visibility": 0,
             }
             landmarks.append(landmark)
@@ -151,7 +157,7 @@ def uncompress_datapoint(compressed):
     for classification in compressed["b"]:
         blendshape = {"categories": [
             {
-                "score": classification["s"][i],
+                "score": (classification["s"][i])/QUANTIZATION_AMOUNT,
                 "index": classification["i"][i],
                 "categoryName": BLENDSHAPE_CATEGORY_NAMES[classification["c"][i]],
                 "displayName": "",
@@ -164,6 +170,7 @@ def uncompress_datapoint(compressed):
         "facialTransformationMatrixes": facial_transformation_matrices,
         "faceLandmarks": face_landmarks,
         "faceBlendshapes": face_blendshapes,
+        "timeStamp": timeStamp,
     }
 
 def fetch_time_series(url, file_type, base_filename, filename, authorization, verify=True):
