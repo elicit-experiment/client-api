@@ -18,7 +18,7 @@ from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fe
 ##
 
 arg_defaults = {
-    "env_file": "/prod.yaml",
+    "env_file": "/home/iainbryson/prod.yaml",
     "study_id": 1294,
     "user_id": None, # all users
 }
@@ -63,6 +63,7 @@ if os.path.isfile(questions_filename):
 
 pp = pprint.PrettyPrinter(indent=4)
 
+command_line.init_parser() # Allow the script to be reentrant: start with a fresh parser every time,
 command_line.parser.add_argument(
     '--study_id', default=arg_defaults["study_id"], help="The study ID to dump", type=int)
 command_line.parser.add_argument(
