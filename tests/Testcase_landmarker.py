@@ -1,15 +1,16 @@
 """
 Testcase for webcam eye tracking
 """
-
-import pprint
-
-from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
+from pyelicit import command_line
+import pprint
 import requests
-import urllib3
+import sys
+sys.path.append("../")
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+#import urllib3
+
+#urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 response = requests.get('https://api.elicit-experiment.com', verify=False)
 butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
@@ -28,7 +29,8 @@ FontSize = '20'
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the Elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+args = command_line.parse_command_line_args()
+elicit_object = elicit.Elicit(args)
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_admin = elicit_object.assert_investigator()
