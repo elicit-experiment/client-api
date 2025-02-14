@@ -20,7 +20,7 @@ def load_ndjson_to_dataframe(file_path):
 
 
 # Example usage
-file_path = "../results/1293/user_14_1965_time_series_1965.face_landmark.json"
+file_path = "../results/1295/user_11/1977_time_series_1977.face_landmark_uncompressed.json"
 df = load_ndjson_to_dataframe(file_path)
 
 def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
@@ -34,6 +34,7 @@ def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
         # Compute interarrival times (differences between consecutive timestamps)
         df['interarrival_time'] = df[timestamp_column].diff()
 
+        print(df.head(50))
         # Drop any NA values (first interarrival time will be NaN)
         interarrival_times = df['interarrival_time'].dropna()
 

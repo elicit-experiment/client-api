@@ -14,6 +14,17 @@ from pyelicit import command_line
 from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
 
 ##
+## DEFAULT ARGUMENTS
+##
+
+arg_defaults = {
+    "env_file": "/prod.yaml",
+    "study_id": 1294,
+    "user_id": None, # all users
+}
+
+
+##
 ## HELPERS
 ##
 
@@ -53,12 +64,13 @@ if os.path.isfile(questions_filename):
 pp = pprint.PrettyPrinter(indent=4)
 
 command_line.parser.add_argument(
-    '--study_id', default=1, help="The study ID to dump", type=int)
+    '--study_id', default=arg_defaults["study_id"], help="The study ID to dump", type=int)
 command_line.parser.add_argument(
-    '--user_id', default=None, help="The user ID to dump", type=int)
+    '--user_id', default=arg_defaults["user_id"], help="The user ID to dump", type=int)
 command_line.parser.add_argument(
     '--user_name', default=None, help="The user name to dump")
-args = command_line.parse_command_line_args()
+args = command_line.parse_command_line_args(arg_defaults)
+pp.pprint(args)
 
 el = elicit.Elicit(args)
 client = el.client
