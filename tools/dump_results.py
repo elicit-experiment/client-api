@@ -65,10 +65,13 @@ client = el.client
 
 
 
-def result_path_for(filename):
-    return os.path.join(RESULTS_ROOT_PATH, str(args.study_id), filename)
+def result_path_for(filename, user_id=None):
+    path = os.path.join(RESULTS_ROOT_PATH, str(args.study_id))
+    if user_id:
+        path = os.path.join(path, f'user_{user_id}')
+    os.path.isdir(path) or os.makedirs(path, exist_ok=True)
+    return os.path.join(path, filename)
 
-os.makedirs(os.path.join(RESULTS_ROOT_PATH, str(args.study_id)), exist_ok=True)
 
 #
 # Double-check that we have the right user
@@ -170,38 +173,58 @@ def extract_video_events(data_points):
             print(video_layout)
     return video_layout_events, video_events_rows
 
+def fetch_datapoints(trial_result, protocol_user_id, user_id):
+    response_data_points = []
+    page = 1
+    while True:
+        dps = el.find_data_points(study_result_id=study_result.id,
+                                  trial_definition_id=trial_result.trial_definition_id,
+                                  protocol_user_id=protocol_user_id,
+                                  page_size=50, page=page)
+        response_data_points += dps
+        if len(dps) < 50:
+            break
+        page += 1
+
+
+    print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
+        len(response_data_points), study_result.id, trial_result.id, protocol_user_id))
+
+    make_data_point_row = lambda x: ({
+        "id": x['id'],
+        "phase_definition_id": trial_result.phase_definition_id,
+        "trial_definition_id": trial_result.trial_definition_id,
+        "component_id": x['component_id'],
+        "study_result_id": study_result.id,
+        "experiment_id": experiment.id,
+        "protocol_user_id": protocol_user_id,
+        "user_id": user_id,
+        "datetime": x['datetime'],
+        "point_type": x['point_type'],
+        "kind": x['kind'],
+        "entity_type": x['entity_type'],
+        "value": x['value'],
+    })
+
+    print("got %d datapoints"%(len(response_data_points)))
+
+    return list(map(make_data_point_row, response_data_points))
 
 def process_trial_result(trial_result):
     global all_video_events, all_video_layout_events, all_answers, all_answers, all_demographics, all_datapoints
-    data_points = el.find_data_points(study_result_id=study_result.id,
-                                      trial_definition_id=trial_result.trial_definition_id,
-                                      protocol_user_id=protocol_user_id,
-                                      page_size=50)
-    print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
-        len(data_points), study_result.id, trial_result.id, protocol_user_id))
+    response_data_points = fetch_datapoints(trial_result, trial_result.protocol_user_id, user_id)
 
-    #pp.pprint(list(data_points))
+    all_datapoints += response_data_points
 
-    make_data_point_row = lambda x: (user_id,
-                                      x['datetime'],
-                                      x['point_type'],
-                                      experiment.id,
-                                      trial_result.phase_definition_id,
-                                      trial_result.trial_definition_id,
-                                      x['component_id'])
-
-    print("got %d datapoints"%(len(data_points)))
-    all_datapoints += data_points
-
-    object_counts['data_points'] += len(data_points)
-    object_ids['data_points'] += [r.id for r in data_points]
+    object_counts['data_points'] += len(response_data_points)
+    pp.pprint(response_data_points)
+    object_ids['data_points'] += [r['id'] for r in response_data_points]
 
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
-    #pp.pprint(trial_definition_data)
-    video_layout_events, video_events = extract_video_events(data_points)
+    video_layout_events, video_events = extract_video_events(response_data_points)
     all_video_events += video_events
     all_video_layout_events += video_layout_events
-    states = list(filter(lambda x: x['point_type'] == 'State', data_points))
+    states = list(filter(lambda x: x['point_type'] == 'State', response_data_points))
 
     if 'TrialType' in trial_definition_data:
         trial_type = trial_definition_data['TrialType']
@@ -275,6 +298,12 @@ for study_result in study_results:
         for trial_result in trial_results:
             process_trial_result(trial_result)
 
+        with open(result_path_for('datapoints.json', user_id), 'w') as outfile:
+            user_datapoints = list(filter(lambda row: row['user_id'] == user_id, all_datapoints))
+            list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
+            list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith('{"') else row, user_datapoints))
+            json.dump(user_datapoints, outfile, indent=2)
+
         for stage_id in (stage.id for stage in stages):
             time_series = el.find_time_series(study_result_id=study_result.id, stage_id=stage_id)
 
@@ -288,7 +317,7 @@ for study_result in study_results:
             for time_series in time_series:
                 url = time_series.file_url
 
-                base_filename = result_path_for("user_%d_%d_" % (user_id, time_series.id))
+                base_filename = result_path_for("%d_" % (time_series.id), user_id=user_id)
                 query_filename = base_filename + time_series.series_type + "." + time_series.file_type
 
                 final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename, filename=query_filename, authorization=el.auth_header(), verify=args.send_opt['verify'])
@@ -401,8 +430,8 @@ if len(all_datapoints) > 0:
     df = pd.DataFrame.from_records(all_datapoints)
 
     #print(all_datapoints[0])
-    print(df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']])
-    csv = df[['datetime', 'phase_definition_id', 'trial_definition_id', 'component_id', 'entity_type', 'kind', 'method', 'point_type', 'component_name', 'value']].to_csv(index=False)
+    print(df.head())
+    csv = df.to_csv(index=False)
 
     with open(result_path_for('datapoints.csv'), 'w', newline='') as csvfile:
         csvfile.write(csv)
