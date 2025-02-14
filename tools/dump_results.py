@@ -18,9 +18,10 @@ from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fe
 ##
 
 arg_defaults = {
-    "env_file": "/home/iainbryson/prod.yaml",
+    "env_file": "<UPDATE THIS FOLDER>/prod.yaml",
     "study_id": 1294,
     "user_id": None, # all users
+    "result_root_dir": "/tmp/results"
 }
 
 
@@ -31,7 +32,6 @@ arg_defaults = {
 ELICIT_API_DATEFMT='%Y-%m-%dT%H:%M:%S.%fZ'
 RESULTS_OUTPUT_DATEFMT='%Y-%m-%d %H:%M:%S.%f%Z'
 video_layout_fields = frozenset(['x','y', 'width', 'height', 'top', 'bottom', 'left'])
-RESULTS_ROOT_PATH = 'results'
 
 def parse_datetime(field, state):
     state[field] = datetime.strptime(state[field], ELICIT_API_DATEFMT)
@@ -70,6 +70,8 @@ command_line.parser.add_argument(
     '--user_id', default=arg_defaults["user_id"], help="The user ID to dump", type=int)
 command_line.parser.add_argument(
     '--user_name', default=None, help="The user name to dump")
+command_line.parser.add_argument(
+    '--result_root_dir', default="results", help="The root folder to dump to")
 args = command_line.parse_command_line_args(arg_defaults)
 pp.pprint(args)
 
@@ -79,7 +81,7 @@ client = el.client
 
 
 def result_path_for(filename, user_id=None):
-    path = os.path.join(RESULTS_ROOT_PATH, str(args.study_id))
+    path = os.path.join(args.result_root_dir, str(args.study_id))
     if user_id:
         path = os.path.join(path, f'user_{user_id}')
     os.path.isdir(path) or os.makedirs(path, exist_ok=True)
