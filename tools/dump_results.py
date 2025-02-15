@@ -102,9 +102,9 @@ all_video_events = []
 all_video_layout_events = []
 all_trial_results = []
 all_experiment_results = []
-all_mturk_infos = []
+all_url_parameters_infos = []
 all_demographics = []
-MTURK_FIELDS = ['assignmentId', 'hitId', 'workerId']
+CUSTOM_PARAMETERS_NON_URL_FIELDS = []
 all_datapoints = []
 object_counts=dict(trial_results=0, data_points=0, experiments=0, study_results=0)
 object_ids=dict(trial_results=[],data_points=[])
@@ -201,9 +201,9 @@ def fetch_datapoints(trial_result, protocol_user_id, user_id):
             break
         page += 1
 
-
-    print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
-        len(response_data_points), study_result.id, trial_result.id, protocol_user_id))
+    if args.debug:
+        print("Got %d datapoints for study result %d, trial result %d protocol user %d" % (
+            len(response_data_points), study_result.id, trial_result.id, protocol_user_id))
 
     make_data_point_row = lambda x: ({
         "id": x['id'],
@@ -221,8 +221,6 @@ def fetch_datapoints(trial_result, protocol_user_id, user_id):
         "value": x['value'],
     })
 
-    print("got %d datapoints"%(len(response_data_points)))
-
     return list(map(make_data_point_row, response_data_points))
 
 def process_trial_result(trial_result):
@@ -232,7 +230,6 @@ def process_trial_result(trial_result):
     all_datapoints += response_data_points
 
     object_counts['data_points'] += len(response_data_points)
-    pp.pprint(response_data_points)
     object_ids['data_points'] += [r['id'] for r in response_data_points]
 
     trial_definition_data = json.loads(trial_result['trial_definition']['definition_data'])
@@ -243,7 +240,6 @@ def process_trial_result(trial_result):
 
     if 'TrialType' in trial_definition_data:
         trial_type = trial_definition_data['TrialType']
-        print(trial_type)
 
         if trial_type == 'Questions':
             print('EXTRACTING QUESTIONS')
@@ -255,7 +251,10 @@ def process_trial_result(trial_result):
 
 print("\n\nSTUDY_RESULTS\n\n")
 
-pp.pprint([with_dates(study_result) for study_result in study_results])
+if args.debug:
+    pp.pprint([with_dates(study_result) for study_result in study_results])
+else:
+    print(f"\tGot {len(study_results)} study results: #{[study_result.id for study_result in study_results]}")
 
 object_counts['study_results'] = len(study_results)
 
@@ -269,7 +268,10 @@ for study_result in study_results:
 
     print("\n\nEXPERIMENTS\n\n")
 
-    pp.pprint([with_dates(experiment) for experiment in experiments])
+    if args.debug:
+        pp.pprint([with_dates(experiment) for experiment in experiments])
+    else:
+        print(f"\tGot {len(experiments)} experiments for study result {study_result.id}")
 
     object_counts['experiments'] += len(experiments)
 
@@ -281,24 +283,23 @@ for study_result in study_results:
             print("Skipping user %d (not %d)" % (user_id, args.user_id))
             continue
 
-        custom_parameters = experiment['custom_parameters']
-        if custom_parameters and custom_parameters.strip():
-            mturk_info = json.loads(custom_parameters)
-            missing = [i for i in MTURK_FIELDS if not i in mturk_info.keys()]
-            if len(missing) == 0:
-                row = [user_id] + [mturk_info[field] for field in MTURK_FIELDS]
-                all_mturk_infos += [row]
+        custom_parameters_string = experiment['custom_parameters']
+        if custom_parameters_string and custom_parameters_string.strip():
+            custom_parameters = json.loads(custom_parameters_string)
+
+            url_parameters = {key: value for key, value in custom_parameters.items() if key not in CUSTOM_PARAMETERS_NON_URL_FIELDS}
+            url_parameters.update({user_id: user_id})
+            all_url_parameters_infos += [url_parameters]
 
         protocol_user_id = experiment['protocol_user_id']
         stages = el.find_stages(study_result_id=study_result.id, experiment_id=experiment.id)
         print("\n\nSTAGES\n\n")
-        print(stages)
+        if args.debug:
+            print(stages)
 
         trial_results = el.find_trial_results(study_result_id=study_result.id, experiment_id=experiment.id)
 
         video_layout = None
-
-        # pp.pprint(trial_results)
 
         all_trial_results += [[user_id,
                                x.started_at,
@@ -310,9 +311,11 @@ for study_result in study_results:
         object_counts['trial_results'] += len(trial_results)
         object_ids['trial_results'] += [r.id for r in trial_results]
 
+        print('PROCESSING TRIAL RESULTS:')
         for trial_result in trial_results:
             process_trial_result(trial_result)
 
+        print("\n\nDATA POINTS\n\n")
         with open(result_path_for('datapoints.json', user_id), 'w') as outfile:
             user_datapoints = list(filter(lambda row: row['user_id'] == user_id, all_datapoints))
             list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
@@ -326,9 +329,9 @@ for study_result in study_results:
                 print("No time series for stage %d (user %d)\n" % (stage_id, user_id))
                 continue
 
-            print("Got %d time series for  stage %d (user %d)" % (len(time_series), stage_id, user_id))
-            print(time_series)
+            print("Got %d time series for stage %d (user %d)" % (len(time_series), stage_id, user_id))
 
+            continue
             for time_series in time_series:
                 url = time_series.file_url
 
@@ -338,7 +341,7 @@ for study_result in study_results:
                 final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename, filename=query_filename, authorization=el.auth_header(), verify=args.send_opt['verify'])
 
                 if time_series.series_type == 'face_landmark':
-                    print(time_series.file_type)
+                    print(f"Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type}")
                     if time_series.file_type == 'msgpack':
                         ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
 
@@ -359,6 +362,25 @@ for study_result in study_results:
                                     print(f"Error: Line '{line.strip()}' is not valid JSON.")
                         except Exception as e:
                             print(f"Error maybe uncompressing file #{ndjson_filename}: {e}")
+
+def face_landmark_summary(data_points):
+    summary_data_points = []
+
+    for summary in data_points:
+        if summary['point_type'] == 'send_points_summary' and summary['kind'] == 'face_landmark':
+            summary_data_points.append({
+                'datetime': summary['datetime'],
+                'queued': summary['value']['queued'],
+                'posted': summary['value']['posted'],
+                'acknowledged': summary['value']['acknowledged'],
+                'posted_bytes': summary['value']['posted_bytes'],
+                'posted_compressed_bytes': summary['value']['posted_compressed_bytes'],
+                'acknowledged_bytes': summary['value']['acknowledged_bytes'],
+                'acknowledged_compressed_bytes': summary['value']['acknowledged_compressed_bytes'],
+            })
+
+    return pd.DataFrame(summary_data_points)
+
 
 with open(result_path_for('video.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -424,13 +446,13 @@ with open(result_path_for('answer.csv'), 'w', newline='') as csvfile:
 
         answerwriter.writerow(answer + (question, correct) + tuple(answers))
 
-with open(result_path_for('mturk.csv'), 'w', newline='') as csvfile:
-    videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    header = ['user_id'] + MTURK_FIELDS
-    videowriter.writerow(header)
-    for mturk_record in all_mturk_infos:
-        pp.pprint(mturk_record)
-        videowriter.writerow(mturk_record)
+with open(result_path_for('url_parameters.csv'), 'w', newline='') as csvfile:
+    url_parameter_writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    header = ['user_id'] + CUSTOM_PARAMETERS_NON_URL_FIELDS
+    url_parameter_writer.writerow(header)
+    for url_parameters_record in all_url_parameters_infos:
+        pp.pprint(url_parameters_record)
+        url_parameter_writer.writerow(url_parameters_record)
 
 
 with open(result_path_for('demographics.csv'), 'w', newline='') as csvfile:
@@ -444,17 +466,21 @@ with open(result_path_for('demographics.csv'), 'w', newline='') as csvfile:
 if len(all_datapoints) > 0:
     df = pd.DataFrame.from_records(all_datapoints)
 
-    #print(all_datapoints[0])
-    print(df.head())
     csv = df.to_csv(index=False)
 
     with open(result_path_for('datapoints.csv'), 'w', newline='') as csvfile:
         csvfile.write(csv)
+
+    face_landmark_summary_df = face_landmark_summary(all_datapoints)
+    if not face_landmark_summary_df.empty:
+        print("\n\nFACE LANDMARK SUMMARY\n\n")
+        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum())
+        print("\n")
+
 else:
     pp.pprint('No datapoints')
 
 pp.pprint(object_counts)
-#pp.pprint(object_ids)
 for object_type in object_ids.keys():
     pp.pprint('Duplicates for %s'%object_type)
     dupes = [item for item, count in collections.Counter(object_ids[object_type]).items() if count > 1]
