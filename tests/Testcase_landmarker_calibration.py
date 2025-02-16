@@ -72,7 +72,7 @@ protocol_object = elicit_object.add_protocol_definition(
 NUM_AUTO_CREATED_USERS = 10
 NUM_ANONYMOUS_USERS = 5
 NUM_REGISTERED_USERS = 5
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS, False)
 
 pp.pprint(study_participants)
 

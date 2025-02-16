@@ -109,6 +109,53 @@ all_datapoints = []
 object_counts=dict(trial_results=0, data_points=0, experiments=0, study_results=0)
 object_ids=dict(trial_results=[],data_points=[])
 
+
+def face_landmark_summary(data_points):
+    summary_data_points = []
+
+    for summary in data_points:
+        if summary['point_type'] == 'send_points_summary' and summary['kind'] == 'face_landmark':
+            summary_data_points.append({
+                'datetime': summary['datetime'],
+                'queued': summary['value']['queued'],
+                'posted': summary['value']['posted'],
+                'acknowledged': summary['value']['acknowledged'],
+                'posted_bytes': summary['value']['posted_bytes'],
+                'posted_compressed_bytes': summary['value']['posted_compressed_bytes'],
+                'acknowledged_bytes': summary['value']['acknowledged_bytes'],
+                'acknowledged_compressed_bytes': summary['value']['acknowledged_compressed_bytes'],
+            })
+
+    return pd.DataFrame(summary_data_points)
+
+def analyze_landmarker_summary(datapoints):
+    """
+    Analyzes and filters data points for specific 'point_type' values:
+    'face_landmark_lifecycle_start' and 'face_landmark_lifecycle_end'.
+    """
+
+    start = list(
+        filter(lambda dp: dp['point_type'] in ['face_landmark_lifecycle_start'],
+               datapoints))
+    end = list(
+        filter(lambda dp: dp['point_type'] in ['face_landmark_lifecycle_stop'],
+               datapoints))
+
+    time_range = end[0]['datetime'] - start[0]['datetime']
+
+    print(f"\n\nFACE LANDMARK SUMMARY for user {user_id}\n\n")
+
+    landmarker_configuration = start[0]['value']
+    print(f"Landmarker configuration: {landmarker_configuration}\n")
+
+    face_landmark_summary_df = face_landmark_summary(datapoints)
+    if not face_landmark_summary_df.empty:
+        print('Aggregate values for entire experiment')
+        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum())
+        print('\nRates/s')
+        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum() / time_range)
+        print("\n")
+
 def fetch_answer(state):
     out = state.copy()
     value = out['value'] = json.loads(state['value'])
@@ -296,6 +343,8 @@ for study_result in study_results:
         print("\n\nSTAGES\n\n")
         if args.debug:
             print(stages)
+        else:
+            print(f"\tGot {len(stages)} stages for experiment {experiment.id}: #{[stage.id for stage in stages]}")
 
         trial_results = el.find_trial_results(study_result_id=study_result.id, experiment_id=experiment.id)
 
@@ -322,6 +371,10 @@ for study_result in study_results:
             list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith('{"') else row, user_datapoints))
             json.dump(user_datapoints, outfile, indent=2)
 
+            print(f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_for('datapoints.json', user_id)}")
+
+            analyze_landmarker_summary(user_datapoints)
+
         for stage_id in (stage.id for stage in stages):
             time_series = el.find_time_series(study_result_id=study_result.id, stage_id=stage_id)
 
@@ -329,9 +382,8 @@ for study_result in study_results:
                 print("No time series for stage %d (user %d)\n" % (stage_id, user_id))
                 continue
 
-            print("Got %d time series for stage %d (user %d)" % (len(time_series), stage_id, user_id))
+            print(f"Got {len(time_series)} time series for stage {stage_id} (user {user_id}). {['%s (%s)' % (ts.id, ts.series_type) for ts in time_series]}\n")
 
-            continue
             for time_series in time_series:
                 url = time_series.file_url
 
@@ -352,35 +404,19 @@ for study_result in study_results:
                     with open(ndjson_filename, 'r') as ndjson_file:
                         try:
                             for line in ndjson_file:
+                                stripped_line = line.strip()
+                                if stripped_line == '':
+                                    continue
                                 try:
-                                    data = json.loads(line.strip())
+                                    data = json.loads(stripped_line)
 
                                     uncompressed_filename = final_filename.replace('face_landmark.json', 'face_landmark_uncompressed.json')
                                     with open(uncompressed_filename, 'a') as uncompressed_file:
                                         uncompressed_file.write(json.dumps(uncompress_datapoint(data)) + '\n')
                                 except json.JSONDecodeError:
-                                    print(f"Error: Line '{line.strip()}' is not valid JSON.")
+                                    print(f"Error: Line '{stripped_line}' is not valid JSON.")
                         except Exception as e:
                             print(f"Error maybe uncompressing file #{ndjson_filename}: {e}")
-
-def face_landmark_summary(data_points):
-    summary_data_points = []
-
-    for summary in data_points:
-        if summary['point_type'] == 'send_points_summary' and summary['kind'] == 'face_landmark':
-            summary_data_points.append({
-                'datetime': summary['datetime'],
-                'queued': summary['value']['queued'],
-                'posted': summary['value']['posted'],
-                'acknowledged': summary['value']['acknowledged'],
-                'posted_bytes': summary['value']['posted_bytes'],
-                'posted_compressed_bytes': summary['value']['posted_compressed_bytes'],
-                'acknowledged_bytes': summary['value']['acknowledged_bytes'],
-                'acknowledged_compressed_bytes': summary['value']['acknowledged_compressed_bytes'],
-            })
-
-    return pd.DataFrame(summary_data_points)
-
 
 with open(result_path_for('video.csv'), 'w', newline='') as csvfile:
     videowriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -470,12 +506,6 @@ if len(all_datapoints) > 0:
 
     with open(result_path_for('datapoints.csv'), 'w', newline='') as csvfile:
         csvfile.write(csv)
-
-    face_landmark_summary_df = face_landmark_summary(all_datapoints)
-    if not face_landmark_summary_df.empty:
-        print("\n\nFACE LANDMARK SUMMARY\n\n")
-        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum())
-        print("\n")
 
 else:
     pp.pprint('No datapoints')
