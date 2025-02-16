@@ -1,6 +1,10 @@
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import show
+
+# Set path from which to load the face landmarker json.
+file_path = "../results/1298/user_10/1981_time_series_1981.face_landmark_uncompressed.json"
 
 def load_ndjson_to_dataframe(file_path):
     try:
@@ -10,7 +14,8 @@ def load_ndjson_to_dataframe(file_path):
 
         # Convert list of JSON objects into a pandas DataFrame
         df = pd.DataFrame(data)
-        return df
+
+        return df.sort_values(by="timeStamp").reset_index(drop=True)
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
         return None
@@ -19,8 +24,6 @@ def load_ndjson_to_dataframe(file_path):
         return None
 
 
-# Example usage
-file_path = "../results/1295/user_11/1977_time_series_1977.face_landmark_uncompressed.json"
 df = load_ndjson_to_dataframe(file_path)
 
 def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
@@ -57,13 +60,6 @@ def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
         print(f"An unexpected error occurred: {e}")
         return None, None
 
-
-stats, df = compute_interarrival_statistics(df)
-print(stats)
-if df is not None:
-    print(df.head())  # Display the first few rows
-
-
 # Plot the timeStamp column against itself
 def plot_column_against_itself(df, column="timeStamp"):
     try:
@@ -81,5 +77,39 @@ def plot_column_against_itself(df, column="timeStamp"):
         print(f"An unexpected error occurred while plotting: {e}")
 
 
-plot_column_against_itself(df)
+def plot_histogram(df, column):
+    """
+    Function to plot a histogram for a specified column in a DataFrame.
+    """
+    try:
+        if column not in df.columns:
+            raise ValueError(f"Column '{column}' not found in the DataFrame.")
+
+        # Drop any missing or NaN values
+        non_na_values = df[column].dropna()
+
+        # Plot the histogram
+        plt.hist(non_na_values, bins=range(0, int(non_na_values.max()) + 2), alpha=0.7, color='blue')
+        plt.title(f"Histogram of '{column}'")
+        plt.xlabel(column)
+        plt.ylabel("Frequency")
+        plt.ylim(left=0)
+        plt.grid(True)
+        print(f"Histogram for column '{column}' has been displayed.")
+        show()
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred while plotting the histogram: {e}")
+
+
+stats, df = compute_interarrival_statistics(df)
+print(stats)
+if df is not None:
+    print(df.head(100))  # Display the first few rows
+    plot_histogram(df, "interarrival_time")
+
+    df.plot(x="timeStamp", y="interarrival_time", kind="scatter",
+            title="Plot of 'timeStamp' against 'interarrival_time'", s=.1)
+    plt.ylim(bottom=0)
 plt.show()
