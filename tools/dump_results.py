@@ -141,6 +141,9 @@ def analyze_landmarker_summary(datapoints):
         filter(lambda dp: dp['point_type'] in ['face_landmark_lifecycle_stop'],
                datapoints))
 
+    if len(start) != 1 or len(end) != 1:
+        return
+
     time_range = end[0]['datetime'] - start[0]['datetime']
 
     print(f"\n\nFACE LANDMARK SUMMARY for user {user_id}\n\n")
