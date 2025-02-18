@@ -21,8 +21,12 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 
 pp = pprint.PrettyPrinter(indent=4)
 
+arg_defaults = {
+    "env_file": "<UPDATE THIS FOLDER>/prod.yaml",
+}
+
 # get the Elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_admin = elicit_object.assert_creator()
@@ -153,7 +157,7 @@ trial_definition_specification = dict(trial_definition=dict(name='Landmarker cal
                                                                     StripZCoordinates=True, # 
                                                                     # IncludeBlendshapes='eyeLookInRight,eyeLookInLeft',
                                                                     # IncludeLandmarks = '1,2,5,100,346',
-                                                                    MaximumSendRateHz=30,
+                                                                    MaximumSendRateHz=35,
                                                                     )))
 
 trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,

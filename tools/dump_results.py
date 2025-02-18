@@ -63,7 +63,7 @@ if os.path.isfile(questions_filename):
 
 pp = pprint.PrettyPrinter(indent=4)
 
-command_line.init_parser() # Allow the script to be reentrant: start with a fresh parser every time,
+command_line.init_parser({"env": (arg_defaults.get("env") or "prod")}) # Allow the script to be reentrant: start with a fresh parser every time,
 command_line.parser.add_argument(
     '--study_id', default=arg_defaults["study_id"], help="The study ID to dump", type=int)
 command_line.parser.add_argument(

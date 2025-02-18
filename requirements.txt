@@ -26,7 +26,7 @@ platformdirs==4.3.6
 plotext==5.3.2
 poetry-core==2.0.1
 pyaml==25.1.0
-pyelicit @ git+https://github.com/elicit-experiment/pyelicit@402ffec9b3b8be2020c038dbb7af838b0f6f049b
+pyelicit @ git+https://github.com/elicit-experiment/pyelicit@a3a5651b10e6ccb6c48389a38740958dd1de62ba
 pyparsing==3.2.1
 pyswagger==0.8.39
 python-dateutil==2.9.0.post0
