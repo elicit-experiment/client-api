@@ -12,6 +12,7 @@ import pandas as pd
 from pyelicit import elicit
 from pyelicit import command_line
 from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
+import shutil
 
 ##
 ## DEFAULT ARGUMENTS
@@ -368,7 +369,8 @@ for study_result in study_results:
             process_trial_result(trial_result)
 
         print("\n\nDATA POINTS\n\n")
-        with open(result_path_for('datapoints.json', user_id), 'w') as outfile:
+
+        with open(result_path_for(f"{args.study_id}_{user_id}_datapoints.json", user_id), 'w') as outfile:
             user_datapoints = list(filter(lambda row: row['user_id'] == user_id, all_datapoints))
             list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
             list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith('{"') else row, user_datapoints))
@@ -390,10 +392,14 @@ for study_result in study_results:
             for time_series in time_series:
                 url = time_series.file_url
 
-                base_filename = result_path_for("%d_" % (time_series.id), user_id=user_id)
+                base_filename = result_path_for(f"{args.study_id}_{user_id}_", user_id=user_id)
                 query_filename = base_filename + time_series.series_type + "." + time_series.file_type
 
                 final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename, filename=query_filename, authorization=el.auth_header(), verify=args.send_opt['verify'])
+
+                # Move the file to the preferred naming convention.
+                shutil.move(final_filename, query_filename)
+                final_filename = query_filename
 
                 if time_series.series_type == 'face_landmark':
                     print(f"Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type}")
