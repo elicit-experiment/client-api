@@ -49,7 +49,7 @@ def with_dates(o):
 
 def is_video_event(data_point):
     return (data_point['point_type'] != 'State') and \
-           (data_point['method'] != None) and \
+           (data_point.get('method') is not None) and \
            ((data_point['method'].find('audio') != -1) or (data_point['method'].find('video') != -1))
 
 ##
@@ -203,7 +203,7 @@ def extract_demographics(states):
 def extract_video_events(data_points):
     video_events_rows = []
     video_layout_events = []
-    video_events = filter(lambda x: is_video_event, data_points)
+    video_events = filter(lambda x: is_video_event(x), data_points)
     video_events = list(video_events)
     make_video_event_row = lambda x: (user_id,
                                       x['datetime'],
@@ -213,6 +213,7 @@ def extract_video_events(data_points):
                                       trial_result.trial_definition_id,
                                       x['component_id'])
     video_events_rows += map(make_video_event_row, video_events)
+
     layouts = list(filter(lambda x: x['point_type'] == 'Layout', data_points))
     if len(layouts) > 0:
         layout = layouts[0]
