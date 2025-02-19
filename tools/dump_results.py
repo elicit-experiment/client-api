@@ -71,7 +71,7 @@ command_line.parser.add_argument(
 command_line.parser.add_argument(
     '--user_name', default=None, help="The user name to dump")
 command_line.parser.add_argument(
-    '--result_root_dir', default="results", help="The root folder to dump to")
+    '--result_root_dir', default=arg_defaults.get("result_root_dir") or "results", help="The root folder to dump to")
 args = command_line.parse_command_line_args(arg_defaults)
 pp.pprint(args)
 
