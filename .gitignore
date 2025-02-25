@@ -16,3 +16,4 @@ __init__.py
 /local.yaml
 /results/
 /.venv/
+tests/swagger.json

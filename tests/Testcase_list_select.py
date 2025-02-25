@@ -14,6 +14,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 response = requests.get('https://api.elicit-experiment.com', verify=False)
 butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 
+def embed_elicit_fontsize(str_input, FontSize):
+    return "{{style|font-size: " + FontSize + "px;|" + str_input + "}}"
 
 ##
 ## MAIN
@@ -22,7 +24,13 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 pp = pprint.PrettyPrinter(indent=4)
 
 # get the Elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
+
+# get the Elicit object to define the experiment
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_admin = elicit_object.assert_creator()
@@ -72,7 +80,7 @@ protocol_object = elicit_object.add_protocol_definition(
 NUM_AUTO_CREATED_USERS = 10
 NUM_ANONYMOUS_USERS = 5
 NUM_REGISTERED_USERS = 5
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS,False)
 
 pp.pprint(study_participants)
 
@@ -160,7 +168,6 @@ elicit_object.add_component(component=dict(component=list_select),
                             phase_definition_id=phase_object.id,
                             trial_definition_id=trial_object.id)
 
-
 # %% Trial 2: ListSelect Outside
 
 trial_definition_specification = dict(
@@ -226,7 +233,79 @@ elicit_object.add_component(component=dict(component=list_select),
                             trial_definition_id=trial_object.id)
 
 
-# %% Trial 3: End of experiment page
+#%% Trial 3: ListSelect - no stimuli
+
+# Trial definition
+trial_definition_specification = dict(trial_definition=dict(name='Listselect no stimuli', definition_data=dict(TrialType='Listselect')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                               study_definition_id=study_object.id,
+                                               protocol_definition_id=protocol_object.id,
+                                               phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+
+
+# Component definition: Header Label
+component_definition_description = dict(name='HeaderLabel',
+                                        definition_data=dict(
+                                                Instruments=[dict(
+                                                        Instrument=dict(
+                                                                Header=dict(HeaderLabel='{{center|1: This is a test of a Listselect component}}')))]))
+
+# Component addition: add the component to the trial
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+# Define ListSelect
+edu_5_options = [
+        "Slideshow presentations (e.g. PowerPoint, Google Slides, Prezi)",
+        "Books",
+        "Scientific papers / Research articles",
+        "Lecture videos (YouTube, Vimeo, etc.)",
+        "Short educational videos (YouTube, Vimeo, etc.)",
+        "Instagram reels / TikTok",
+        "Online Blogs",
+        "Games",
+        "Simulations / interactive learning experiences"
+    ]
+
+edu_5_items = [dict(Id=str(i), Label=embed_elicit_fontsize(option, '15')) for i, option in enumerate(edu_5_options)]
+
+component_definition_description = dict(
+        name="edu_5",
+        definition_data=dict(
+            Layout=dict(Type='row'),
+            Instruments=[
+                dict(
+                    Instrument=dict(
+                        ListSelect=dict(
+                            HeaderLabel=embed_elicit_fontsize("The educational material I seek out is usually ….", '15'),
+                            IsOptional='0',
+                            TextField="Other",
+                            UserTextInput=True,
+                            UserInputBox="Inside",
+                            MaxNoOfSelections="5",
+                            MinNoOfSelections="1",
+                            Items=dict(Item=edu_5_items)
+                        )
+                    )
+                )
+            ]
+        )
+    )
+
+component_object = elicit_object.add_component(component=dict(component=component_definition_description),
+                                 study_definition_id=study_object.id,
+                                 protocol_definition_id=protocol_object.id,
+                                 phase_definition_id=phase_object.id,
+                                 trial_definition_id=trial_object.id)
+
+# %% Trial 4: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(
