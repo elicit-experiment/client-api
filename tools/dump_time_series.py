@@ -183,9 +183,9 @@ def fetch_time_series(url, file_type, base_filename, filename, authorization, ve
     with requests.get(url, headers=headers, stream=True, verify=verify) as r:
         content_disposition = r.headers.get('Content-Disposition')
         location = r.headers.get('Location')
-        print(r.headers)
+        # print(r.headers)
         # print(r.body)
-        print(r.status_code)
+        # print(r.status_code)
 
         if r.status_code == 500:
             exit()

@@ -9,13 +9,16 @@ import collections
 from datetime import datetime
 import pandas as pd
 import pyswagger.primitives
+import urllib3
 import yaml
+from pandas.core.interchange.dataframe_protocol import DataFrame
 from pyelicit import elicit
 from pyelicit import command_line
 from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
 import shutil
 from study_definition_helpers import dump_study_definition
 from dump_utilities import with_dates, is_video_event
+import warnings
 
 ##
 ## DEFAULT ARGUMENTS
@@ -93,7 +96,16 @@ class ResultCollector:
         self.answers.append(answer)
 
     def emit_experiment_events(self):
-        emit_to_csv(self.experiment_events, "experiment_events.csv")
+        base_events = pd.DataFrame.from_records(self.experiment_events)
+        url_params = pd.DataFrame.from_records(self.url_parameters)
+        mouse_tracking_summary = pd.DataFrame.from_records(self.mouse_tracking_summary)
+        landmarker_summary = pd.DataFrame.from_records(self.landmarker_summary)
+
+        merged_data = base_events.merge(url_params, on="user_id", how="outer") \
+            .merge(mouse_tracking_summary, on="user_id", how="outer") \
+            .merge(landmarker_summary, on="user_id", how="outer")
+
+        emit_to_csv(merged_data.to_dict(orient="records"), "experiment_events.csv")
 
     def add_experiment_event(self, experiment, experiment_time_series):
         user_id = experiment['protocol_user']['user_id']
@@ -195,10 +207,16 @@ class ResultCollector:
         summary_row = {
             "user_id": user_id,
             "duration": duration,
-            "point_count": summary_df['count'].sum(),
-            "points_per_second": summary_df['count'].sum() / duration,
         }
-        summary_row.update(mouse_tracking_configuration)
+        if summary_df is not None:
+            point_count = summary_df['count'].sum()
+            summary_row.update({
+                "ms_point_count": point_count,
+                "ms_points_per_second": point_count / duration,
+            })
+
+        if mouse_tracking_configuration is not None:
+            summary_row.update(mouse_tracking_configuration)
 
         self.mouse_tracking_summary.append(summary_row)
 
@@ -206,14 +224,19 @@ class ResultCollector:
         emit_to_csv(self.mouse_tracking_summary, "mouse_tracking_summary.csv")
 
     def add_landmarker_configuration(self, user_id, landmarker_configuration, duration, summary_df):
-        point_count = summary_df['acknowledged'].sum()
         summary_row = {
             "user_id": user_id,
             "duration": duration,
-            "point_count": point_count,
-            "points_per_second": point_count / duration,
         }
-        summary_row.update(landmarker_configuration)
+        if summary_df is not None:
+            point_count = summary_df['acknowledged'].sum()
+            summary_row.update({
+                "lm_point_count": point_count,
+                "lm_points_per_second": point_count / duration,
+            })
+
+        if landmarker_configuration is not None:
+            summary_row.update(landmarker_configuration)
 
         self.landmarker_summary.append(summary_row)
 
@@ -301,7 +324,7 @@ def analyze_mouse_tracking_summary(datapoints, user_id):
                datapoints))
 
     if len(start) != 1:
-       return
+       return None, None, None
 
     mouse_tracking_configuration = start[0]['value']
     print(f"\n\nMOUSE TRACKING SUMMARY for user {user_id}\n\n")
@@ -401,7 +424,15 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
         else:
             render_answer_datapoint = render_answer_datapoints[0]
             state_answer_datapoint = state_answer_datapoints[0]
-            state_values = json.loads(state_answer_datapoint['value'])
+
+            if isinstance(state_answer_datapoint['value'], dict):
+                state_values = state_answer_datapoint['value']
+            else:
+                try:
+                    state_values = json.loads(state_answer_datapoint['value'])
+                except (json.JSONDecodeError, TypeError) as e:
+                    print(f"Error decoding JSON from state_answer_datapoint['value']: {e} {state_answer_datapoint}")
+                    state_values = {}
             if 'Id' not in state_values:
                 continue
 
@@ -463,7 +494,7 @@ def fetch_all_time_series(study_result, experiment):
 
             final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename,
                                                filename=query_filename, authorization=el.auth_header(),
-                                               verify=args.send_opt['verify'])
+                                               verify=True)
 
             # Move the file to the preferred naming convention.
             shutil.move(final_filename, query_filename)
@@ -502,34 +533,6 @@ def fetch_all_time_series(study_result, experiment):
             }
 
     return experiment_time_series
-
-##
-## MAIN
-##
-
-pp = pprint.PrettyPrinter(indent=4)
-
-command_line.init_parser({"env": (arg_defaults.get("env") or "prod")}) # Allow the script to be reentrant: start with a fresh parser every time,
-command_line.parser.add_argument(
-    '--study_id', default=arg_defaults["study_id"], help="The study ID to dump", type=int)
-command_line.parser.add_argument(
-    '--user_id', default=arg_defaults["user_id"], help="The user ID to dump", type=int)
-command_line.parser.add_argument(
-    '--user_name', default=None, help="The user name to dump")
-command_line.parser.add_argument(
-    '--result_root_dir', default=arg_defaults.get("result_root_dir") or "results", help="The root folder to dump to")
-args = command_line.parse_command_line_args(arg_defaults)
-pp.pprint(args)
-
-el = elicit.Elicit(args)
-client = el.client
-
-#
-# Double-check that we have the right user
-#
-
-user = el.assert_creator()
-
 
 def analyze_and_dump_user_data_points(user_datapoints, user_id):
     """Dump json data points for a single user."""
@@ -592,14 +595,41 @@ def process():
             for trial_result in trial_results:
                 response_data_points = fetch_datapoints(study_result, experiment, trial_result, trial_result.protocol_user_id, user_id)
                 user_datapoints += response_data_points
+
                 collector.add_data_points(experiment, trial_result, response_data_points)
                 print(f"        Got {len(response_data_points)} data points for trial {trial_result.id} (user {user_id})")
 
-        for answer in synthesize_answers(user_datapoints, trial_definitions):
-            collector.add_answer(answer)
-
             analyze_and_dump_user_data_points(user_datapoints, user_id)
+            for answer in synthesize_answers(user_datapoints, trial_definitions):
+                collector.add_answer(answer)
 
+
+##
+## MAIN
+##
+
+pp = pprint.PrettyPrinter(indent=4)
+
+command_line.init_parser({"env": (arg_defaults.get("env") or "prod")}) # Allow the script to be reentrant: start with a fresh parser every time,
+command_line.parser.add_argument(
+    '--study_id', default=arg_defaults["study_id"], help="The study ID to dump", type=int)
+command_line.parser.add_argument(
+    '--user_id', default=arg_defaults["user_id"], help="The user ID to dump", type=int)
+command_line.parser.add_argument(
+    '--user_name', default=None, help="The user name to dump")
+command_line.parser.add_argument(
+    '--result_root_dir', default=arg_defaults.get("result_root_dir") or "results", help="The root folder to dump to")
+args = command_line.parse_command_line_args(arg_defaults)
+pp.pprint(args)
+
+el = elicit.Elicit(args)
+client = el.client
+
+#
+# Double-check that we have the right user
+#
+
+user = el.assert_creator()
 
 if __name__ == "__main__":
     print("\nExecution of dump_results.py script started...")
