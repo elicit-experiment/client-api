@@ -13,8 +13,8 @@ from pyelicit import elicit
 from random import shuffle
 
 def embed_elicit_fontsize(str_input, FontSize):
-    return "{{style|font-size: " + FontSize + "px;|" + str_input + "}}"
-    
+    return "{{style|font-size: " + str(FontSize) + "px;|" + str_input + "}}"
+
 ## URLs
 audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-easy-piano.mp3"
 video_youtube_url = 'https://youtu.be/zr9leP_Dcm8'
@@ -37,7 +37,7 @@ elicit_object = elicit.Elicit(parse_command_line_args())
 
 
 # Double-check that we have the right user: we need to be investigator to create a study
-user_investigator = elicit_object.assert_investigator()
+user_investigator = elicit_object.assert_creator()
 
 #
 # Add a new Study Definition
@@ -79,7 +79,7 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 #
 
 # Get a list of users who can participate in the study
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS,False)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS, False)
 
 
 # add users to protocol

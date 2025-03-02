@@ -28,7 +28,7 @@ elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 
 # Double-check that we have the right user: we need to be admin to create a study
-user_investigator = elicit_object.assert_investigator()
+user_investigator = elicit_object.assert_creator()
 
 #
 # Add a new Study Definition
@@ -70,7 +70,7 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 #
 
 # Get a list of users who can participate in the study
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS,False)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS, False)
 
 
 # add users to protocol
