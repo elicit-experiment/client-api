@@ -1,6 +1,7 @@
 """
 Testcase for webcam eye tracking
 """
+from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 from pyelicit import command_line
 import pprint
@@ -28,9 +29,14 @@ FontSize = '20'
 
 pp = pprint.PrettyPrinter(indent=4)
 
+
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
+
 # get the Elicit object to define the experiment
-args = command_line.parse_command_line_args()
-elicit_object = elicit.Elicit(args)
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_admin = elicit_object.assert_investigator()
@@ -97,7 +103,7 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 NUM_AUTO_CREATED_USERS = 50
 NUM_ANONYMOUS_USERS = 50
 NUM_REGISTERED_USERS = 5
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS,False)
 
 pp.pprint(study_participants)
 

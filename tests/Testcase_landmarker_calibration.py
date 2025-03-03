@@ -22,7 +22,8 @@ butterfly_video_url = 'https://youtu.be/zr9leP_Dcm8'
 pp = pprint.PrettyPrinter(indent=4)
 
 arg_defaults = {
-    "env_file": "<UPDATE THIS FOLDER>/prod.yaml",
+    "env": "prod",
+    "env_file": "../prod.yaml",
 }
 
 # get the Elicit object to define the experiment
