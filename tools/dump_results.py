@@ -1,24 +1,21 @@
 """
 Example for dumping the results of a study.
 """
-import csv
 import pprint
 import json
 import os
 import collections
-from datetime import datetime
 import pandas as pd
 import pyswagger.primitives
-import urllib3
 import yaml
-from pandas.core.interchange.dataframe_protocol import DataFrame
 from pyelicit import elicit
 from pyelicit import command_line
 from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
 import shutil
 from study_definition_helpers import dump_study_definition
-from dump_utilities import with_dates, is_video_event
-import warnings
+from dump_utilities import with_dates
+from result_path_generator import ResultPathGenerator
+from result_collector import ResultCollector
 
 ##
 ## DEFAULT ARGUMENTS
@@ -28,7 +25,7 @@ arg_defaults = {
     "study_id": 1309,
     "env": "prod",
     "user_id": None, # all users
-    "result_root_dir": "/Users/iainbryson/Projects/elicit/client-api/results"
+    "result_root_dir": "/tmp/results"
 }
 
 
@@ -40,208 +37,19 @@ def debug_log(message):
     if args.debug:
         print(message)
 
-def ensure_study_info(elicit, el, study_id):
-    filename = result_path_for(f"study_{args.study_id}.yaml")
+
+def ensure_study_info(el, study_id, result_path_generator: ResultPathGenerator = None):
+    filename = result_path_generator.result_path_for(f"study_{study_id}.yaml")
     if os.path.exists(filename):
-        return yaml.load(filename)
+        print(f"Using existing study info file {filename}")
+        return yaml.safe_load(open(filename, 'r'))
     else:
-        return dump_study_definition(elicit, el, study_id)
+        print(f"Generating study info file {filename}")
+        study_info = dump_study_definition(elicit, el, study_id)
+        with open(filename, 'w') as file:
+            yaml.dump(json.loads(json.dumps(study_info)), file)
+        return study_info
 
-def result_path_for(filename, user_id=None):
-    """Generate a path for a result file."""
-    path = os.path.join(args.result_root_dir, str(args.study_id))
-    if user_id:
-        path = os.path.join(path, f'user_{user_id}')
-    os.path.isdir(path) or os.makedirs(path, exist_ok=True)
-    return os.path.join(path, filename)
-
-def emit_to_csv(data, filename):
-    if data:
-        header = data[0].keys()
-        with open(result_path_for(filename), 'w') as file:
-            writer = csv.DictWriter(file, fieldnames=header)
-            writer.writeheader()
-            writer.writerows(data)
-
-class ResultCollector:
-    def __init__(self):
-        self.answers = []
-        self.experiment_events = []
-        self.url_parameters = []
-        self.trial_results = []
-        self.data_points = []
-        self.mouse_tracking_summary = []
-        self.landmarker_summary = []
-
-    def emit(self):
-        if len(self.answers) > 0:
-            self.emit_answers()
-        if len(self.experiment_events) > 0:
-            self.emit_experiment_events()
-        if len(self.url_parameters) > 0:
-            self.emit_url_parameters()
-        if len(self.trial_results) > 0:
-            self.emit_trial_results()
-        if len(self.data_points) > 0:
-            self.emit_data_points()
-            self.emit_video_events()
-            self.emit_video_layout_events()
-            self.emit_mouse_tracking_summary_events()
-            self.emit_landmarker_summary_events()
-
-    def emit_answers(self):
-        emit_to_csv(self.answers, "answers.csv")
-
-    def add_answer(self, answer):
-        self.answers.append(answer)
-
-    def emit_experiment_events(self):
-        base_events = pd.DataFrame.from_records(self.experiment_events)
-        url_params = pd.DataFrame.from_records(self.url_parameters)
-        mouse_tracking_summary = pd.DataFrame.from_records(self.mouse_tracking_summary)
-        landmarker_summary = pd.DataFrame.from_records(self.landmarker_summary)
-
-        merged_data = base_events.merge(url_params, on="user_id", how="outer") \
-            .merge(mouse_tracking_summary, on="user_id", how="outer") \
-            .merge(landmarker_summary, on="user_id", how="outer")
-
-        emit_to_csv(merged_data.to_dict(orient="records"), "experiment_events.csv")
-
-    def add_experiment_event(self, experiment, experiment_time_series):
-        user_id = experiment['protocol_user']['user_id']
-
-        experiment_event = {
-            "user_id": user_id,
-            "started_at": experiment.started_at,
-            "completed_at": experiment.completed_at,
-            "duration": (datetime.fromisoformat(experiment.completed_at.to_json()) - datetime.fromisoformat(experiment.started_at.to_json())).total_seconds(),
-            "experiment_id": experiment.id,
-        }
-        custom_parameters = experiment['custom_parameters']
-        url_parameters = {key: value for key, value in custom_parameters.items()}
-        experiment_event.update(url_parameters)
-
-        for experiment_time_series_type, experiment_time_series_info in experiment_time_series.items():
-            experiment_event[f"{experiment_time_series_type}_filename"] = experiment_time_series_info['filename']
-
-        url_parameters.update({ "user_id": user_id, "experiment_id": experiment.id })
-
-        self.experiment_events.append(experiment_event)
-        self.url_parameters.append(url_parameters)
-
-    def emit_url_parameters(self):
-        emit_to_csv(self.url_parameters, "url_parameters.csv")
-
-    def add_url_parameter(self, url_parameter):
-        self.url_parameters.append(url_parameter)
-
-    def emit_trial_results(self):
-        emit_to_csv(self.trial_results, "trial_results.csv")
-
-    def add_trial_results(self, experiment, trial_results, trial_definitions: pyswagger.primitives.Model):
-        self.trial_results += [{
-            "user_id": experiment['protocol_user']['user_id'],
-            "started_at": trial_result.started_at,
-            "completed_at": trial_result.completed_at,
-            "duration": (datetime.fromisoformat(trial_result.completed_at.to_json()) - datetime.fromisoformat(trial_result.started_at.to_json())).total_seconds(),
-            "experiment_id": experiment.id,
-            "protocol_definition_id": experiment['protocol_user']['protocol_definition_id'],
-            "phase_definition_id": trial_result.phase_definition_id,
-            "trial_definition_id": trial_result.trial_definition_id,
-            "trial_name": trial_definitions[trial_result.trial_definition_id]['name'],
-            "trial_type": json.loads(trial_definitions[trial_result.trial_definition_id]['definition_data'])['TrialType']
-        } for trial_result in trial_results]
-
-    def emit_data_points(self):
-        emit_to_csv(self.data_points, "data_points.csv")
-
-    def add_data_points(self, experiment, trial_result, data_points):
-        self.data_points += [{
-            "id": data_point["id"],
-            "phase_definition_id": trial_result.phase_definition_id,
-            "trial_definition_id": trial_result.trial_definition_id,
-            "component_id": data_point["component_id"],
-            "study_result_id": data_point["study_result_id"],
-            "experiment_id": experiment.id,
-            "protocol_user_id": experiment['protocol_user']['id'],
-            "user_id": experiment['protocol_user']['user_id'],
-            "datetime": data_point["datetime"],
-            "point_type": data_point["point_type"],
-            "kind": data_point["kind"],
-            "method": data_point["method"],
-            "entity_type": data_point["entity_type"],
-            "value": data_point["value"],
-        } for data_point in data_points]
-
-    def emit_video_events(self):
-        video_events = filter(lambda x: is_video_event(x), self.data_points)
-        video_events = list(video_events)
-        emit_to_csv(video_events, "video_events.csv")
-
-    def emit_video_layout_events(self):
-        layout_data_points = list(filter(lambda x: x['point_type'] == 'Layout', self.data_points))
-        if len(layout_data_points) == 0:
-            return
-        layouts = []
-        for layout_data_point in layout_data_points:
-            video_layout = json.loads(layout_data_point['value'])
-            video_layout_event = {"x": video_layout['x'],
-                                  "y": video_layout['y'],
-                                  "width": video_layout['width'],
-                                  "height": video_layout['height'],
-                                  "top": video_layout['top'],
-                                  "right": video_layout['right'],
-                                  "bottom": video_layout['bottom'],
-                                  "left": video_layout['left'],
-                                  "datetime": layout_data_point['datetime'],
-                                  "user_id": layout_data_point['user_id'],
-                                  "experiment_id": layout_data_point['experiment_id'],
-                                  "phase_definition_id": layout_data_point['phase_definition_id'],
-                                  "trial_definition_id": layout_data_point['trial_definition_id'],
-                                  "component_id": layout_data_point['component_id']}
-
-            layouts.append(video_layout_event)
-        emit_to_csv(layouts, "video_layout_events.csv")
-
-    def add_mouse_tracking_summary(self, user_id, mouse_tracking_configuration, duration, summary_df):
-        summary_row = {
-            "user_id": user_id,
-            "duration": duration,
-        }
-        if summary_df is not None:
-            point_count = summary_df['count'].sum()
-            summary_row.update({
-                "ms_point_count": point_count,
-                "ms_points_per_second": point_count / duration,
-            })
-
-        if mouse_tracking_configuration is not None:
-            summary_row.update(mouse_tracking_configuration)
-
-        self.mouse_tracking_summary.append(summary_row)
-
-    def emit_mouse_tracking_summary_events(self):
-        emit_to_csv(self.mouse_tracking_summary, "mouse_tracking_summary.csv")
-
-    def add_landmarker_configuration(self, user_id, landmarker_configuration, duration, summary_df):
-        summary_row = {
-            "user_id": user_id,
-            "duration": duration,
-        }
-        if summary_df is not None:
-            point_count = summary_df['acknowledged'].sum()
-            summary_row.update({
-                "lm_point_count": point_count,
-                "lm_points_per_second": point_count / duration,
-            })
-
-        if landmarker_configuration is not None:
-            summary_row.update(landmarker_configuration)
-
-        self.landmarker_summary.append(summary_row)
-
-    def emit_landmarker_summary_events(self):
-        emit_to_csv(self.landmarker_summary, "landmarker_summary.csv")
 
 def face_landmark_summary(data_points):
     summary_data_points = []
@@ -489,7 +297,7 @@ def fetch_all_time_series(study_result, experiment):
         for time_series in time_series:
             url = time_series.file_url
 
-            base_filename = result_path_for(f"{args.study_id}_{user_id}_", user_id=user_id)
+            base_filename = result_path_generator.result_path_for(f"{args.study_id}_{user_id}_", user_id=user_id)
             query_filename = base_filename + time_series.series_type + "." + time_series.file_type
 
             final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename,
@@ -536,14 +344,14 @@ def fetch_all_time_series(study_result, experiment):
 
 def analyze_and_dump_user_data_points(user_datapoints, user_id):
     """Dump json data points for a single user."""
-    with open(result_path_for(f"{args.study_id}_{user_id}_datapoints.json", user_id), 'w') as outfile:
+    with open(result_path_generator.result_path_for(f"{args.study_id}_{user_id}_datapoints.json", user_id), 'w') as outfile:
         list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
         list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith(
             '{"') else row, user_datapoints))
         json.dump(user_datapoints, outfile, indent=2)
 
         print(
-            f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_for('datapoints.json', user_id)}")
+            f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_generator.result_path_for('datapoints.json', user_id)}")
 
         landmarker_configuration, duration, summary_df = analyze_landmarker_summary(user_datapoints, user_id)
         collector.add_landmarker_configuration(user_id, landmarker_configuration, duration, summary_df)
@@ -552,9 +360,9 @@ def analyze_and_dump_user_data_points(user_datapoints, user_id):
         collector.add_mouse_tracking_summary(user_id, mouse_tracking_configuration, duration, summary_df)
 
 
-def process():
+def process(collector: ResultCollector, results_path_generator: ResultPathGenerator):
     study_results = el.find_study_results(study_definition_id=args.study_id)
-    study_info = ensure_study_info(elicit, el, args.study_id)
+    study_info = ensure_study_info(el, args.study_id, results_path_generator)
     phase_definition = study_info['protocol_definitions'][0]['phase_definitions'][0]
     trial_definitions = {}
     for trial_def in phase_definition["trial_definitions"]:
@@ -634,9 +442,10 @@ user = el.assert_creator()
 if __name__ == "__main__":
     print("\nExecution of dump_results.py script started...")
 
-    collector = ResultCollector()
+    result_path_generator = ResultPathGenerator(args.result_root_dir, args.study_id)
+    collector = ResultCollector(result_path_generator)
 
-    process()
+    process(collector, result_path_generator)
 
     collector.emit()
     print("\nExecution completed. Results have been emitted.")
