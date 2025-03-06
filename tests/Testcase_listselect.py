@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Example testing the Tagging-A
+Example testing the Listselect
 """
 
 import pprint
@@ -11,6 +11,9 @@ import json
 from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
+
+FontSize = 15;
+FontSize_options = 12;
 
 def embed_elicit_fontsize(str_input, FontSize):
     return "{{style|font-size: " + str(FontSize) + "px;|" + str_input + "}}"
@@ -32,8 +35,13 @@ NUM_ANONYMOUS_USERS = 10
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# get the elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
+
+# get the Elicit object to define the experiment
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 
 # Double-check that we have the right user: we need to be investigator to create a study
@@ -44,8 +52,8 @@ user_investigator = elicit_object.assert_creator()
 #
 
 # Define study
-study_definition_description = dict(title='Tagging-A test',
-                        description="""This is a test of the Tagging-A component""",
+study_definition_description = dict(title='Listselect test',
+                        description="""This is a test of the Listselect component""",
                         version=1,
                         lock_question=1,
                         enable_previous=1,
@@ -64,10 +72,10 @@ study_object = elicit_object.add_study(study=dict(study_definition=study_definit
 #
 
 # Define protocol
-protocol_definition_descriptiopn = dict(name='Tagging-A test',
+protocol_definition_descriptiopn = dict(name='Listselect test',
                                definition_data="whatever you want here",
-                               summary="This is a test of the Tagging-A component",
-                               description='This is a test of the Tagging-A component',
+                               summary="This is a test of the Listselect component",
+                               description='This is a test of the Listselect component',
                                active=True)
 
 # Add protocol
@@ -137,7 +145,7 @@ component_definition_description = dict(name='ListSelect',
                                                             Instruments=[dict(
                                                                     Instrument=dict(
                                                                         ListSelect=dict(
-                                                                            HeaderLabel='This is Listselect with image stimuli',
+                                                                            HeaderLabel='This is Listselect with image stimuli (inside)',
                                                                             IsOptional='0',
                                                                             TextField='Other',
                                                                             UserTextInput = True,
@@ -166,36 +174,39 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  trial_definition_id=trial_object.id)
 
 
-
 component_definition_description = dict(name='ListSelect',
                                         definition_data=dict(Layout=dict(Type='column',
                                                                          ColumnWidthPercent=['30', '70']),
                                                             Instruments=[dict(
                                                                     Instrument=dict(
                                                                         ListSelect=dict(
-                                                                            HeaderLabel='This is Listselect with image stimuli',
+                                                                            HeaderLabel='This is Listselect with image stimuli (outside)',
                                                                             IsOptional='0',
-                                                                            TextField='TextField',
+                                                                            TextField='Other',
                                                                             UserTextInput = True,
                                                                             UserInputBox = 'Outside',
-                                                                            MaxNoOfAnswers ='2',
-                                                                            MinNoOfAnswers ='0',
+                                                                            MaxNoOfSelections='2',
+                                                                            MinNoOfSelections='0',
                                                                             Items=dict(
                                                                                 Item=[
                                                                                       dict(Id='0',Label='Item-0',Selected='1',Correct=False),
-                                                                                      dict(Id='1',Label='Item-1',Selected='0',Correct=False)]))))],
+                                                                                      dict(Id='1',Label='Item-1',Selected='0',Correct=False),
+                                                                                      dict(Id='2',Label='Item-2',Selected='1',Correct=False),
+                                                                                      dict(Id='3',Label='Item-3',Selected='0',Correct=False),
+                                                                                      dict(Id='4',Label='Item-4',Selected='1', Correct=False),
+                                                                                      dict(Id='5',Label='Item-5',Selected='1', Correct=False)]))))],
                                                             Stimuli=[dict(Height='100%',
                                                                           Width='100%',
                                                                           Label='This is a full size',
                                                                           Type='image',
                                                                           URI='https://dummyimage.com/750x550/996633/fff')]))
+
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
                                  study_definition_id=study_object.id,
                                  protocol_definition_id=protocol_object.id,
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
-
 
 
 #%% Trial 2: ListSelect - no stimuli
@@ -226,49 +237,46 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-# Define ListSelect
-edu_5_options = [
-        "Slideshow presentations (e.g. PowerPoint, Google Slides, Prezi)",
-        "Books",
-        "Scientific papers / Research articles",
-        "Lecture videos (YouTube, Vimeo, etc.)",
-        "Short educational videos (YouTube, Vimeo, etc.)",
-        "Instagram reels / TikTok",
-        "Online Blogs",
-        "Games",
-        "Simulations / interactive learning experiences"
-    ]
-
-edu_5_items = [dict(Id=str(i), Label=embed_elicit_fontsize(option, 15)) for i, option in enumerate(edu_5_options)]
-
-component_definition_description = dict(
-        name="edu_5",
-        definition_data=dict(
-            Layout=dict(Type='row'),
-            Instruments=[
-                dict(
-                    Instrument=dict(
-                        ListSelect=dict(
-                            HeaderLabel=embed_elicit_fontsize("The educational material I seek out is usually ….", 15),
-                            IsOptional='0',
-                            TextField="Other",
-                            UserTextInput=True,
-                            UserInputBox="Inside",
-                            MaxNoOfSelections="5",
-                            MinNoOfSelections="1",
-                            Items=dict(Item=edu_5_items)
-                        )
+# ListSelect for edu_5
+component_definition_description = dict(name='edu_5',
+    definition_data=dict(
+        Layout=dict(Type='column', ColumnWidthPercent=['30', '70']),
+        Instruments=[dict(
+            Instrument=dict(
+                ListSelect=dict(
+                    HeaderLabel=embed_elicit_fontsize("The educational material I seek out is usually …", FontSize),
+                    IsOptional='0',
+                    TextField="Other",
+                    UserTextInput=True,
+                    UserInputBox="Inside",
+                    MaxNoOfSelections="5",
+                    MinNoOfSelections="1",
+                    Items=dict(
+                        Item=[
+                            dict(Id='0', Label=embed_elicit_fontsize("Slideshow presentations (e.g. PowerPoint, Google Slides, Prezi)", FontSize_options)),
+                            dict(Id='1', Label=embed_elicit_fontsize("Books", FontSize_options)),
+                            dict(Id='2', Label=embed_elicit_fontsize("Scientific papers / Research articles", FontSize_options)),
+                            dict(Id='3', Label=embed_elicit_fontsize("Lecture videos (YouTube, Vimeo, etc.)", FontSize_options)),
+                            dict(Id='4', Label=embed_elicit_fontsize("Short educational videos (YouTube, Vimeo, etc.)", FontSize_options)),
+                            dict(Id='5', Label=embed_elicit_fontsize("Instagram reels / TikTok", FontSize_options)),
+                            dict(Id='6', Label=embed_elicit_fontsize("Online Blogs", FontSize_options)),
+                            dict(Id='7', Label=embed_elicit_fontsize("Games", FontSize_options)),
+                            dict(Id='8', Label=embed_elicit_fontsize("Simulations / interactive learning experiences", FontSize_options))
+                        ]
                     )
                 )
-            ]
-        )
+            )
+        )]
     )
+)
 
-component_object = elicit_object.add_component(component=dict(component=component_definition_description),
-                                 study_definition_id=study_object.id,
-                                 protocol_definition_id=protocol_object.id,
-                                 phase_definition_id=phase_object.id,
-                                 trial_definition_id=trial_object.id)
+elicit_object.add_component(
+    component=dict(component=component_definition_description),
+    study_definition_id=study_object.id,
+    protocol_definition_id=protocol_object.id,
+    phase_definition_id=phase_object.id,
+    trial_definition_id=trial_object.id
+)
 
 #%%  Trial 6: End of experiment page
 #
@@ -284,7 +292,7 @@ component_definition_description = dict(name='HeaderLabel',
                             definition_data=dict(
                                     Instruments=[dict(
                                             Instrument=dict(
-                                                    Header=dict(HeaderLabel='{{center|6: Thank you for your participation}}')))]))
+                                                    Header=dict(HeaderLabel='{{center|Thank you for your participation}}')))]))
 
 # Component addition: add the component to the trial
 component_object = elicit_object.add_component(component=dict(component=component_definition_description),
