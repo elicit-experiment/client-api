@@ -22,10 +22,11 @@ from result_collector import ResultCollector
 ##
 
 arg_defaults = {
-    "study_id": 1309,
+    "study_id": 1371,
     "env": "prod",
     "user_id": None, # all users
-    "result_root_dir": "/tmp/results"
+    "result_root_dir": "../../results",
+    "env_file": "../prod.yaml"
 }
 
 
