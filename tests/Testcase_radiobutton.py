@@ -23,9 +23,13 @@ NUM_ANONYMOUS_USERS = 10
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# get the elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
 
+# get the Elicit object to define the experiment
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 # Double-check that we have the right user: we need to be admin to create a study
 user_investigator = elicit_object.assert_creator()
