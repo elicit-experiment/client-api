@@ -20,12 +20,18 @@ audio_url = "https://www.mfiles.co.uk/mp3-downloads/franz-liszt-liebestraum-3-ea
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# get the elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
+
+# get the Elicit object to define the experiment
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 
-# Double-check that we have the right user: we need to be admin to create a study
+# Double-check that we have the right user: we need to be investigator to create a study
 user_investigator = elicit_object.assert_investigator()
+
 
 #
 # Add a new Study Definition

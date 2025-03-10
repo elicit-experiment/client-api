@@ -25,8 +25,13 @@ NUM_ANONYMOUS_USERS = 10
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# get the elicit object to define the experiment
-elicit_object = elicit.Elicit(parse_command_line_args())
+arg_defaults = {
+    "env": "prod",
+    "env_file": "../prod.yaml",
+}
+
+# get the Elicit object to define the experiment
+elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 
 # Double-check that we have the right user: we need to be investigator to create a study
@@ -72,7 +77,7 @@ protocol_object = elicit_object.add_protocol_definition(protocol_definition=dict
 #
 
 # Get a list of users who can participate in the study
-study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS)
+study_participants = elicit_object.ensure_users(NUM_REGISTERED_USERS, NUM_ANONYMOUS_USERS,False)
 
 
 # add users to protocol
