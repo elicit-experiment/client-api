@@ -305,7 +305,74 @@ component_object = elicit_object.add_component(component=dict(component=componen
                                  phase_definition_id=phase_object.id,
                                  trial_definition_id=trial_object.id)
 
-# %% Trial 4: End of experiment page
+
+# %% Trial 4: ListSelect no text Input
+
+trial_definition_specification = dict(
+    trial_definition=dict(name='ListSelect No User Text, No. Selections 2..4', definition_data=dict(TrialType='ListSelect page')))
+
+trial_object = elicit_object.add_trial_definition(trial_definition=trial_definition_specification,
+                                                  study_definition_id=study_object.id,
+                                                  protocol_definition_id=protocol_object.id,
+                                                  phase_definition_id=phase_object.id)
+# save trial to later define trial orders
+trials.append(trial_object)
+
+# Component definition: Header Label
+header_component_definition = dict(name='HeaderLabel',
+                                   definition_data=dict(
+                                       Instruments=[dict(
+                                           Instrument=dict(
+                                               Header=dict(
+                                                   HeaderLabel='{{center|ListSelect}}')))]))
+# Component addition: add the component to the trial
+elicit_object.add_component(component=dict(component=header_component_definition),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+# Define ListSelect component
+
+list_select = dict(name='ListSelect',
+                   definition_data=dict(Layout=dict(Type='column',
+                                                    ColumnWidthPercent=['70', '30']),
+                                        Instruments=[dict(
+                                            Instrument=dict(
+                                                ListSelect=dict(
+                                                    HeaderLabel='This is Listselect with image stimuli (UserTextInput=False)',
+                                                    IsOptional='0',
+                                                    TextField='Other',
+                                                    UserTextInput=False,
+                                                    UserInputBox='Outside', # This will be ignored because UserTextInput = False
+                                                    MaxNoOfSelections='4',
+                                                    MinNoOfSelections='2',
+                                                    Items=dict(
+                                                        Item=[
+                                                            dict(Id='0', Label='Item-0'),
+                                                            dict(Id='1', Label='Item-1'),
+                                                            dict(Id='2', Label='Item-2'),
+                                                            dict(Id='3', Label='Item-3'),
+                                                            dict(Id='4', Label='Item-4'),
+                                                            dict(Id='5', Label='Item-5')])
+                                                )))],
+                                        Stimuli=[
+                                            dict(
+                                                Height='100%',
+                                                Width='100%',
+                                                Label='This is a full size',
+                                                Type='image',
+                                                URI='https://dummyimage.com/750x550/996633/fff',
+                                            )]))
+
+elicit_object.add_component(component=dict(component=list_select),
+                            study_definition_id=study_object.id,
+                            protocol_definition_id=protocol_object.id,
+                            phase_definition_id=phase_object.id,
+                            trial_definition_id=trial_object.id)
+
+
+
+# %% Trial 5: End of experiment page
 #
 # Trial definition
 trial_definition_specification = dict(
