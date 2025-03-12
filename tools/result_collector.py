@@ -192,7 +192,7 @@ class ResultCollector:
 
     def emit_to_csv(self, data, filename):
         if data:
-            header = data[0].keys()
+            header = set().union(*(row.keys() for row in data))
             with open(self.result_path_generator.result_path_for(filename), 'w') as file:
                 writer = csv.DictWriter(file, fieldnames=header)
                 writer.writeheader()

@@ -22,7 +22,7 @@ from result_collector import ResultCollector
 ##
 
 arg_defaults = {
-    "study_id": 1371,
+    "study_id": 1419,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",
@@ -245,7 +245,13 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
             if 'Id' not in state_values:
                 continue
 
-            answer_id = int(state_values['Id'])
+            try:
+                answer_id = int(state_values['Id'])
+            except ValueError:
+                print(
+                    f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
+                answer_id = state_values['Id']
+
             render_values = json.loads(render_answer_datapoint['value'])
 
             question = ''
@@ -254,12 +260,15 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                     def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
                     question = next(iter(def_data.values()))['HeaderLabel']
 
-            if answer_id >= len(render_values):
-                print(
-                    f"WARN: Found answer datapoint for component {answer_component_id} with Id {answer_id} but only {len(render_values)} Render datapoints")
-                answer = 'none'
+            if isinstance(answer_id, int):
+                if answer_id >= len(render_values):
+                    print(
+                        f"WARN: Found answer datapoint for component {answer_component_id} with Id {answer_id} but only {len(render_values)} Render datapoints")
+                    answer = answer_id
+                else:
+                    answer = render_values[answer_id]['Label']
             else:
-                answer = render_values[answer_id]['Label']
+                answer = next((render_value['Label'] for render_value in render_values if render_value['Id'] == answer_id), answer_id)
 
             state_answer_datapoint.update({
                 "render_id": [render_value['Id'] for render_value in render_values],
