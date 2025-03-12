@@ -35,7 +35,7 @@ elicit_object = elicit.Elicit(parse_command_line_args(arg_defaults))
 
 
 # Double-check that we have the right user: we need to be investigator to create a study
-user_investigator = elicit_object.assert_investigator()
+user_investigator = elicit_object.assert_creator()
 
 #
 # Add a new Study Definition
