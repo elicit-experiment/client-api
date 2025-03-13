@@ -223,42 +223,59 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
         grouped_answer_datapoints[data_point['component_id']].append(data_point)
     answers = []
     for answer_component_id, answer_datapoints in grouped_answer_datapoints.items():
+
         render_answer_datapoints = list(filter(lambda row: row['point_type'] == 'Render', answer_datapoints))
         state_answer_datapoints = list(filter(lambda row: row['point_type'] == 'State', answer_datapoints))
-        if len(render_answer_datapoints) == 0 or len(state_answer_datapoints) == 0:
+
+        if len(render_answer_datapoints) == 0 and len(state_answer_datapoints) == 0:
             print(
                 "WARN: Found answer datapoints for component %d without both Render and State datapoints" % answer_component_id)
             pp.pprint(render_answer_datapoints)
             pp.pprint(state_answer_datapoints)
+
+            continue
+
+        state_answer_datapoint = state_answer_datapoints[0]
+
+        if isinstance(state_answer_datapoint['value'], dict):
+            state_values = state_answer_datapoint['value']
         else:
+            try:
+                state_values = json.loads(state_answer_datapoint['value'])
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"Error decoding JSON from state_answer_datapoint['value']: {e} {state_answer_datapoint}")
+                state_values = {}
+        if 'Id' not in state_values:
+            continue
+
+        try:
+            answer_id = int(state_values['Id'])
+        except ValueError:
+            print(
+                f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
+            answer_id = state_values['Id']
+
+        if len(state_answer_datapoints) > 0:
+            question = get_question(state_answer_datapoint['trial_definition_id'], answer_component_id, trial_definitions)
+            state_answer_datapoint.update({
+                "render_id": None,
+                "render_label": None,
+                "question": question,
+                "answer_id": state_values['Id'],
+                "answer": state_values['Id'],
+                "answer_component_id": answer_component_id,
+            })
+
+            answers.append(state_answer_datapoint)
+        else:
+            # because of randomized instruments, we need to determine the answer with reference to the actual
+            # order of the answers rendered.
             render_answer_datapoint = render_answer_datapoints[0]
             state_answer_datapoint = state_answer_datapoints[0]
 
-            if isinstance(state_answer_datapoint['value'], dict):
-                state_values = state_answer_datapoint['value']
-            else:
-                try:
-                    state_values = json.loads(state_answer_datapoint['value'])
-                except (json.JSONDecodeError, TypeError) as e:
-                    print(f"Error decoding JSON from state_answer_datapoint['value']: {e} {state_answer_datapoint}")
-                    state_values = {}
-            if 'Id' not in state_values:
-                continue
-
-            try:
-                answer_id = int(state_values['Id'])
-            except ValueError:
-                print(
-                    f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
-                answer_id = state_values['Id']
+            question = get_question(render_answer_datapoint['trial_definition_id'], answer_component_id, trial_definitions)
 
             render_values = json.loads(render_answer_datapoint['value'])
-
-            question = ''
-            for component in trial_definitions[render_answer_datapoint['trial_definition_id']]['components']:
-                if component['id'] == answer_component_id:
-                    def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
-                    question = next(iter(def_data.values()))['HeaderLabel']
 
             if isinstance(answer_id, int):
                 if answer_id >= len(render_values):
@@ -276,11 +293,22 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                 "question": question,
                 "answer_id": answer_id,
                 "answer": answer,
+                "answer_component_id": answer_component_id,
             })
 
             answers.append(state_answer_datapoint)
 
     return answers
+
+
+def get_question(trial_definition_id, answer_component_id, trial_definitions):
+    question = ''
+    for component in trial_definitions[trial_definition_id]['components']:
+        if component['id'] == answer_component_id:
+            # def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
+            # question = next(iter(def_data.values()))['HeaderLabel']
+            question = component['name']
+    return question
 
 def fetch_all_time_series(study_result, experiment):
     user_id = experiment['protocol_user']['user_id']
