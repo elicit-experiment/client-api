@@ -56,25 +56,35 @@ class ResultCollector:
 
     def add_experiment_event(self, experiment, experiment_time_series):
         user_id = experiment['protocol_user']['user_id']
-
+    
+        # Check if both timestamps exist before computing duration
+        if experiment.completed_at and experiment.started_at:
+            duration = (
+                datetime.fromisoformat(experiment.completed_at.to_json()) -
+                datetime.fromisoformat(experiment.started_at.to_json())
+            ).total_seconds()
+        else:
+            duration = None  # Or choose another default/handling mechanism
+    
         experiment_event = {
             "user_id": user_id,
             "started_at": experiment.started_at,
             "completed_at": experiment.completed_at,
-            "duration": (datetime.fromisoformat(experiment.completed_at.to_json()) - datetime.fromisoformat(experiment.started_at.to_json())).total_seconds(),
+            "duration": duration,
             "experiment_id": experiment.id,
         }
         custom_parameters = experiment['custom_parameters']
         url_parameters = {key: value for key, value in custom_parameters.items()}
         experiment_event.update(url_parameters)
-
+    
         for experiment_time_series_type, experiment_time_series_info in experiment_time_series.items():
             experiment_event[f"{experiment_time_series_type}_filename"] = experiment_time_series_info['filename']
-
+    
         url_parameters.update({ "user_id": user_id, "experiment_id": experiment.id })
-
+    
         self.experiment_events.append(experiment_event)
         self.url_parameters.append(url_parameters)
+
 
     def emit_url_parameters(self):
         self.emit_to_csv(self.url_parameters, "url_parameters.csv")
@@ -87,16 +97,19 @@ class ResultCollector:
 
     def add_trial_results(self, experiment, trial_results, trial_definitions: pyswagger.primitives.Model):
         self.trial_results += [{
-            "user_id": experiment['protocol_user']['user_id'],
-            "started_at": trial_result.started_at,
-            "completed_at": trial_result.completed_at,
-            "duration": (datetime.fromisoformat(trial_result.completed_at.to_json()) - datetime.fromisoformat(trial_result.started_at.to_json())).total_seconds(),
-            "experiment_id": experiment.id,
             "protocol_definition_id": experiment['protocol_user']['protocol_definition_id'],
+            "experiment_id": experiment.id,
             "phase_definition_id": trial_result.phase_definition_id,
             "trial_definition_id": trial_result.trial_definition_id,
+            "user_id": experiment['protocol_user']['user_id'],
+            "trial_type": json.loads(trial_definitions[trial_result.trial_definition_id]['definition_data'])['TrialType'],
             "trial_name": trial_definitions[trial_result.trial_definition_id]['name'],
-            "trial_type": json.loads(trial_definitions[trial_result.trial_definition_id]['definition_data'])['TrialType']
+            "started_at": trial_result.started_at,
+            "completed_at": trial_result.completed_at,
+            "duration": (
+                datetime.fromisoformat(trial_result.completed_at.to_json()) -
+                datetime.fromisoformat(trial_result.started_at.to_json())
+            ).total_seconds() if trial_result.completed_at and trial_result.started_at else None,
         } for trial_result in trial_results]
 
     def emit_data_points(self):
@@ -104,14 +117,14 @@ class ResultCollector:
 
     def add_data_points(self, experiment, trial_result, data_points):
         self.data_points += [{
-            "id": data_point["id"],
-            "phase_definition_id": trial_result.phase_definition_id,
-            "trial_definition_id": trial_result.trial_definition_id,
-            "component_id": data_point["component_id"],
             "study_result_id": data_point["study_result_id"],
             "experiment_id": experiment.id,
+            "phase_definition_id": trial_result.phase_definition_id,
+            "trial_definition_id": trial_result.trial_definition_id,
+            "component_id": data_point["component_id"],           
             "protocol_user_id": experiment['protocol_user']['id'],
             "user_id": experiment['protocol_user']['user_id'],
+            "id": data_point["id"],            
             "datetime": data_point["datetime"],
             "point_type": data_point["point_type"],
             "kind": data_point["kind"],
@@ -132,20 +145,20 @@ class ResultCollector:
         layouts = []
         for layout_data_point in layout_data_points:
             video_layout = json.loads(layout_data_point['value'])
-            video_layout_event = {"x": video_layout['x'],
+            video_layout_event = {"experiment_id": layout_data_point['experiment_id'],
+                                  "phase_definition_id": layout_data_point['phase_definition_id'],
+                                  "trial_definition_id": layout_data_point['trial_definition_id'],
+                                  "component_id": layout_data_point['component_id'],
+                                  "user_id": layout_data_point['user_id'],
+                                  "datetime": layout_data_point['datetime'],
+                                  "x": video_layout['x'],
                                   "y": video_layout['y'],
                                   "width": video_layout['width'],
                                   "height": video_layout['height'],
                                   "top": video_layout['top'],
                                   "right": video_layout['right'],
                                   "bottom": video_layout['bottom'],
-                                  "left": video_layout['left'],
-                                  "datetime": layout_data_point['datetime'],
-                                  "user_id": layout_data_point['user_id'],
-                                  "experiment_id": layout_data_point['experiment_id'],
-                                  "phase_definition_id": layout_data_point['phase_definition_id'],
-                                  "trial_definition_id": layout_data_point['trial_definition_id'],
-                                  "component_id": layout_data_point['component_id']}
+                                  "left": video_layout['left']}
 
             layouts.append(video_layout_event)
         self.emit_to_csv(layouts, "video_layout_events.csv")
