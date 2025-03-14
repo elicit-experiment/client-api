@@ -25,7 +25,7 @@ import re
 ##
 
 arg_defaults = {
-    "study_id": 1419,
+    "study_id": 1420,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",
@@ -54,6 +54,42 @@ def remove_elicit_formatting(text: str) -> str:
             break
         text = new_text
     return text.strip()
+
+def remove_formatting_recursive(val):
+    if isinstance(val, str):
+        return remove_elicit_formatting(val)
+    elif isinstance(val, dict):
+        return {k: remove_formatting_recursive(v) for k, v in val.items()}
+    elif isinstance(val, list):
+        return [remove_formatting_recursive(item) for item in val]
+    else:
+        return val
+
+def remove_html_tags(text: str) -> str:
+    return re.sub(r'<[^>]+>', '', text)
+
+def clean_multi_answer_value(val):
+    """
+    If val is a dict containing a "Tags" key (as in a ListSelect component),
+    clean the "Label" fields while preserving other fields such as "Id", "Kind", and "Selected".
+    Otherwise, fall back to the generic recursive cleaning.
+    """
+    if isinstance(val, dict) and "Tags" in val and isinstance(val["Tags"], list):
+        cleaned_tags = []
+        for tag in val["Tags"]:
+            # Make a copy so we don't modify the original.
+            cleaned_tag = tag.copy()
+            if "Label" in cleaned_tag and isinstance(cleaned_tag["Label"], str):
+                # Remove elicit formatting and HTML tags from the Label.
+                cleaned_tag["Label"] = remove_elicit_formatting(cleaned_tag["Label"])
+                cleaned_tag["Label"] = remove_html_tags(cleaned_tag["Label"])
+            cleaned_tags.append(cleaned_tag)
+        new_val = val.copy()
+        new_val["Tags"] = cleaned_tags
+        return new_val
+    else:
+        return remove_formatting_recursive(val)
+
 
 def process_datetime(dt):
     """
@@ -86,6 +122,26 @@ def debug_log(message):
     if args.debug:
         print(message)
 
+def extract_selected_info(val):
+    """
+    Expects val to be a dict with a "Tags" key (as in a ListSelect component).
+    Returns a tuple (indices, labels) where:
+      - indices: a list of zero-based positions for which 'Selected' is True.
+      - labels: a list of the cleaned labels corresponding to those selected tags.
+    """
+    indices = []
+    labels = []
+    if isinstance(val, dict) and "Tags" in val and isinstance(val["Tags"], list):
+        for i, tag in enumerate(val["Tags"]):
+            if tag.get("Selected"):
+                indices.append(i)
+                # Clean the label using your formatting removal functions.
+                label = tag.get("Label", "")
+                # Remove elicit formatting and HTML tags:
+                label = remove_elicit_formatting(label)
+                label = remove_html_tags(label)
+                labels.append(label)
+    return indices, labels
 
 def ensure_study_info(el, study_id, result_path_generator: ResultPathGenerator = None):
     filename = result_path_generator.result_path_for(f"study_{study_id}.yaml")
@@ -261,17 +317,17 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
     """
     Synthesize answers from datapoints & trial/component definitions.
     
-    This transforms the data points into a more convenient format for analysis by aligning
-    the final state of each component with the render of that component and enriches
-    the result with labels to make the result easier for humans to understand.
+    Transforms the data points into a more convenient format by aligning the final state of each 
+    component with the render of that component and enriching the result with labels to make 
+    the result easier for humans to understand.
     """
     
     # Define the desired column order explicitly.
     desired_order = [
-        "datestring", "datetime", "experiment_id", "phase_definition_id", "trial_definition_id", "trial_name","component_id", "id",
-        "study_result_id", "protocol_user_id", "user_id", "answer_component_id",
+        "datestring", "datetime", "experiment_id", "phase_definition_id", "trial_definition_id", "trial_name",
+        "component_id", "id", "study_result_id", "protocol_user_id", "user_id", "answer_component_id",
         "point_type", "kind", "method", "entity_type", 
-        "render_id", "render_label", "component_name", "HeaderLabel","value", "answer_id", "answer",
+        "render_id", "render_label", "component_name", "HeaderLabel", "value", "answer_id", "answer",
     ]
     
     answer_datapoints = list(filter(lambda row: row['point_type'] in ['State', 'Render'], datapoints))
@@ -289,7 +345,7 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
             print("WARN: Found answer datapoints for component %d without both Render and State datapoints" % answer_component_id)
             continue
 
-        # We'll use the state answer datapoint if available.
+        # Use state answer datapoint if available, else render datapoint.
         if state_answer_datapoints:
             base_answer = state_answer_datapoints[0]
         else:
@@ -300,106 +356,307 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
         for key in desired_order:
             new_answer[key] = base_answer.get(key, None)
         
-        # Process the 'value' field to extract the answer id.
-        if isinstance(base_answer.get('value'), dict):
-            state_values = base_answer['value']
-        else:
+        kind = base_answer.get("kind", "")
+        
+        # Branch based on component kind.
+        if kind in ["CheckBoxGroup"]:
             try:
-                state_values = json.loads(base_answer.get('value'))
+                if isinstance(base_answer.get('value'), dict):
+                    state_values = base_answer['value']
+                else:
+                    state_values = json.loads(base_answer.get('value'))
             except (json.JSONDecodeError, TypeError) as e:
-                print(f"Error decoding JSON from base_answer['value']: {e} {base_answer}")
+                print(f"Error decoding JSON from base_answer['value'] for CheckBoxGroup: {e} {base_answer}")
                 state_values = {}
         
-        if 'Id' not in state_values:
-            continue
+            cleaned_state_values = remove_formatting_recursive(state_values)
+            new_answer["value"] = cleaned_state_values
+        
+            # Convert selections to ints.
+            selections = cleaned_state_values.get("Selections", [])
+            try:
+                selected_ids = [int(s) for s in selections]
+            except Exception:
+                selected_ids = selections
+            new_answer["answer_id"] = selected_ids
+        
+            if render_answer_datapoints:
+                try:
+                    render_value = render_answer_datapoints[0].get("value")
+                    if isinstance(render_value, str):
+                        render_options = json.loads(render_value)
+                    else:
+                        render_options = render_value
+                except Exception as e:
+                    print(f"Error decoding Render value for CheckBoxGroup: {e}")
+                    render_options = []
+        
+                all_rendered_ids = []
+                all_rendered_labels = []
+                selected_labels = []
+                for opt in render_options:
+                    # Get the rendered ID, remove formatting, and then try to convert to int.
+                    rid_str = str(opt.get("Id", "")).strip()
+                    cleaned_rid_str = remove_elicit_formatting(rid_str)
+                    try:
+                        rid_int = int(cleaned_rid_str)
+                    except ValueError:
+                        rid_int = cleaned_rid_str  # fallback if conversion fails.
+                    all_rendered_ids.append(rid_int)
+        
+                    # Clean the rendered label.
+                    raw_label = opt.get("Label", "")
+                    cleaned_label = remove_elicit_formatting(raw_label)
+                    cleaned_label = remove_html_tags(cleaned_label)
+                    all_rendered_labels.append(cleaned_label)
+        
+                    # Check if the rendered ID is in the list of selected IDs.
+                    if rid_int in selected_ids:
+                        selected_labels.append(cleaned_label)
+                
+                new_answer["render_id"] = all_rendered_ids
+                new_answer["render_label"] = all_rendered_labels
+                new_answer["answer"] = selected_labels
+            else:
+                new_answer["render_id"] = []
+                new_answer["render_label"] = []
+                new_answer["answer"] = selections
 
-        try:
-            answer_id = int(state_values['Id'])
-        except ValueError:
-            print(f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
-            answer_id = state_values['Id']
+        elif kind in ["RadioButtonGroup"]:
+            # Process state value.
+            try:
+                if isinstance(base_answer.get('value'), dict):
+                    state_values = base_answer['value']
+                else:
+                    state_values = json.loads(base_answer.get('value'))
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"Error decoding JSON from base_answer['value'] for RadioButtonGroup: {e} {base_answer}")
+                state_values = {}
+            
+            if 'Id' not in state_values:
+                continue
+        
+            try:
+                answer_id = int(state_values['Id'])
+            except ValueError:
+                print(f"WARN: Found answer datapoint for RadioButtonGroup with Id {state_values['Id']} but it is not an integer")
+                answer_id = state_values['Id']
+            
+            # Process the raw value.
+            value = base_answer.get("value")
+            if isinstance(value, str):
+                new_answer["value"] = remove_elicit_formatting(value)
+            else:
+                new_answer["value"] = remove_formatting_recursive(value)
+            new_answer["answer_id"] = answer_id
+            new_answer["answer"] = state_values['Id']  # default to the raw value for now
+        
+            # Process the Render datapoint.
+            if render_answer_datapoints:
+                try:
+                    render_value = render_answer_datapoints[0].get("value")
+                    if isinstance(render_value, str):
+                        render_options = json.loads(render_value)
+                    else:
+                        render_options = render_value
+                except Exception as e:
+                    print(f"Error decoding Render value for RadioButtonGroup: {e}")
+                    render_options = []
+                
+                all_rendered_ids = []
+                all_rendered_labels = []
+                selected_label = None
+                for opt in render_options:
+                    # Get and clean the rendered ID.
+                    rid_str = str(opt.get("Id", "")).strip()
+                    cleaned_rid_str = remove_elicit_formatting(rid_str)
+                    try:
+                        rid_int = int(cleaned_rid_str)
+                    except ValueError:
+                        rid_int = cleaned_rid_str
+                    all_rendered_ids.append(rid_int)
+                    
+                    # Clean the rendered label.
+                    raw_label = opt.get("Label", "")
+                    cleaned_label = remove_elicit_formatting(raw_label)
+                    cleaned_label = remove_html_tags(cleaned_label)
+                    all_rendered_labels.append(cleaned_label)
+                    
+                    # If this option's ID matches the answer_id, record its label.
+                    if rid_int == answer_id:
+                        selected_label = cleaned_label
+                
+                new_answer["render_id"] = all_rendered_ids
+                new_answer["render_label"] = all_rendered_labels
+                if selected_label is not None:
+                    new_answer["answer"] = selected_label
+                else:
+                    new_answer["answer"] = state_values['Id']
+            else:
+                new_answer["render_id"] = []
+                new_answer["render_label"] = []
+                
+        elif kind in ["Main_ListSelect_ListSelect"]:
+                    try:
+                        if isinstance(base_answer.get('value'), dict):
+                            state_values = base_answer['value']
+                        else:
+                            state_values = json.loads(base_answer.get('value'))
+                    except (json.JSONDecodeError, TypeError) as e:
+                        print(f"Error decoding JSON from base_answer['value'] for ListSelect: {e} {base_answer}")
+                        state_values = {}
+                    
+                    cleaned_state_values = remove_formatting_recursive(state_values)
+                    new_answer["value"] = cleaned_state_values
+        
+                    # For ListSelect, expect structure like {'Tags': [ { 'Id': '1', 'Label': ..., 'Selected': True}, ... ]}
+                    indices = []
+                    labels = []
+                    tags = cleaned_state_values.get("Tags", [])
+                    for i, tag in enumerate(tags):
+                        if tag.get("Selected"):
+                            indices.append(i)
+                            label = tag.get("Label", "")
+                            label = remove_elicit_formatting(label)
+                            label = remove_html_tags(label)
+                            labels.append(label)
+                    new_answer["answer_id"] = indices
+                    new_answer["answer"] = labels
+        elif kind in ["Freetext"]:
+            try:
+                value_field = base_answer.get("value")
+                if isinstance(value_field, str):
+                    state_obj = json.loads(value_field)
+                else:
+                    state_obj = value_field
+            except Exception as e:
+                print(f"Error decoding Freetext state: {e}")
+                state_obj = {}
+        
+            try:
+                render_obj = {}
+                if render_answer_datapoints:
+                    render_field = render_answer_datapoints[0].get("value")
+                    if isinstance(render_field, str):
+                        render_obj = json.loads(render_field)
+                    else:
+                        render_obj = render_field
+            except Exception as e:
+                print(f"Error decoding Freetext render: {e}")
+                render_obj = {}
+        
+            # For Freetext, we want to use the state object's "Text" field for the answer.
+            raw_text = state_obj.get("Text", "")
+            cleaned_text = raw_text
+            if isinstance(raw_text, str):
+                cleaned_text = remove_elicit_formatting(raw_text)
+                cleaned_text = remove_html_tags(cleaned_text)
+            
+            # Set value, answer_id, and answer to the cleaned text from the state.
+            new_answer["value"] = cleaned_text
+            new_answer["answer_id"] = cleaned_text
+            new_answer["answer"] = cleaned_text
+        
+            # Use the render event to set render_label (if available).
+            if render_obj:
+                render_text = render_obj.get("Text", "")
+                cleaned_render_text = render_text
+                if isinstance(render_text, str):
+                    cleaned_render_text = remove_elicit_formatting(render_text)
+                    cleaned_render_text = remove_html_tags(cleaned_render_text)
+                new_answer["render_id"] = []  # No IDs for Freetext.
+                new_answer["render_label"] = [cleaned_render_text]
+            else:
+                new_answer["render_id"] = []
+                new_answer["render_label"] = []
 
+        else:
+            # For single-answer components (e.g., LikertScale, RadioButtonGroup).
+            if isinstance(base_answer.get('value'), dict):
+                state_values = base_answer['value']
+            else:
+                try:
+                    state_values = json.loads(base_answer.get('value'))
+                except (json.JSONDecodeError, TypeError) as e:
+                    print(f"Error decoding JSON from base_answer['value']: {e} {base_answer}")
+                    state_values = {}
+            
+            if 'Id' not in state_values:
+                continue
+
+            try:
+                answer_id = int(state_values['Id'])
+            except ValueError:
+                print(f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
+                answer_id = state_values['Id']
+            
+            value = base_answer.get("value")
+            if isinstance(value, str):
+                new_answer["value"] = remove_elicit_formatting(value)
+            else:
+                new_answer["value"] = remove_formatting_recursive(value)
+            new_answer["answer_id"] = state_values['Id']
+            new_answer["answer"] = state_values['Id']
+
+        # Retrieve additional metadata.
         component_name = get_component_name(base_answer['trial_definition_id'], answer_component_id, trial_definitions)
         header_label = remove_elicit_formatting(get_component_header_label(base_answer['trial_definition_id'], answer_component_id, trial_definitions))
         trial_name = get_trial_name(base_answer['trial_definition_id'], trial_definitions)
         
-        # Update the synthesized answer with our additional fields in our desired order.
         new_answer["HeaderLabel"] = header_label
         new_answer["trial_name"] = trial_name
-        new_answer["render_id"] = None
-        new_answer["render_label"] = None
+        #new_answer["render_id"] = None
+        #new_answer["render_label"] = None
         new_answer["component_name"] = component_name
-        new_answer["answer_id"] = state_values['Id']
-        new_answer["answer"] = state_values['Id']
         new_answer["answer_component_id"] = answer_component_id
 
-        # If no state datapoint is available, use the Render datapoint details.
-        if not state_answer_datapoints and render_answer_datapoints:
-            render_dp = render_answer_datapoints[0]
-            render_values = json.loads(render_dp['value'])
-            if isinstance(answer_id, int):
-                if answer_id >= len(render_values):
-                    answer = answer_id
-                else:
-                    answer = render_values[answer_id]['Label']
-            else:
-                answer = next((rv['Label'] for rv in render_values if rv['Id'] == answer_id), answer_id)
-            new_answer["HeaderLabel"] = header_label
-            new_answer["trial_name"] = trial_name
-            new_answer["render_id"] = [rv['Id'] for rv in render_values]
-            new_answer["render_label"] = [rv['Label'] for rv in render_values]
-            new_answer["component_name"] = component_name
-            new_answer["answer_id"] = answer_id
-            new_answer["answer"] = answer
-            new_answer["answer_component_id"] = answer_component_id
-
-        # Process the datetime field: produce both raw and ISO string versions.
+        # Process datetime.
         raw_dt, iso_dt = process_datetime(base_answer.get("datetime"))
         new_answer["datetime"] = raw_dt
         new_answer["datestring"] = iso_dt
 
         answers.append(new_answer)
     return answers
-
+    
 def get_trial_name(trial_definition_id, trial_definitions):
-    trial_def = trial_definitions.get(trial_definition_id, {})
-    return trial_def.get("name", "")
-
+        trial_def = trial_definitions.get(trial_definition_id, {})
+        return trial_def.get("name", "")
+    
 def get_component_name(trial_definition_id, answer_component_id, trial_definitions):
-    component_name = ''
-    for component in trial_definitions[trial_definition_id]['components']:
-        if component['id'] == answer_component_id:
-            # def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
-            # component_name = next(iter(def_data.values()))['HeaderLabel']
-            component_name = component['name']
-    return component_name
-
+        component_name = ''
+        for component in trial_definitions[trial_definition_id]['components']:
+            if component['id'] == answer_component_id:
+                # def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
+                # component_name = next(iter(def_data.values()))['HeaderLabel']
+                component_name = component['name']
+        return component_name
+    
 def get_component_header_label(trial_definition_id, answer_component_id, trial_definitions):
-    header_label = ''
-    # Loop over components in the specified trial definition.
-    for component in trial_definitions[trial_definition_id]['components']:
-        if component['id'] == answer_component_id:
-            # Get the definition_data which might be a dictionary or JSON string.
-            def_data = component.get('definition_data')
-            if isinstance(def_data, str):
-                try:
-                    def_data = json.loads(def_data)
-                except Exception as e:
-                    print("Error parsing definition_data:", e)
-                    return header_label
-            # Look for the Instruments key.
-            instruments = def_data.get('Instruments')
-            if instruments and isinstance(instruments, list) and len(instruments) > 0:
-                # Get the first instrument.
-                instrument_data = instruments[0].get('Instrument')
-                if instrument_data and isinstance(instrument_data, dict):
-                    # There could be different instrument types.
-                    # Loop over the instrument types and extract HeaderLabel from the first one.
-                    for instrument_key, instrument in instrument_data.items():
-                        header_label = instrument.get('HeaderLabel', '')
-                        break  # Found the first instrument, break out.
-            break
-    return header_label
+        header_label = ''
+        # Loop over components in the specified trial definition.
+        for component in trial_definitions[trial_definition_id]['components']:
+            if component['id'] == answer_component_id:
+                # Get the definition_data which might be a dictionary or JSON string.
+                def_data = component.get('definition_data')
+                if isinstance(def_data, str):
+                    try:
+                        def_data = json.loads(def_data)
+                    except Exception as e:
+                        print("Error parsing definition_data:", e)
+                        return header_label
+                # Look for the Instruments key.
+                instruments = def_data.get('Instruments')
+                if instruments and isinstance(instruments, list) and len(instruments) > 0:
+                    # Get the first instrument.
+                    instrument_data = instruments[0].get('Instrument')
+                    if instrument_data and isinstance(instrument_data, dict):
+                        # There could be different instrument types.
+                        # Loop over the instrument types and extract HeaderLabel from the first one.
+                        for instrument_key, instrument in instrument_data.items():
+                            header_label = instrument.get('HeaderLabel', '')
+                            break  # Found the first instrument, break out.
+                break
+        return header_label
 
 def fetch_all_time_series(study_result, experiment):
     user_id = experiment['protocol_user']['user_id']
