@@ -1,13 +1,40 @@
 import csv
 import json
 from datetime import datetime
-
+from collections import OrderedDict
 import pandas as pd
 import pyswagger.primitives
 
 from dump_utilities import is_video_event
 from result_path_generator import ResultPathGenerator
 
+
+def process_datetime(dt):
+    """
+    Returns a tuple (raw, iso) where:
+      - raw is the original datetime value
+      - iso is the datetime converted to an ISO formatted string with 6-digit microseconds.
+    If dt is an int/float, it's assumed to be a Unix timestamp.
+    If it's a string, we try to parse it as ISO; if that fails, we leave it as-is.
+    """
+    raw = dt
+    iso = None
+    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # this ensures 6 digits for microseconds
+    if isinstance(dt, (int, float)):
+        try:
+            d = datetime.fromtimestamp(dt)
+            iso = d.strftime(fmt)
+        except Exception:
+            iso = dt
+    elif isinstance(dt, str):
+        try:
+            d = datetime.fromisoformat(dt)
+            iso = d.strftime(fmt)
+        except ValueError:
+            iso = dt
+    else:
+        iso = dt
+    return raw, iso
 
 class ResultCollector:
     def __init__(self, result_path_generator: ResultPathGenerator):
@@ -66,23 +93,33 @@ class ResultCollector:
         else:
             duration = None  # Or choose another default/handling mechanism
     
-        experiment_event = {
-            "user_id": user_id,
-            "started_at": experiment.started_at,
-            "completed_at": experiment.completed_at,
-            "duration": duration,
-            "experiment_id": experiment.id,
-        }
+        # Create an OrderedDict for experiment_event
+        experiment_event = OrderedDict()
+        experiment_event["started_at"] = experiment.started_at
+        experiment_event["completed_at"] = experiment.completed_at
+        experiment_event["duration"] = duration
+        experiment_event["experiment_id"] = experiment.id
+        experiment_event["user_id"] = user_id
+        
+        # Add custom parameters in order
         custom_parameters = experiment['custom_parameters']
-        url_parameters = {key: value for key, value in custom_parameters.items()}
-        experiment_event.update(url_parameters)
+        for key, value in custom_parameters.items():
+            experiment_event[key] = value
     
+        # Add time series information
         for experiment_time_series_type, experiment_time_series_info in experiment_time_series.items():
             experiment_event[f"{experiment_time_series_type}_filename"] = experiment_time_series_info['filename']
     
-        url_parameters.update({ "user_id": user_id, "experiment_id": experiment.id })
-    
+        # Append the ordered event to the list
         self.experiment_events.append(experiment_event)
+    
+        # Similarly, construct an OrderedDict for url_parameters
+        url_parameters = OrderedDict()
+        for key, value in custom_parameters.items():
+            url_parameters[key] = value
+        url_parameters["user_id"] = user_id
+        url_parameters["experiment_id"] = experiment.id
+    
         self.url_parameters.append(url_parameters)
 
 
@@ -96,42 +133,51 @@ class ResultCollector:
         self.emit_to_csv(self.trial_results, "trial_results.csv")
 
     def add_trial_results(self, experiment, trial_results, trial_definitions: pyswagger.primitives.Model):
-        self.trial_results += [{
-            "protocol_definition_id": experiment['protocol_user']['protocol_definition_id'],
-            "experiment_id": experiment.id,
-            "phase_definition_id": trial_result.phase_definition_id,
-            "trial_definition_id": trial_result.trial_definition_id,
-            "user_id": experiment['protocol_user']['user_id'],
-            "trial_type": json.loads(trial_definitions[trial_result.trial_definition_id]['definition_data'])['TrialType'],
-            "trial_name": trial_definitions[trial_result.trial_definition_id]['name'],
-            "started_at": trial_result.started_at,
-            "completed_at": trial_result.completed_at,
-            "duration": (
-                datetime.fromisoformat(trial_result.completed_at.to_json()) -
-                datetime.fromisoformat(trial_result.started_at.to_json())
-            ).total_seconds() if trial_result.completed_at and trial_result.started_at else None,
-        } for trial_result in trial_results]
+        for trial_result in trial_results:
+            trial_result_entry = OrderedDict()
+            trial_result_entry["started_at"] = trial_result.started_at
+            trial_result_entry["completed_at"] = trial_result.completed_at
+            if trial_result.completed_at and trial_result.started_at:
+                trial_result_entry["duration"] = (
+                    datetime.fromisoformat(trial_result.completed_at.to_json()) -
+                    datetime.fromisoformat(trial_result.started_at.to_json())
+                ).total_seconds()
+            else:
+                trial_result_entry["duration"] = None
+            trial_result_entry["protocol_definition_id"] = experiment['protocol_user']['protocol_definition_id']
+            trial_result_entry["experiment_id"] = experiment.id
+            trial_result_entry["phase_definition_id"] = trial_result.phase_definition_id
+            trial_result_entry["trial_definition_id"] = trial_result.trial_definition_id
+            trial_result_entry["user_id"] = experiment['protocol_user']['user_id']
+            trial_result_entry["trial_type"] = json.loads(trial_definitions[trial_result.trial_definition_id]['definition_data'])['TrialType']
+            trial_result_entry["trial_name"] = trial_definitions[trial_result.trial_definition_id]['name']
+    
+            self.trial_results.append(trial_result_entry)
 
     def emit_data_points(self):
         self.emit_to_csv(self.data_points, "data_points.csv")
 
     def add_data_points(self, experiment, trial_result, data_points):
-        self.data_points += [{
-            "study_result_id": data_point["study_result_id"],
-            "experiment_id": experiment.id,
-            "phase_definition_id": trial_result.phase_definition_id,
-            "trial_definition_id": trial_result.trial_definition_id,
-            "component_id": data_point["component_id"],           
-            "protocol_user_id": experiment['protocol_user']['id'],
-            "user_id": experiment['protocol_user']['user_id'],
-            "id": data_point["id"],            
-            "datetime": data_point["datetime"],
-            "point_type": data_point["point_type"],
-            "kind": data_point["kind"],
-            "method": data_point["method"],
-            "entity_type": data_point["entity_type"],
-            "value": data_point["value"],
-        } for data_point in data_points]
+        for dp in data_points:
+            dp_entry = OrderedDict()
+            # Process the datetime into two fields:
+            raw_dt, iso_dt = process_datetime(dp["datetime"])
+            dp_entry["datestring"] = iso_dt
+            dp_entry["datetime"] = raw_dt            
+            dp_entry["study_result_id"] = dp["study_result_id"]
+            dp_entry["experiment_id"] = experiment.id
+            dp_entry["phase_definition_id"] = trial_result.phase_definition_id
+            dp_entry["trial_definition_id"] = trial_result.trial_definition_id
+            dp_entry["component_id"] = dp["component_id"]
+            dp_entry["protocol_user_id"] = experiment['protocol_user']['id']
+            dp_entry["user_id"] = experiment['protocol_user']['user_id']
+            dp_entry["id"] = dp["id"]            
+            dp_entry["point_type"] = dp["point_type"]
+            dp_entry["kind"] = dp["kind"]
+            dp_entry["method"] = dp["method"]
+            dp_entry["entity_type"] = dp["entity_type"]
+            dp_entry["value"] = dp["value"]
+            self.data_points.append(dp_entry)
 
     def emit_video_events(self):
         video_events = filter(lambda x: is_video_event(x), self.data_points)
@@ -140,26 +186,30 @@ class ResultCollector:
 
     def emit_video_layout_events(self):
         layout_data_points = list(filter(lambda x: x['point_type'] == 'Layout', self.data_points))
-        if len(layout_data_points) == 0:
+        if not layout_data_points:
             return
         layouts = []
         for layout_data_point in layout_data_points:
             video_layout = json.loads(layout_data_point['value'])
-            video_layout_event = {"experiment_id": layout_data_point['experiment_id'],
-                                  "phase_definition_id": layout_data_point['phase_definition_id'],
-                                  "trial_definition_id": layout_data_point['trial_definition_id'],
-                                  "component_id": layout_data_point['component_id'],
-                                  "user_id": layout_data_point['user_id'],
-                                  "datetime": layout_data_point['datetime'],
-                                  "x": video_layout['x'],
-                                  "y": video_layout['y'],
-                                  "width": video_layout['width'],
-                                  "height": video_layout['height'],
-                                  "top": video_layout['top'],
-                                  "right": video_layout['right'],
-                                  "bottom": video_layout['bottom'],
-                                  "left": video_layout['left']}
-
+            # Process datetime into two forms:
+            raw_dt, iso_dt = process_datetime(layout_data_point['datetime'])
+            
+            video_layout_event = OrderedDict()
+            video_layout_event["datetime"] = raw_dt
+            video_layout_event["datestring"] = iso_dt
+            video_layout_event["experiment_id"] = layout_data_point['experiment_id']
+            video_layout_event["phase_definition_id"] = layout_data_point['phase_definition_id']
+            video_layout_event["trial_definition_id"] = layout_data_point['trial_definition_id']
+            video_layout_event["component_id"] = layout_data_point['component_id']
+            video_layout_event["user_id"] = layout_data_point['user_id']
+            video_layout_event["x"] = video_layout['x']
+            video_layout_event["y"] = video_layout['y']
+            video_layout_event["width"] = video_layout['width']
+            video_layout_event["height"] = video_layout['height']
+            video_layout_event["top"] = video_layout['top']
+            video_layout_event["right"] = video_layout['right']
+            video_layout_event["bottom"] = video_layout['bottom']
+            video_layout_event["left"] = video_layout['left']
             layouts.append(video_layout_event)
         self.emit_to_csv(layouts, "video_layout_events.csv")
 
@@ -205,8 +255,15 @@ class ResultCollector:
 
     def emit_to_csv(self, data, filename):
         if data:
-            header = set().union(*(row.keys() for row in data))
-            with open(self.result_path_generator.result_path_for(filename), 'w') as file:
+            # Use the keys from the first row as the header
+            header = list(data[0].keys())
+            # If subsequent rows might have extra keys, append them in order of appearance.
+            for row in data[1:]:
+                for key in row.keys():
+                    if key not in header:
+                        header.append(key)
+            with open(self.result_path_generator.result_path_for(filename), 'w', newline='') as file:
                 writer = csv.DictWriter(file, fieldnames=header)
                 writer.writeheader()
                 writer.writerows(data)
+

@@ -16,6 +16,9 @@ from study_definition_helpers import dump_study_definition
 from dump_utilities import with_dates
 from result_path_generator import ResultPathGenerator
 from result_collector import ResultCollector
+from collections import OrderedDict
+from datetime import datetime
+import re
 
 ##
 ## DEFAULT ARGUMENTS
@@ -33,6 +36,51 @@ arg_defaults = {
 ##
 ## HELPERS
 ##
+
+def remove_elicit_formatting(text: str) -> str:
+    # Remove literal tokens that we know should vanish.
+    text = text.replace("{{n}}", "")
+    
+    # This pattern matches the innermost double curly braces with no nested ones.
+    pattern = re.compile(r"\{\{([^{}]+?)\}\}")
+    
+    # Continue replacing until no further changes occur.
+    while True:
+        # The replacement function:
+        # If the match contains a pipe, return the text after the last pipe.
+        # Otherwise, remove the match completely.
+        new_text = pattern.sub(lambda m: m.group(1).split('|')[-1].strip() if '|' in m.group(1) else "", text)
+        if new_text == text:
+            break
+        text = new_text
+    return text.strip()
+
+def process_datetime(dt):
+    """
+    Returns a tuple (raw, iso) where:
+      - raw is the original datetime value
+      - iso is the datetime converted to an ISO formatted string with 6-digit microseconds.
+    If dt is an int/float, it's assumed to be a Unix timestamp.
+    If it's a string, we try to parse it as ISO; if that fails, we leave it as-is.
+    """
+    raw = dt
+    iso = None
+    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # this ensures 6 digits for microseconds
+    if isinstance(dt, (int, float)):
+        try:
+            d = datetime.fromtimestamp(dt)
+            iso = d.strftime(fmt)
+        except Exception:
+            iso = dt
+    elif isinstance(dt, str):
+        try:
+            d = datetime.fromisoformat(dt)
+            iso = d.strftime(fmt)
+        except ValueError:
+            iso = dt
+    else:
+        iso = dt
+    return raw, iso
 
 def debug_log(message):
     if args.debug:
@@ -186,15 +234,16 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
     debug_log(f"Got {len(response_data_points)} datapoints for study result {study_result.id}, trial result {trial_result.id} protocol user {protocol_user_id}")
 
     make_data_point_row = lambda data_point: ({
-        "id": data_point.id,
+        "datetime": data_point.datetime,
+        "experiment_id": experiment.id,
+        
         "phase_definition_id": trial_result.phase_definition_id,
         "trial_definition_id": trial_result.trial_definition_id,
         "component_id": data_point['component_id'],
         "study_result_id": study_result.id,
-        "experiment_id": experiment.id,
+        "id": data_point.id,
         "protocol_user_id": protocol_user_id,
-        "user_id": user_id,
-        "datetime": data_point.datetime,
+        "user_id": user_id,        
         "point_type": data_point.point_type,
         "kind": data_point.kind,
         "method": data_point.method,
@@ -211,104 +260,146 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
 def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.primitives.Model):
     """
     Synthesize answers from datapoints & trial/component definitions.
-
-    This transforms the data points into a more convenient format for analysis by aligning the final state of each component with the render of that component and enriches
-    the result with the labels to make the result easier for humans to understand.
+    
+    This transforms the data points into a more convenient format for analysis by aligning
+    the final state of each component with the render of that component and enriches
+    the result with labels to make the result easier for humans to understand.
     """
-
-    answer_datapoints = list(
-        filter(lambda row: row['point_type'] == 'State' or row['point_type'] == 'Render', datapoints))
-    grouped_answer_datapoints = collections.defaultdict(list)
+    
+    # Define the desired column order explicitly.
+    desired_order = [
+        "datestring", "datetime", "experiment_id", "phase_definition_id", "trial_definition_id", "trial_name","component_id", "id",
+        "study_result_id", "protocol_user_id", "user_id", "answer_component_id",
+        "point_type", "kind", "method", "entity_type", 
+        "render_id", "render_label", "component_name", "HeaderLabel","value", "answer_id", "answer",
+    ]
+    
+    answer_datapoints = list(filter(lambda row: row['point_type'] in ['State', 'Render'], datapoints))
+    grouped_answer_datapoints = {}
     for data_point in answer_datapoints:
-        grouped_answer_datapoints[data_point['component_id']].append(data_point)
+        comp_id = data_point['component_id']
+        grouped_answer_datapoints.setdefault(comp_id, []).append(data_point)
+        
     answers = []
-    for answer_component_id, answer_datapoints in grouped_answer_datapoints.items():
-
-        render_answer_datapoints = list(filter(lambda row: row['point_type'] == 'Render', answer_datapoints))
-        state_answer_datapoints = list(filter(lambda row: row['point_type'] == 'State', answer_datapoints))
-
-        if len(render_answer_datapoints) == 0 and len(state_answer_datapoints) == 0:
-            print(
-                "WARN: Found answer datapoints for component %d without both Render and State datapoints" % answer_component_id)
-            pp.pprint(render_answer_datapoints)
-            pp.pprint(state_answer_datapoints)
-
+    for answer_component_id, group in grouped_answer_datapoints.items():
+        render_answer_datapoints = [row for row in group if row['point_type'] == 'Render']
+        state_answer_datapoints = [row for row in group if row['point_type'] == 'State']
+        
+        if not state_answer_datapoints and not render_answer_datapoints:
+            print("WARN: Found answer datapoints for component %d without both Render and State datapoints" % answer_component_id)
             continue
 
-        state_answer_datapoint = state_answer_datapoints[0]
+        # We'll use the state answer datapoint if available.
+        if state_answer_datapoints:
+            base_answer = state_answer_datapoints[0]
+        else:
+            base_answer = render_answer_datapoints[0]
 
-        if isinstance(state_answer_datapoint['value'], dict):
-            state_values = state_answer_datapoint['value']
+        # Build a new OrderedDict in the desired order.
+        new_answer = OrderedDict()
+        for key in desired_order:
+            new_answer[key] = base_answer.get(key, None)
+        
+        # Process the 'value' field to extract the answer id.
+        if isinstance(base_answer.get('value'), dict):
+            state_values = base_answer['value']
         else:
             try:
-                state_values = json.loads(state_answer_datapoint['value'])
+                state_values = json.loads(base_answer.get('value'))
             except (json.JSONDecodeError, TypeError) as e:
-                print(f"Error decoding JSON from state_answer_datapoint['value']: {e} {state_answer_datapoint}")
+                print(f"Error decoding JSON from base_answer['value']: {e} {base_answer}")
                 state_values = {}
+        
         if 'Id' not in state_values:
             continue
 
         try:
             answer_id = int(state_values['Id'])
         except ValueError:
-            print(
-                f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
+            print(f"WARN: Found answer datapoint for component {answer_component_id} with Id {state_values['Id']} but it is not an integer")
             answer_id = state_values['Id']
 
-        if len(state_answer_datapoints) > 0:
-            question = get_question(state_answer_datapoint['trial_definition_id'], answer_component_id, trial_definitions)
-            state_answer_datapoint.update({
-                "render_id": None,
-                "render_label": None,
-                "question": question,
-                "answer_id": state_values['Id'],
-                "answer": state_values['Id'],
-                "answer_component_id": answer_component_id,
-            })
+        component_name = get_component_name(base_answer['trial_definition_id'], answer_component_id, trial_definitions)
+        header_label = remove_elicit_formatting(get_component_header_label(base_answer['trial_definition_id'], answer_component_id, trial_definitions))
+        trial_name = get_trial_name(base_answer['trial_definition_id'], trial_definitions)
+        
+        # Update the synthesized answer with our additional fields in our desired order.
+        new_answer["HeaderLabel"] = header_label
+        new_answer["trial_name"] = trial_name
+        new_answer["render_id"] = None
+        new_answer["render_label"] = None
+        new_answer["component_name"] = component_name
+        new_answer["answer_id"] = state_values['Id']
+        new_answer["answer"] = state_values['Id']
+        new_answer["answer_component_id"] = answer_component_id
 
-            answers.append(state_answer_datapoint)
-        else:
-            # because of randomized instruments, we need to determine the answer with reference to the actual
-            # order of the answers rendered.
-            render_answer_datapoint = render_answer_datapoints[0]
-            state_answer_datapoint = state_answer_datapoints[0]
-
-            question = get_question(render_answer_datapoint['trial_definition_id'], answer_component_id, trial_definitions)
-
-            render_values = json.loads(render_answer_datapoint['value'])
-
+        # If no state datapoint is available, use the Render datapoint details.
+        if not state_answer_datapoints and render_answer_datapoints:
+            render_dp = render_answer_datapoints[0]
+            render_values = json.loads(render_dp['value'])
             if isinstance(answer_id, int):
                 if answer_id >= len(render_values):
-                    print(
-                        f"WARN: Found answer datapoint for component {answer_component_id} with Id {answer_id} but only {len(render_values)} Render datapoints")
                     answer = answer_id
                 else:
                     answer = render_values[answer_id]['Label']
             else:
-                answer = next((render_value['Label'] for render_value in render_values if render_value['Id'] == answer_id), answer_id)
+                answer = next((rv['Label'] for rv in render_values if rv['Id'] == answer_id), answer_id)
+            new_answer["HeaderLabel"] = header_label
+            new_answer["trial_name"] = trial_name
+            new_answer["render_id"] = [rv['Id'] for rv in render_values]
+            new_answer["render_label"] = [rv['Label'] for rv in render_values]
+            new_answer["component_name"] = component_name
+            new_answer["answer_id"] = answer_id
+            new_answer["answer"] = answer
+            new_answer["answer_component_id"] = answer_component_id
 
-            state_answer_datapoint.update({
-                "render_id": [render_value['Id'] for render_value in render_values],
-                "render_label": [render_value['Label'] for render_value in render_values],
-                "question": question,
-                "answer_id": answer_id,
-                "answer": answer,
-                "answer_component_id": answer_component_id,
-            })
+        # Process the datetime field: produce both raw and ISO string versions.
+        raw_dt, iso_dt = process_datetime(base_answer.get("datetime"))
+        new_answer["datetime"] = raw_dt
+        new_answer["datestring"] = iso_dt
 
-            answers.append(state_answer_datapoint)
-
+        answers.append(new_answer)
     return answers
 
+def get_trial_name(trial_definition_id, trial_definitions):
+    trial_def = trial_definitions.get(trial_definition_id, {})
+    return trial_def.get("name", "")
 
-def get_question(trial_definition_id, answer_component_id, trial_definitions):
-    question = ''
+def get_component_name(trial_definition_id, answer_component_id, trial_definitions):
+    component_name = ''
     for component in trial_definitions[trial_definition_id]['components']:
         if component['id'] == answer_component_id:
             # def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
-            # question = next(iter(def_data.values()))['HeaderLabel']
-            question = component['name']
-    return question
+            # component_name = next(iter(def_data.values()))['HeaderLabel']
+            component_name = component['name']
+    return component_name
+
+def get_component_header_label(trial_definition_id, answer_component_id, trial_definitions):
+    header_label = ''
+    # Loop over components in the specified trial definition.
+    for component in trial_definitions[trial_definition_id]['components']:
+        if component['id'] == answer_component_id:
+            # Get the definition_data which might be a dictionary or JSON string.
+            def_data = component.get('definition_data')
+            if isinstance(def_data, str):
+                try:
+                    def_data = json.loads(def_data)
+                except Exception as e:
+                    print("Error parsing definition_data:", e)
+                    return header_label
+            # Look for the Instruments key.
+            instruments = def_data.get('Instruments')
+            if instruments and isinstance(instruments, list) and len(instruments) > 0:
+                # Get the first instrument.
+                instrument_data = instruments[0].get('Instrument')
+                if instrument_data and isinstance(instrument_data, dict):
+                    # There could be different instrument types.
+                    # Loop over the instrument types and extract HeaderLabel from the first one.
+                    for instrument_key, instrument in instrument_data.items():
+                        header_label = instrument.get('HeaderLabel', '')
+                        break  # Found the first instrument, break out.
+            break
+    return header_label
 
 def fetch_all_time_series(study_result, experiment):
     user_id = experiment['protocol_user']['user_id']
