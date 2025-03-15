@@ -4,37 +4,68 @@ from datetime import datetime
 from collections import OrderedDict
 import pandas as pd
 import pyswagger.primitives
-
 from dump_utilities import is_video_event
 from result_path_generator import ResultPathGenerator
+from dateutil.parser import isoparse
+from dateutil import parser
 
-
+def get_trial_name(trial_definition_id, trial_definitions):
+        trial_def = trial_definitions.get(trial_definition_id, {})
+        return trial_def.get("name", "")
+    
+def get_component_name(trial_definition_id, answer_component_id, trial_definitions):
+        component_name = ''
+        for component in trial_definitions[trial_definition_id]['components']:
+            if component['id'] == answer_component_id:
+                # def_data = json.loads(component['definition_data'])['Instruments'][0]['Instrument']
+                # component_name = next(iter(def_data.values()))['HeaderLabel']
+                component_name = component['name']
+        return component_name
+    
 def process_datetime(dt):
     """
-    Returns a tuple (raw, iso) where:
-      - raw is the original datetime value
-      - iso is the datetime converted to an ISO formatted string with 6-digit microseconds.
-    If dt is an int/float, it's assumed to be a Unix timestamp.
-    If it's a string, we try to parse it as ISO; if that fails, we leave it as-is.
+    Converts various datetime formats into:
+      - A raw numerical timestamp (seconds since epoch)
+      - A cleaned ISO 8601 string WITHOUT timezone info
+    Ensures compatibility across all functions using this.
     """
-    raw = dt
+    if dt is None:
+        return None, None  # Handle missing timestamps safely
+
+    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # Ensure microsecond precision
+    raw = None
     iso = None
-    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # this ensures 6 digits for microseconds
-    if isinstance(dt, (int, float)):
-        try:
-            d = datetime.fromtimestamp(dt)
+
+    try:
+        # Handle pyswagger.primitives._time.Datetime
+        if isinstance(dt, pyswagger.primitives._time.Datetime):
+            dt = dt.to_json()  # Convert to string
+
+        if isinstance(dt, (int, float)):  # Unix timestamp
+            d = datetime.utcfromtimestamp(dt)
+            raw = d.timestamp()
             iso = d.strftime(fmt)
-        except Exception:
-            iso = dt
-    elif isinstance(dt, str):
-        try:
-            d = datetime.fromisoformat(dt)
+
+        elif isinstance(dt, str):  # String timestamps
+            dt_cleaned = dt.replace("Z", "").replace("+00:00", "")  # Remove timezone offsets
+            d = isoparse(dt_cleaned)
+            raw = d.timestamp()
             iso = d.strftime(fmt)
-        except ValueError:
-            iso = dt
-    else:
-        iso = dt
+
+        elif isinstance(dt, datetime):  # Already a datetime object
+            d = dt.replace(tzinfo=None)  # Ensure timezone is removed
+            raw = d.timestamp()
+            iso = d.strftime(fmt)
+
+        if raw is None or iso is None:
+            raise ValueError("Conversion failed")
+
+    except Exception as e:
+        print(f"⚠️ Could not parse datetime: {dt} → Error: {e}")
+        return None, None  # Prevent breaking the script
+
     return raw, iso
+
 
 class ResultCollector:
     def __init__(self, result_path_generator: ResultPathGenerator):
@@ -46,7 +77,7 @@ class ResultCollector:
         self.data_points = []
         self.mouse_tracking_summary = []
         self.landmarker_summary = []
-
+        self.trial_definitions = {}
     def emit(self):
         if len(self.answers) > 0:
             self.emit_answers()
@@ -58,8 +89,9 @@ class ResultCollector:
             self.emit_trial_results()
         if len(self.data_points) > 0:
             self.emit_data_points()
-            self.emit_video_events()
+            self.emit_video_events(self.trial_definitions)
             self.emit_video_layout_events()
+            self.emit_video_playback_summary()            
             self.emit_mouse_tracking_summary_events()
             self.emit_landmarker_summary_events()
 
@@ -72,14 +104,45 @@ class ResultCollector:
     def emit_experiment_events(self):
         base_events = pd.DataFrame.from_records(self.experiment_events)
         url_params = pd.DataFrame.from_records(self.url_parameters)
-        mouse_tracking_summary = pd.DataFrame.from_records(self.mouse_tracking_summary)
         landmarker_summary = pd.DataFrame.from_records(self.landmarker_summary)
-
-        merged_data = base_events.merge(url_params, on="user_id", how="outer") \
-            .merge(mouse_tracking_summary, on="user_id", how="outer") \
-            .merge(landmarker_summary, on="user_id", how="outer")
-
+    
+        # Count the number of completed trials per user (assuming trial_results is available)
+        trials_completed_df = pd.DataFrame(self.trial_results)
+        trials_completed_count = trials_completed_df.groupby('user_id').size().reset_index(name='trials_completed')
+    
+        # Rename duration in landmarker_summary
+        landmarker_summary = landmarker_summary.rename(columns={'duration': 'duration_landmark'})
+    
+        # Merge datasets carefully to avoid duplicates
+        merged_data = base_events.merge(url_params, on="user_id", how="left", suffixes=(None, "_url"))
+        merged_data = merged_data.merge(trials_completed_count, on="user_id", how="left")
+        merged_data = merged_data.merge(landmarker_summary[['user_id', 'duration_landmark']], on="user_id", how="left")
+    
+        # Select and rename final columns
+        final_columns = [
+            "started_at", 
+            "completed_at", 
+            "duration", 
+            "experiment_id", 
+            "user_id", 
+            "trials_completed",
+            "STUDY_ID",  # From url_params
+            "SESSION_ID",  # From url_params
+            "PROLIFIC_PID",  # From url_params
+            "duration_landmark",
+            "mouse_filename",
+            "face_landmark_filename",
+        ]
+    
+        # Ensure all final columns exist (fill missing ones with NaN)
+        for col in final_columns:
+            if col not in merged_data.columns:
+                merged_data[col] = pd.NA
+    
+        merged_data = merged_data[final_columns]
+    
         self.emit_to_csv(merged_data.to_dict(orient="records"), "experiment_events.csv")
+
 
     def add_experiment_event(self, experiment, experiment_time_series):
         user_id = experiment['protocol_user']['user_id']
@@ -122,7 +185,6 @@ class ResultCollector:
     
         self.url_parameters.append(url_parameters)
 
-
     def emit_url_parameters(self):
         self.emit_to_csv(self.url_parameters, "url_parameters.csv")
 
@@ -160,10 +222,11 @@ class ResultCollector:
     def add_data_points(self, experiment, trial_result, data_points):
         for dp in data_points:
             dp_entry = OrderedDict()
+    
             # Process the datetime into two fields:
-            raw_dt, iso_dt = process_datetime(dp["datetime"])
+            raw_dt, iso_dt = process_datetime(dp.get("datetime"))    
             dp_entry["datestring"] = iso_dt
-            dp_entry["datetime"] = raw_dt            
+            dp_entry["datetime"] = raw_dt
             dp_entry["study_result_id"] = dp["study_result_id"]
             dp_entry["experiment_id"] = experiment.id
             dp_entry["phase_definition_id"] = trial_result.phase_definition_id
@@ -171,19 +234,97 @@ class ResultCollector:
             dp_entry["component_id"] = dp["component_id"]
             dp_entry["protocol_user_id"] = experiment['protocol_user']['id']
             dp_entry["user_id"] = experiment['protocol_user']['user_id']
-            dp_entry["id"] = dp["id"]            
+            dp_entry["id"] = dp["id"]
             dp_entry["point_type"] = dp["point_type"]
             dp_entry["kind"] = dp["kind"]
             dp_entry["method"] = dp["method"]
             dp_entry["entity_type"] = dp["entity_type"]
             dp_entry["value"] = dp["value"]
+    
             self.data_points.append(dp_entry)
 
-    def emit_video_events(self):
-        video_events = filter(lambda x: is_video_event(x), self.data_points)
-        video_events = list(video_events)
+
+    def emit_video_events(self, trial_definitions):
+        video_event_points = list(filter(lambda x: is_video_event(x), self.data_points))
+       
+        video_events = []
+    
+        for dp in video_event_points:
+            video_event = OrderedDict()
+    
+            # Extract and process datetime
+            raw_dt, iso_dt = process_datetime(dp.get("datetime"))
+    
+            if raw_dt is None or iso_dt is None:
+                print(f"⚠️ Skipping event due to unparseable datetime: {dp.get('datetime')} FULL EVENT: {dp}")  # Log full event
+                continue
+    
+            # Add all relevant fields back
+            video_event["datetime"] = raw_dt
+            video_event["datestring"] = iso_dt
+            video_event["experiment_id"] = dp.get("experiment_id")
+            video_event["phase_definition_id"] = dp.get("phase_definition_id")
+            video_event["trial_definition_id"] = dp.get("trial_definition_id")
+            video_event["trial_name"] = get_trial_name(dp["trial_definition_id"], trial_definitions)
+            video_event["component_id"] = dp.get("component_id")
+            video_event["component_name"] = get_component_name(dp["trial_definition_id"], dp["component_id"], trial_definitions)
+            video_event["protocol_user_id"] = dp.get("protocol_user_id")
+            video_event["user_id"] = dp.get("user_id")
+            video_event["id"] = dp.get("id")
+            video_event["point_type"] = dp.get("point_type")
+            video_event["value"] = dp.get("value")
+    
+            video_events.append(video_event)
+    
+        #print(f"✅ Successfully processed {len(video_events)} video events.")  # Debugging
         self.emit_to_csv(video_events, "video_events.csv")
 
+    def emit_video_playback_summary(self):
+        video_event_points = filter(lambda x: is_video_event(x), self.data_points)
+        user_playback_events = {}
+    
+        for dp in video_event_points:
+            user_id = dp["user_id"]
+    
+            if user_id not in user_playback_events:
+                user_playback_events[user_id] = OrderedDict({
+                    "datetime_start": None,  # Numerical timestamp
+                    "datetime_end": None,    # Numerical timestamp
+                    "time_string_start": None,  # ISO string
+                    "time_string_end": None,  # ISO string
+                    "duration": None,  # Playback duration
+                    "study_result_id": dp["study_result_id"],
+                    "experiment_id": dp["experiment_id"],
+                    "phase_definition_id": dp["phase_definition_id"],
+                    "trial_definition_id": dp["trial_definition_id"],
+                    "component_id": dp["component_id"],
+                    "user_id": dp["user_id"]
+                })
+    
+            raw_dt, iso_dt = process_datetime(dp["datetime"])
+    
+            if raw_dt is None or iso_dt is None:
+                print(f"⚠️ Skipping event due to unparseable datetime: {dp['datetime']}")
+                continue  # Don't process unparseable timestamps
+    
+            event_type = dp["point_type"]
+    
+            if event_type == "PLAYING":
+                user_playback_events[user_id]["datetime_start"] = raw_dt
+                user_playback_events[user_id]["time_string_start"] = iso_dt
+            elif event_type in ["ENDED", "PAUSED", "Stop"]:
+                user_playback_events[user_id]["datetime_end"] = raw_dt
+                user_playback_events[user_id]["time_string_end"] = iso_dt
+    
+        video_playback_summary = []
+        for playback_event in user_playback_events.values():
+            if playback_event["datetime_start"] and playback_event["datetime_end"]:
+                playback_event["duration"] = playback_event["datetime_end"] - playback_event["datetime_start"]
+    
+            video_playback_summary.append(playback_event)
+    
+        self.emit_to_csv(video_playback_summary, "video_playback_summary.csv")
+    
     def emit_video_layout_events(self):
         layout_data_points = list(filter(lambda x: x['point_type'] == 'Layout', self.data_points))
         if not layout_data_points:

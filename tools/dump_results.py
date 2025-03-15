@@ -19,13 +19,16 @@ from result_collector import ResultCollector
 from collections import OrderedDict
 from datetime import datetime
 import re
+from dateutil.parser import parse
+from dateutil.parser import isoparse
+from dateutil import parser
 
 ##
 ## DEFAULT ARGUMENTS
 ##
 
 arg_defaults = {
-    "study_id": 1420,
+    "study_id": 1421,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",
@@ -90,32 +93,48 @@ def clean_multi_answer_value(val):
     else:
         return remove_formatting_recursive(val)
 
-
 def process_datetime(dt):
     """
-    Returns a tuple (raw, iso) where:
-      - raw is the original datetime value
-      - iso is the datetime converted to an ISO formatted string with 6-digit microseconds.
-    If dt is an int/float, it's assumed to be a Unix timestamp.
-    If it's a string, we try to parse it as ISO; if that fails, we leave it as-is.
+    Converts various datetime formats into:
+      - A raw numerical timestamp (seconds since epoch)
+      - A cleaned ISO 8601 string WITHOUT timezone info
+    Ensures compatibility across all functions using this.
     """
-    raw = dt
+    if dt is None:
+        return None, None  # Handle missing timestamps safely
+
+    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # Ensure microsecond precision
+    raw = None
     iso = None
-    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # this ensures 6 digits for microseconds
-    if isinstance(dt, (int, float)):
-        try:
-            d = datetime.fromtimestamp(dt)
+
+    try:
+        # Handle pyswagger.primitives._time.Datetime
+        if isinstance(dt, pyswagger.primitives._time.Datetime):
+            dt = dt.to_json()  # Convert to string
+
+        if isinstance(dt, (int, float)):  # Unix timestamp
+            d = datetime.utcfromtimestamp(dt)
+            raw = d.timestamp()
             iso = d.strftime(fmt)
-        except Exception:
-            iso = dt
-    elif isinstance(dt, str):
-        try:
-            d = datetime.fromisoformat(dt)
+
+        elif isinstance(dt, str):  # String timestamps
+            dt_cleaned = dt.replace("Z", "").replace("+00:00", "")  # Remove timezone offsets
+            d = isoparse(dt_cleaned)
+            raw = d.timestamp()
             iso = d.strftime(fmt)
-        except ValueError:
-            iso = dt
-    else:
-        iso = dt
+
+        elif isinstance(dt, datetime):  # Already a datetime object
+            d = dt.replace(tzinfo=None)  # Ensure timezone is removed
+            raw = d.timestamp()
+            iso = d.strftime(fmt)
+
+        if raw is None or iso is None:
+            raise ValueError("Conversion failed")
+
+    except Exception as e:
+        print(f"⚠️ Could not parse datetime: {dt} → Error: {e}")
+        return None, None  # Prevent breaking the script
+
     return raw, iso
 
 def debug_log(message):
@@ -313,6 +332,56 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
 
     return list(map(make_data_point_row, response_data_points))
 
+    def emit_video_events(data_points, result_path_generator):
+        """
+        Extracts video-specific events from the data_points and emits them to a CSV file (video_events.csv).
+    
+        Extracted events include:
+        - UNSTARTED
+        - PLAYING
+        - PAUSED
+        - STOPPED
+        - ENDED
+        - BUFFERING
+        - CUED
+        - START
+        - COMPLETED
+    
+        """
+        video_events = ["UNSTARTED", "PLAYING", "PAUSED", "STOPPED", "ENDED", "BUFFERING", "CUED", "Start", "Stop"]
+    
+        video_data_points = [dp for dp in data_points if dp['point_type'] in video_events]
+    
+        if not video_events:
+            return
+    
+        video_event_rows = []
+    
+        for dp in video_events:
+            video_event = OrderedDict()
+    
+            # Extract basic info
+            raw_dt, iso_dt = process_datetime(dp.get('datetime'))
+            video_event["datetime"] = raw_dt
+            video_event["datestring"] = iso_dt
+            video_event["experiment_id"] = dp.get('experiment_id')
+            video_event["phase_definition_id"] = dp.get('phase_definition_id')
+            video_event["trial_definition_id"] = dp.get('trial_definition_id')
+            video_event["component_id"] = dp.get('component_id')
+            video_event["study_result_id"] = dp.get('study_result_id')
+            video_event["protocol_user_id"] = dp.get('protocol_user_id')
+            video_event["user_id"] = dp.get('user_id')
+            video_event["id"] = dp.get('id')
+            video_event["point_type"] = dp.get('point_type')
+            video_event["kind"] = dp.get('kind')
+            video_event["method"] = dp.get('method')
+            video_event["entity_type"] = dp.get('entity_type')
+            video_event["value"] = dp.get('value')
+    
+            video_events.append(video_event)
+    
+        return video_events
+    
 def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.primitives.Model):
     """
     Synthesize answers from datapoints & trial/component definitions.
@@ -755,6 +824,7 @@ def process(collector: ResultCollector, results_path_generator: ResultPathGenera
         if 'id' in trial_def:
             trial_definitions[trial_def['id']] = trial_def
 
+    collector.trial_definitions = trial_definitions
     print("\n\nSTUDY_RESULTS\n\n")
     if args.debug:
         pp.pprint([with_dates(study_result) for study_result in study_results])
