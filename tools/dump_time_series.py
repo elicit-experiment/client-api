@@ -201,22 +201,22 @@ def fetch_time_series(url, file_type, base_filename, filename, authorization, ve
 
         # Check the first few bytes of the content to verify if it is actually a gzip file, despite the headers.
         # This can happen for in-progress files, since the content type is only for the base type in that case.
-        if not is_gzip:
-            print(f"Checking gzip content for {filename}...")
-            try:
-                with open(filename, 'rb', encoding=None) as fd:
-                    content_peek = fd.read(2)
-                    if content_peek == b'\x1f\x8b':  # Magic number for gzip
-                        print("File is gzip despite headers suggesting otherwise.")
-
-                        # move the file on disk to have the ".gz" extension
-                        gzip_filename = f"{filename}.gz"
-                        os.rename(filename, gzip_filename)
-                        filename = gzip_filename
-                        is_gzip = True
-
-            except Exception as e:
-                print(f"Error while checking gzip content: {e}")
+        # if not is_gzip:
+        #     print(f"Checking gzip content for {filename}...")
+        #     try:
+        #         with open(filename, 'rb', encoding=None) as fd:
+        #             content_peek = fd.read(2)
+        #             if content_peek == b'\x1f\x8b':  # Magic number for gzip
+        #                 print("File is gzip despite headers suggesting otherwise.")
+        #
+        #                 # move the file on disk to have the ".gz" extension
+        #                 gzip_filename = f"{filename}.gz"
+        #                 os.rename(filename, gzip_filename)
+        #                 filename = gzip_filename
+        #                 is_gzip = True
+        #
+        #     except Exception as e:
+        #         print(f"Error while checking gzip content: {e}")
 
 
         filename = filename.replace('.gz', '')

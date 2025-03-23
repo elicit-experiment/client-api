@@ -764,7 +764,6 @@ def fetch_all_time_series(study_result, experiment):
             final_filename = query_filename
 
             if time_series.series_type == 'face_landmark':
-                print(f"Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type}")
                 if time_series.file_type == 'msgpack':
                     ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
 
@@ -772,24 +771,33 @@ def fetch_all_time_series(study_result, experiment):
                 else:
                     ndjson_filename = final_filename
 
-                with open(ndjson_filename, 'r') as ndjson_file:
-                    try:
-                        for line in ndjson_file:
-                            stripped_line = line.strip()
-                            if stripped_line == '':
-                                continue
-                            try:
-                                data = json.loads(stripped_line)
+                uncompressed_filename = final_filename.replace('face_landmark.json',
+                                                               'face_landmark_uncompressed.json')
 
-                                uncompressed_filename = final_filename.replace('face_landmark.json',
-                                                                               'face_landmark_uncompressed.json')
-                                with open(uncompressed_filename, 'a') as uncompressed_file:
-                                    uncompressed_file.write(json.dumps(uncompress_datapoint(data)) + '\n')
-                                final_filename = uncompressed_filename
-                            except json.JSONDecodeError:
-                                print(f"Error: Line '{stripped_line}' is not valid JSON.")
-                    except Exception as e:
-                        print(f"Error maybe uncompressed file #{ndjson_filename}: {e}")
+                print(f"        Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type} to {uncompressed_filename}")
+
+                with open(uncompressed_filename, 'a') as uncompressed_file:
+                    with open(ndjson_filename, 'r') as ndjson_file:
+                        try:
+                            for line in ndjson_file:
+                                stripped_line = line.strip()
+                                if stripped_line == '':
+                                    continue
+                                try:
+                                    data = json.loads(stripped_line)
+                                    transformed_data = json.dumps(uncompress_datapoint(data))
+
+                                    if transformed_data != '':
+                                        uncompressed_file.write(transformed_data + '\n')
+                                    else:
+                                        print(f"WARN: Skipping empty line in {ndjson_filename} for {data}")
+                                    final_filename = uncompressed_filename
+                                except json.JSONDecodeError:
+                                    print(f"Error: Line '{stripped_line}' is not valid JSON.")
+                        except Exception as e:
+                            print(f"Error maybe uncompressed file #{ndjson_filename}: {e}")
+            else:
+                print(f"        Skipping face landmark data for stage {stage_id} (user {user_id}), type {time_series.series_type}")
 
             experiment_time_series[time_series.series_type] = {
                 "filename": final_filename,
@@ -842,14 +850,14 @@ def process(collector: ResultCollector, results_path_generator: ResultPathGenera
             print(f"\tGot {len(experiments)} experiments for study result {study_result.id}")
 
         for experiment in experiments:
-            experiment_time_series = fetch_all_time_series(study_result, experiment)
-            collector.add_experiment_event(experiment, experiment_time_series)
-
             user_id = experiment['protocol_user']['user_id']
 
             if args.user_id and args.user_id != user_id:
                 print("Skipping user %d (not %d)" % (user_id, args.user_id))
                 continue
+
+            experiment_time_series = fetch_all_time_series(study_result, experiment)
+            collector.add_experiment_event(experiment, experiment_time_series)
 
             trial_results = el.find_trial_results(study_result_id=study_result.id, experiment_id=experiment.id)
 
