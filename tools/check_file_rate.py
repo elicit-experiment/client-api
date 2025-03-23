@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import show
+import hashlib
 
 # Set path from which to load the face landmarker json.
 file_path = "../results/1298/user_10/1981_time_series_1981.face_landmark_uncompressed.json"
@@ -23,8 +24,6 @@ def load_ndjson_to_dataframe(file_path):
         print(f"Error reading JSON file '{file_path}': {e}")
         return None
 
-
-df = load_ndjson_to_dataframe(file_path)
 
 def compute_interarrival_statistics(df, timestamp_column="timeStamp"):
     try:
@@ -103,6 +102,7 @@ def plot_histogram(df, column):
         print(f"An unexpected error occurred while plotting the histogram: {e}")
 
 
+df = load_ndjson_to_dataframe(facelandmark_file_path)
 stats, df = compute_interarrival_statistics(df)
 print(stats)
 if df is not None:
@@ -113,3 +113,45 @@ if df is not None:
             title="Plot of 'timeStamp' against 'interarrival_time'", s=.1)
     plt.ylim(bottom=0)
 plt.show()
+
+
+raw_file_name = facelandmark_file_path#.replace("_uncompressed", '')
+hash_counts = {"face_landmarks_hash": {}, "blendshapes_hash": {}}
+
+def compute_hash_bucket_counts(hash_dict):
+    """
+    Computes and returns counts for each hash bucket.
+    """
+    counts = {}
+    for key, count in hash_dict.items():
+        counts[count] = counts.get(count, 0) + 1
+    return counts
+
+def compute_values(filename, landmark_name = 'faceLandmarks', blendshape_name = 'blendshapes'):
+    total_counts = 0
+    with open(filename, 'r') as file:
+        for line in file:
+            if line.strip() == "":
+                continue
+
+            value = json.loads(line)
+            total_counts += 1
+            # Calculate hashes for face landmarks and blendshapes
+            if len(value[landmark_name]) < 1:
+                continue
+            face_landmarks_hash = hashlib.md5(json.dumps(value[landmark_name][0]).encode('utf-8')).hexdigest()
+            blendshapes_hash = hashlib.md5(json.dumps(value[blendshape_name][0]).encode('utf-8')).hexdigest()
+
+            # Track and display counts of each hash
+            hash_counts["face_landmarks_hash"][face_landmarks_hash] = hash_counts["face_landmarks_hash"].get(
+                face_landmarks_hash, 0) + 1
+            hash_counts["blendshapes_hash"][blendshapes_hash] = hash_counts["blendshapes_hash"].get(blendshapes_hash, 0) + 1
+
+    # Compute and display the bucket counts
+    face_landmarks_bucket_counts = compute_hash_bucket_counts(hash_counts["face_landmarks_hash"])
+    blendshapes_bucket_counts = compute_hash_bucket_counts(hash_counts["blendshapes_hash"])
+
+    print("Face Landmarks Hash Bucket Counts:", face_landmarks_bucket_counts)
+    print("Blendshapes Hash Bucket Counts:", blendshapes_bucket_counts)
+
+compute_values(raw_file_name, 'faceLandmarks', 'faceBlendshapes')
