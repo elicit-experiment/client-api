@@ -66,7 +66,6 @@ def process_datetime(dt):
 
     return raw, iso
 
-
 class ResultCollector:
     def __init__(self, result_path_generator: ResultPathGenerator):
         self.result_path_generator = result_path_generator
@@ -260,8 +259,8 @@ class ResultCollector:
                 continue
     
             # Add all relevant fields back
-            video_event["datetime"] = raw_dt
             video_event["datestring"] = iso_dt
+            video_event["datetime"] = raw_dt            
             video_event["experiment_id"] = dp.get("experiment_id")
             video_event["phase_definition_id"] = dp.get("phase_definition_id")
             video_event["trial_definition_id"] = dp.get("trial_definition_id")
@@ -288,10 +287,10 @@ class ResultCollector:
     
             if user_id not in user_playback_events:
                 user_playback_events[user_id] = OrderedDict({
+                    "datestring_start": None,  # ISO string
+                    "datestring_end": None,  # ISO string
                     "datetime_start": None,  # Numerical timestamp
                     "datetime_end": None,    # Numerical timestamp
-                    "time_string_start": None,  # ISO string
-                    "time_string_end": None,  # ISO string
                     "duration": None,  # Playback duration
                     "study_result_id": dp["study_result_id"],
                     "experiment_id": dp["experiment_id"],
@@ -311,10 +310,10 @@ class ResultCollector:
     
             if event_type == "PLAYING":
                 user_playback_events[user_id]["datetime_start"] = raw_dt
-                user_playback_events[user_id]["time_string_start"] = iso_dt
+                user_playback_events[user_id]["datestring_start"] = iso_dt
             elif event_type in ["ENDED", "PAUSED", "Stop"]:
                 user_playback_events[user_id]["datetime_end"] = raw_dt
-                user_playback_events[user_id]["time_string_end"] = iso_dt
+                user_playback_events[user_id]["datestring_end"] = iso_dt
     
         video_playback_summary = []
         for playback_event in user_playback_events.values():
@@ -336,8 +335,8 @@ class ResultCollector:
             raw_dt, iso_dt = process_datetime(layout_data_point['datetime'])
             
             video_layout_event = OrderedDict()
-            video_layout_event["datetime"] = raw_dt
             video_layout_event["datestring"] = iso_dt
+            video_layout_event["datetime"] = raw_dt            
             video_layout_event["experiment_id"] = layout_data_point['experiment_id']
             video_layout_event["phase_definition_id"] = layout_data_point['phase_definition_id']
             video_layout_event["trial_definition_id"] = layout_data_point['trial_definition_id']

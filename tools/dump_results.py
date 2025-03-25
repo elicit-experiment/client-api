@@ -28,7 +28,7 @@ from dateutil import parser
 ##
 
 arg_defaults = {
-    "study_id": 1421,
+    "study_id": 1423,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",
@@ -565,7 +565,7 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                 new_answer["render_id"] = []
                 new_answer["render_label"] = []
                 
-        elif kind in ["Main_ListSelect_ListSelect"]:
+        elif kind in ["ListSelect", "Main_ListSelect_ListSelect"]:
                     try:
                         if isinstance(base_answer.get('value'), dict):
                             state_values = base_answer['value']
