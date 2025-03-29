@@ -200,14 +200,23 @@ def analyze_landmarker_summary(datapoints, user_id):
     'face_landmark_lifecycle_start' and 'face_landmark_lifecycle_end'.
     """
 
-    start = list(
+    start = sorted(
         filter(lambda dp: dp['point_type'] in ['face_landmark_lifecycle_start'],
-               datapoints))
-    end = list(
+               datapoints),
+        key=lambda dp: dp['datetime']
+    )
+    end = sorted(
         filter(lambda dp: dp['point_type'] in ['face_landmark_lifecycle_stop'],
-               datapoints))
+               datapoints),
+        key=lambda dp: dp['datetime'],
+        reverse=True
+    )
 
-    if len(start) != 1:
+    if (len(start) != 1) or (len(end) != 1):
+        print(f"\tUnexpected number of start/end datapoints found for user {user_id}: {len(start)} start, {len(end)} end")
+
+    if len(start) == 0:
+       print(f"No start datapoint `face_landmark_lifecycle_start` found for user {user_id}")
        return None, None, None
 
     print(f"\n\nFACE LANDMARK SUMMARY for user {user_id}\n\n")
@@ -215,14 +224,19 @@ def analyze_landmarker_summary(datapoints, user_id):
     landmarker_configuration = start[0]['value']
     print(f"Landmarker configuration: {landmarker_configuration}\n")
 
-    if len(end) != 1:
-        return landmarker_configuration, None, None
-
-    time_range = end[0]['datetime'] - start[0]['datetime']
-
     face_landmark_summary_df = face_landmark_summary(datapoints)
+
+    if len(end) == 0:
+        print(f"No end datapoint `face_landmark_lifecycle_stop` found for user {user_id}")
+        if len(face_landmark_summary_df) == 0:
+            return landmarker_configuration, None, None
+        face_landmark_summary_df = face_landmark_summary_df.sort_values(by='datetime')
+        time_range = face_landmark_summary_df.iloc[-1]['datetime'] - face_landmark_summary_df.iloc[0]['datetime']
+    else:
+        time_range = end[0]['datetime'] - start[0]['datetime']
+
     if not face_landmark_summary_df.empty:
-        print('Aggregate values for entire experiment')
+        print(f'Aggregate values for entire experiment {time_range}s')
         pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum())
         print('\nRates count/s')
         pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum() / time_range)
@@ -760,7 +774,8 @@ def fetch_all_time_series(study_result, experiment):
                                                verify=True)
 
             # Move the file to the preferred naming convention.
-            shutil.move(final_filename, query_filename)
+            print(f'\nfinal_filename: {final_filename}')
+            shutil.copy(final_filename, query_filename)
             final_filename = query_filename
 
             if time_series.series_type == 'face_landmark':
