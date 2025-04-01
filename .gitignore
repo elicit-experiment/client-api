@@ -17,3 +17,5 @@ __init__.py
 /results/
 /.venv/
 tests/swagger.json
+tools/dump_results_pandas.py
+tools/elicit_helpers.py

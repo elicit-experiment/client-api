@@ -22,13 +22,15 @@ import re
 from dateutil.parser import parse
 from dateutil.parser import isoparse
 from dateutil import parser
+import filecmp
+import time
 
 ##
 ## DEFAULT ARGUMENTS
 ##
 
 arg_defaults = {
-    "study_id": 1423,
+    "study_id": 1422,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",
@@ -40,6 +42,30 @@ arg_defaults = {
 ## HELPERS
 ##
 
+def remove_file_retry(filepath, retries=5, delay=0.5):
+    for attempt in range(retries):
+        try:
+            os.remove(filepath)
+            return True
+        except PermissionError as e:
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                raise e
+                
+def safe_copy_and_remove(src, dst):
+    if os.path.exists(dst):
+        if filecmp.cmp(src, dst, shallow=False):
+            if os.path.abspath(src) != os.path.abspath(dst):
+                remove_file_retry(src)
+            return dst
+        else:
+            remove_file_retry(dst)
+    shutil.copy(src, dst)
+    if os.path.abspath(src) != os.path.abspath(dst):
+        remove_file_retry(src)
+    return dst
+    
 def remove_elicit_formatting(text: str) -> str:
     # Remove literal tokens that we know should vanish.
     text = text.replace("{{n}}", "")
@@ -376,8 +402,8 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
     
             # Extract basic info
             raw_dt, iso_dt = process_datetime(dp.get('datetime'))
-            video_event["datetime"] = raw_dt
             video_event["datestring"] = iso_dt
+            video_event["datetime"] = raw_dt            
             video_event["experiment_id"] = dp.get('experiment_id')
             video_event["phase_definition_id"] = dp.get('phase_definition_id')
             video_event["trial_definition_id"] = dp.get('trial_definition_id')
@@ -775,7 +801,7 @@ def fetch_all_time_series(study_result, experiment):
 
             # Move the file to the preferred naming convention.
             print(f'\nfinal_filename: {final_filename}')
-            shutil.copy(final_filename, query_filename)
+            safe_copy_and_remove(final_filename, query_filename)
             final_filename = query_filename
 
             if time_series.series_type == 'face_landmark':
