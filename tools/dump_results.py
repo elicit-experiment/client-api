@@ -24,6 +24,7 @@ from dateutil.parser import isoparse
 from dateutil import parser
 import filecmp
 import time
+import csv
 
 ##
 ## DEFAULT ARGUMENTS
@@ -371,57 +372,7 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
     # pp.pprint(duplicate_ids)
 
     return list(map(make_data_point_row, response_data_points))
-
-    def emit_video_events(data_points, result_path_generator):
-        """
-        Extracts video-specific events from the data_points and emits them to a CSV file (video_events.csv).
-    
-        Extracted events include:
-        - UNSTARTED
-        - PLAYING
-        - PAUSED
-        - STOPPED
-        - ENDED
-        - BUFFERING
-        - CUED
-        - START
-        - COMPLETED
-    
-        """
-        video_events = ["UNSTARTED", "PLAYING", "PAUSED", "STOPPED", "ENDED", "BUFFERING", "CUED", "Start", "Stop"]
-    
-        video_data_points = [dp for dp in data_points if dp['point_type'] in video_events]
-    
-        if not video_events:
-            return
-    
-        video_event_rows = []
-    
-        for dp in video_events:
-            video_event = OrderedDict()
-    
-            # Extract basic info
-            raw_dt, iso_dt = process_datetime(dp.get('datetime'))
-            video_event["datestring"] = iso_dt
-            video_event["datetime"] = raw_dt            
-            video_event["experiment_id"] = dp.get('experiment_id')
-            video_event["phase_definition_id"] = dp.get('phase_definition_id')
-            video_event["trial_definition_id"] = dp.get('trial_definition_id')
-            video_event["component_id"] = dp.get('component_id')
-            video_event["study_result_id"] = dp.get('study_result_id')
-            video_event["protocol_user_id"] = dp.get('protocol_user_id')
-            video_event["user_id"] = dp.get('user_id')
-            video_event["id"] = dp.get('id')
-            video_event["point_type"] = dp.get('point_type')
-            video_event["kind"] = dp.get('kind')
-            video_event["method"] = dp.get('method')
-            video_event["entity_type"] = dp.get('entity_type')
-            video_event["value"] = dp.get('value')
-    
-            video_events.append(video_event)
-    
-        return video_events
-    
+  
 def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.primitives.Model):
     """
     Synthesize answers from datapoints & trial/component definitions.
@@ -548,7 +499,7 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
             try:
                 answer_id = int(state_values['Id'])
             except ValueError:
-                print(f"WARN: Found answer datapoint for RadioButtonGroup with Id {state_values['Id']} but it is not an integer")
+                #print(f"WARN: Found answer datapoint for RadioButtonGroup with Id {state_values['Id']} but it is not an integer")
                 answer_id = state_values['Id']
             
             # Process the raw value.
@@ -804,6 +755,12 @@ def fetch_all_time_series(study_result, experiment):
             safe_copy_and_remove(final_filename, query_filename)
             final_filename = query_filename
 
+            count_points = 0
+            min_ts = None
+            max_ts = None
+            avg_fs = None
+            duration_s = None
+                
             if time_series.series_type == 'face_landmark':
                 if time_series.file_type == 'msgpack':
                     ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
@@ -817,7 +774,7 @@ def fetch_all_time_series(study_result, experiment):
 
                 print(f"        Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type} to {uncompressed_filename}")
 
-                with open(uncompressed_filename, 'a') as uncompressed_file:
+                with open(uncompressed_filename, 'w') as uncompressed_file:
                     with open(ndjson_filename, 'r') as ndjson_file:
                         try:
                             for line in ndjson_file:
@@ -826,7 +783,18 @@ def fetch_all_time_series(study_result, experiment):
                                     continue
                                 try:
                                     data = json.loads(stripped_line)
-                                    transformed_data = json.dumps(uncompress_datapoint(data))
+                                    data_uncompressed = uncompress_datapoint(data)
+                                    
+                                    # collect stats on the collected timeseries
+                                    count_points += 1
+                                    timestamp = data_uncompressed.get("timeStamp", None)
+                                    if timestamp is not None:
+                                        if min_ts is None or timestamp < min_ts:
+                                            min_ts = timestamp
+                                        if max_ts is None or timestamp > max_ts:
+                                            max_ts = timestamp
+                
+                                    transformed_data = json.dumps(data_uncompressed)
 
                                     if transformed_data != '':
                                         uncompressed_file.write(transformed_data + '\n')
@@ -837,11 +805,63 @@ def fetch_all_time_series(study_result, experiment):
                                     print(f"Error: Line '{stripped_line}' is not valid JSON.")
                         except Exception as e:
                             print(f"Error maybe uncompressed file #{ndjson_filename}: {e}")
+                            
+                final_filename = uncompressed_filename
+
+                # compute duration, sampling rate
+                if min_ts is not None and max_ts is not None:
+                    duration_s = (max_ts - min_ts) / 1000.0  # time in ms
+                    avg_fs = count_points / duration_s if duration_s > 0 else None
+                else:
+                    duration_s = None
+                    avg_fs = None      
+            
+            elif time_series.series_type == 'mouse':
+                print(f"        Processing mouse data for stage {stage_id} (user {user_id})")
+
+                # We assume it's a TSV (tab-separated) file 
+                # with a header row like: "x   y   timeStamp"
+                count_points = 0
+                min_ts = None
+                max_ts = None
+            
+                # If your file has a header, you can use DictReader with the correct delimiter.
+                with open(final_filename, 'r', encoding='utf-8') as mouse_file:
+                    reader = csv.DictReader(mouse_file, delimiter='\t')
+                    for row in reader:
+                        # row is like {"x": "1207", "y": "591", "timeStamp": "1742061230495"}
+                        try:
+                            x_val = float(row["x"])
+                            y_val = float(row["y"])
+                            ts_val = float(row["timeStamp"])  # If these are indeed numeric
+            
+                            count_points += 1
+                            if min_ts is None or ts_val < min_ts:
+                                min_ts = ts_val
+                            if max_ts is None or ts_val > max_ts:
+                                max_ts = ts_val
+            
+                        except ValueError as e:
+                            print(f"Skipping invalid row due to parse error: {row}, error: {e}")
+                            continue
+            
+                # Now compute duration & sampling rate if you like
+                if min_ts is not None and max_ts is not None:
+                    duration_s = (max_ts - min_ts) / 1000.0  # if your timeStamp is in ms
+                    avg_fs = count_points / duration_s if duration_s > 0 else None
+                else:
+                    duration_s = None
+                    avg_fs = None
+                             
             else:
                 print(f"        Skipping face landmark data for stage {stage_id} (user {user_id}), type {time_series.series_type}")
-
+            
+            just_filename = os.path.basename(final_filename) # strip the file from the path
             experiment_time_series[time_series.series_type] = {
-                "filename": final_filename,
+                "filename": just_filename,
+                "count_points": count_points,
+                "avg_fs_hz": avg_fs,
+                "duration_seconds": duration_s,
             }
 
     return experiment_time_series
@@ -862,7 +882,6 @@ def analyze_and_dump_user_data_points(user_datapoints, user_id):
 
         mouse_tracking_configuration, duration, summary_df = analyze_mouse_tracking_summary(user_datapoints, user_id)
         collector.add_mouse_tracking_summary(user_id, mouse_tracking_configuration, duration, summary_df)
-
 
 def process(collector: ResultCollector, results_path_generator: ResultPathGenerator):
     study_results = el.find_study_results(study_definition_id=args.study_id)

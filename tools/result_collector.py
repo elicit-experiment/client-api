@@ -110,12 +110,12 @@ class ResultCollector:
         trials_completed_count = trials_completed_df.groupby('user_id').size().reset_index(name='trials_completed')
     
         # Rename duration in landmarker_summary
-        landmarker_summary = landmarker_summary.rename(columns={'duration': 'duration_landmark'})
+        landmarker_summary = landmarker_summary.rename(columns={'duration': 'duration_landmark_events'})
     
         # Merge datasets carefully to avoid duplicates
         merged_data = base_events.merge(url_params, on="user_id", how="left", suffixes=(None, "_url"))
         merged_data = merged_data.merge(trials_completed_count, on="user_id", how="left")
-        merged_data = merged_data.merge(landmarker_summary[['user_id', 'duration_landmark']], on="user_id", how="left")
+        merged_data = merged_data.merge(landmarker_summary[['user_id', 'duration_landmark_events']], on="user_id", how="left")
     
         # Select and rename final columns
         final_columns = [
@@ -128,9 +128,15 @@ class ResultCollector:
             "STUDY_ID",  # From url_params
             "SESSION_ID",  # From url_params
             "PROLIFIC_PID",  # From url_params
-            "duration_landmark",
-            "mouse_filename",
-            "face_landmark_filename",
+            "duration_landmark_events",
+            "points_landmark_timeseries",
+            "duration_landmark_timeseries",
+            "fs_landmark_timeseries",
+            "filename_landmark_timeseries",
+            "points_mouse_timeseries",
+            "duration_mouse_timeseries",
+            "fs_mouse_timeseries",
+            "filename_mouse_timeseries",
         ]
     
         # Ensure all final columns exist (fill missing ones with NaN)
@@ -169,10 +175,23 @@ class ResultCollector:
             experiment_event[key] = value
     
         # Add time series information
-        for experiment_time_series_type, experiment_time_series_info in experiment_time_series.items():
-            experiment_event[f"{experiment_time_series_type}_filename"] = experiment_time_series_info['filename']
+        for ts_type, ts_info in experiment_time_series.items():
+            if ts_type == "face_landmark":
+                experiment_event["filename_landmark_timeseries"] = ts_info["filename"]
+                experiment_event["points_landmark_timeseries"] = ts_info["count_points"]
+                experiment_event["duration_landmark_timeseries"] = ts_info["duration_seconds"]
+                experiment_event["fs_landmark_timeseries"] = ts_info["avg_fs_hz"]
     
-        # Append the ordered event to the list
+            elif ts_type == "mouse":
+                experiment_event["filename_mouse_timeseries"] = ts_info["filename"]
+                experiment_event["points_mouse_timeseries"] = ts_info["count_points"]
+                experiment_event["duration_mouse_timeseries"] = ts_info["duration_seconds"]
+                experiment_event["fs_mouse_timeseries"] = ts_info["avg_fs_hz"]
+    
+            else:
+                # If there are other timeseries you don't care about, you can skip or handle them here
+                pass
+            
         self.experiment_events.append(experiment_event)
     
         # Similarly, construct an OrderedDict for url_parameters

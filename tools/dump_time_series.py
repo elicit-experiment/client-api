@@ -167,10 +167,10 @@ def uncompress_datapoint(compressed):
         face_blendshapes.append(blendshape)
 
     return {
-        "facialTransformationMatrixes": facial_transformation_matrices,
-        "faceLandmarks": face_landmarks,
-        "faceBlendshapes": face_blendshapes,
         "timeStamp": timeStamp,
+        "faceBlendshapes": face_blendshapes,
+        "faceLandmarks": face_landmarks,        
+        "facialTransformationMatrixes": facial_transformation_matrices,
     }
 
 def fetch_time_series(url, file_type, base_filename, filename, authorization, verify=True):
@@ -250,6 +250,8 @@ def convert_msgpack_to_ndjson(final_filename, ndjson_filename):
             unpacker = msgpack.Unpacker(msgpack_file)
             with open(ndjson_filename, 'w') as ndjson_file:
                 for obj in unpacker:
+                    if not obj or obj == {}:
+                        continue
                     ndjson_file.write(json.dumps(obj) + '\n')
 
         print(f"Data successfully converted from MsgPack to NDJSON: {ndjson_filename}")
