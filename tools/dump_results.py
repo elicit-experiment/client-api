@@ -201,8 +201,7 @@ def ensure_study_info(el, study_id, result_path_generator: ResultPathGenerator =
             yaml.dump(json.loads(json.dumps(study_info)), file)
         return study_info
 
-
-def face_landmark_summary(data_points):
+def face_landmark_event_summary(data_points):
     summary_data_points = []
 
     for summary in data_points:
@@ -220,7 +219,7 @@ def face_landmark_summary(data_points):
 
     return pd.DataFrame(summary_data_points)
 
-def analyze_landmarker_summary(datapoints, user_id):
+def analyze_landmarker_event_summary(datapoints, user_id):
     """
     Finds the landmarker summary datapoints and extracts them for analysis in order to provide a quick overview of the experiment.
     Analyzes and filters data points for specific 'point_type' values:
@@ -251,28 +250,28 @@ def analyze_landmarker_summary(datapoints, user_id):
     landmarker_configuration = start[0]['value']
     print(f"Landmarker configuration: {landmarker_configuration}\n")
 
-    face_landmark_summary_df = face_landmark_summary(datapoints)
+    face_landmark_event_summary_df = face_landmark_event_summary(datapoints)
 
     if len(end) == 0:
         print(f"No end datapoint `face_landmark_lifecycle_stop` found for user {user_id}")
-        if len(face_landmark_summary_df) == 0:
+        if len(face_landmark_event_summary_df) == 0:
             return landmarker_configuration, None, None
-        face_landmark_summary_df = face_landmark_summary_df.sort_values(by='datetime')
-        time_range = face_landmark_summary_df.iloc[-1]['datetime'] - face_landmark_summary_df.iloc[0]['datetime']
+        face_landmark_event_summary_df = face_landmark_event_summary_df.sort_values(by='datetime')
+        time_range = face_landmark_event_summary_df.iloc[-1]['datetime'] - face_landmark_event_summary_df.iloc[0]['datetime']
     else:
         time_range = end[0]['datetime'] - start[0]['datetime']
 
-    if not face_landmark_summary_df.empty:
+    if not face_landmark_event_summary_df.empty:
         print(f'Aggregate values for entire experiment {time_range}s')
-        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum())
+        pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum())
         print('\nRates count/s')
-        pp.pprint(face_landmark_summary_df.drop('datetime', axis=1).sum() / time_range)
+        pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum() / time_range)
         print("\n")
 
-    return landmarker_configuration, time_range, face_landmark_summary_df
+    return landmarker_configuration, time_range, face_landmark_event_summary_df
 
 
-def mouse_tracking_summary(data_points):
+def mouse_tracking_event_summary(data_points):
     summary_data_points = []
 
     for summary in data_points:
@@ -284,7 +283,7 @@ def mouse_tracking_summary(data_points):
 
     return pd.DataFrame(summary_data_points)
 
-def analyze_mouse_tracking_summary(datapoints, user_id):
+def analyze_mouse_tracking_event_summary(datapoints, user_id):
     """
     Finds the mouse summary datapoints and extracts them for analysis in order to provide a quick overview of the experiment.
     """
@@ -309,15 +308,15 @@ def analyze_mouse_tracking_summary(datapoints, user_id):
 
     duration = end[0]['datetime'] - start[0]['datetime']
 
-    mouse_tracking_summary_df = mouse_tracking_summary(datapoints)
-    if not mouse_tracking_summary_df.empty:
+    mouse_tracking_event_summary_df = mouse_tracking_event_summary(datapoints)
+    if not mouse_tracking_event_summary_df.empty:
         print('Aggregate values for entire experiment')
-        pp.pprint(mouse_tracking_summary_df.drop('datetime', axis=1).sum())
+        pp.pprint(mouse_tracking_event_summary_df.drop('datetime', axis=1).sum())
         print('\nRates count/s')
-        pp.pprint(mouse_tracking_summary_df.drop('datetime', axis=1).sum() / duration)
+        pp.pprint(mouse_tracking_event_summary_df.drop('datetime', axis=1).sum() / duration)
         print("\n")
 
-    return mouse_tracking_configuration, duration, mouse_tracking_summary_df
+    return mouse_tracking_configuration, duration, mouse_tracking_event_summary_df
 
 def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict, trial_result: dict, protocol_user_id: int, user_id: int) -> list[dict]:
     """
@@ -352,7 +351,6 @@ def fetch_datapoints(study_result: pyswagger.primitives.Model, experiment: dict,
     make_data_point_row = lambda data_point: ({
         "datetime": data_point.datetime,
         "experiment_id": experiment.id,
-        
         "phase_definition_id": trial_result.phase_definition_id,
         "trial_definition_id": trial_result.trial_definition_id,
         "component_id": data_point['component_id'],
@@ -720,168 +718,212 @@ def get_component_header_label(trial_definition_id, answer_component_id, trial_d
 
 def fetch_all_time_series(study_result, experiment):
     user_id = experiment['protocol_user']['user_id']
-
     stages = el.find_stages(study_result_id=study_result.id, experiment_id=experiment.id)
-    print("\n\nSTAGES\n\n")
-    if args.debug:
-        print(stages)
-    else:
-        print(f"\tGot {len(stages)} stages for experiment {experiment.id}: #{[stage.id for stage in stages]}")
-
     experiment_time_series = {}
 
-    for stage_id in (stage.id for stage in stages):
-        time_series = el.find_time_series(study_result_id=study_result.id, stage_id=stage_id)
-
-        if len(time_series) < 1:
-            print(f"       No time series for stage {stage_id} (user {user_id})\n")
+    for stage in stages:
+        stage_id = stage.id
+        # Ensure time_series_list is a list
+        time_series_list = el.find_time_series(study_result_id=study_result.id, stage_id=stage_id) or []
+        
+        if not time_series_list:
             continue
 
-        print(
-            f"        Got {len(time_series)} time series for stage {stage_id} (user {user_id}). {['%s (%s)' % (ts.id, ts.series_type) for ts in time_series]}\n")
+        print(f"Stage {stage_id} (user {user_id}) => {len(time_series_list)} time series")
 
-        for time_series in time_series:
-            url = time_series.file_url
+        # Separate them by type
+        face_landmark_series = [ts for ts in time_series_list if ts.series_type == 'face_landmark']
+        mouse_series = [ts for ts in time_series_list if ts.series_type == 'mouse']
+        print(f"Found {len(face_landmark_series)} face_landmark time series and {len(mouse_series)} mouse time series for stage {stage_id}")
 
-            base_filename = result_path_generator.result_path_for(f"{args.study_id}_{user_id}_", user_id=user_id)
-            query_filename = base_filename + time_series.series_type + "." + time_series.file_type
+        # --------------------------------------------------------
+        # FACE_LANDMARK
+        # --------------------------------------------------------
+        face_landmark_uncompressed_file = None
+        face_landmark_file_count = 0
+        face_landmark_count_points = 0
+        face_landmark_ts_min = None
+        face_landmark_ts_max = None
 
-            final_filename = fetch_time_series(url, time_series.file_type, base_filename=base_filename,
-                                               filename=query_filename, authorization=el.auth_header(),
-                                               verify=True)
+        if face_landmark_series:
+            # Pick a path for the final uncompressed file. 
+            # For consistency, we can build from the "first" time_series or from a standard naming pattern.
+            first_ts = face_landmark_series[0]
+            base_filename = result_path_generator.result_path_for(f"{args.study_id}_{user_id}_", subfolder='face_landmark')
+            face_landmark_uncompressed_file = os.path.join(
+                base_filename + "face_landmark_uncompressed.json"
+            )
 
-            # Move the file to the preferred naming convention.
-            print(f'\nfinal_filename: {final_filename}')
-            safe_copy_and_remove(final_filename, query_filename)
+            # If a leftover file exists from prior runs, remove it so we start fresh
+            if os.path.exists(face_landmark_uncompressed_file):
+                os.remove(face_landmark_uncompressed_file)
+
+        # Now loop over each face_landmark time series, appending
+        for ts in face_landmark_series:
+            query_base = result_path_generator.result_path_for(f"{args.study_id}_{user_id}_", subfolder='face_landmark')
+            query_filename = query_base + ts.series_type + "." + ts.file_type
+
+            # Download the file
+            downloaded_filename = fetch_time_series(
+                url=ts.file_url,
+                file_type=ts.file_type,
+                base_filename=query_base,
+                filename=query_filename,
+                authorization=el.auth_header(),
+                verify=True
+            )
+            safe_copy_and_remove(downloaded_filename, query_filename)
             final_filename = query_filename
 
-            count_points = 0
-            min_ts = None
-            max_ts = None
-            avg_fs = None
-            duration_s = None
-                
-            if time_series.series_type == 'face_landmark':
-                if time_series.file_type == 'msgpack':
-                    ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
-
-                    convert_msgpack_to_ndjson(final_filename, ndjson_filename)
-                else:
-                    ndjson_filename = final_filename
-
-                uncompressed_filename = final_filename.replace('face_landmark.json',
-                                                               'face_landmark_uncompressed.json')
-
-                print(f"        Processing face landmark data for stage {stage_id} (user {user_id}) {time_series.file_type} to {uncompressed_filename}")
-
-                with open(uncompressed_filename, 'w') as uncompressed_file:
-                    with open(ndjson_filename, 'r') as ndjson_file:
-                        try:
-                            for line in ndjson_file:
-                                stripped_line = line.strip()
-                                if stripped_line == '':
-                                    continue
-                                try:
-                                    data = json.loads(stripped_line)
-                                    data_uncompressed = uncompress_datapoint(data)
-                                    
-                                    # collect stats on the collected timeseries
-                                    count_points += 1
-                                    timestamp = data_uncompressed.get("timeStamp", None)
-                                    if timestamp is not None:
-                                        if min_ts is None or timestamp < min_ts:
-                                            min_ts = timestamp
-                                        if max_ts is None or timestamp > max_ts:
-                                            max_ts = timestamp
-                
-                                    transformed_data = json.dumps(data_uncompressed)
-
-                                    if transformed_data != '':
-                                        uncompressed_file.write(transformed_data + '\n')
-                                    else:
-                                        print(f"WARN: Skipping empty line in {ndjson_filename} for {data}")
-                                    final_filename = uncompressed_filename
-                                except json.JSONDecodeError:
-                                    print(f"Error: Line '{stripped_line}' is not valid JSON.")
-                        except Exception as e:
-                            print(f"Error maybe uncompressed file #{ndjson_filename}: {e}")
-                            
-                final_filename = uncompressed_filename
-
-                # compute duration, sampling rate
-                if min_ts is not None and max_ts is not None:
-                    duration_s = (max_ts - min_ts) / 1000.0  # time in ms
-                    avg_fs = count_points / duration_s if duration_s > 0 else None
-                else:
-                    duration_s = None
-                    avg_fs = None      
-            
-            elif time_series.series_type == 'mouse':
-                print(f"        Processing mouse data for stage {stage_id} (user {user_id})")
-
-                # We assume it's a TSV (tab-separated) file 
-                # with a header row like: "x   y   timeStamp"
-                count_points = 0
-                min_ts = None
-                max_ts = None
-            
-                # If your file has a header, you can use DictReader with the correct delimiter.
-                with open(final_filename, 'r', encoding='utf-8') as mouse_file:
-                    reader = csv.DictReader(mouse_file, delimiter='\t')
-                    for row in reader:
-                        # row is like {"x": "1207", "y": "591", "timeStamp": "1742061230495"}
-                        try:
-                            x_val = float(row["x"])
-                            y_val = float(row["y"])
-                            ts_val = float(row["timeStamp"])  # If these are indeed numeric
-            
-                            count_points += 1
-                            if min_ts is None or ts_val < min_ts:
-                                min_ts = ts_val
-                            if max_ts is None or ts_val > max_ts:
-                                max_ts = ts_val
-            
-                        except ValueError as e:
-                            print(f"Skipping invalid row due to parse error: {row}, error: {e}")
-                            continue
-            
-                # Now compute duration & sampling rate if you like
-                if min_ts is not None and max_ts is not None:
-                    duration_s = (max_ts - min_ts) / 1000.0  # if your timeStamp is in ms
-                    avg_fs = count_points / duration_s if duration_s > 0 else None
-                else:
-                    duration_s = None
-                    avg_fs = None
-                             
+            # Possibly convert msgpack -> NDJSON
+            if ts.file_type == 'msgpack':
+                ndjson_filename = final_filename.replace('.msgpack', '.ndjson')
+                convert_msgpack_to_ndjson(final_filename, ndjson_filename)
             else:
-                print(f"        Skipping face landmark data for stage {stage_id} (user {user_id}), type {time_series.series_type}")
-            
-            just_filename = os.path.basename(final_filename) # strip the file from the path
-            experiment_time_series[time_series.series_type] = {
-                "filename": just_filename,
-                "count_points": count_points,
-                "avg_fs_hz": avg_fs,
-                "duration_seconds": duration_s,
+                ndjson_filename = final_filename
+
+            # Append to the single uncompressed file
+            face_landmark_file_count += 1
+            local_count = 0
+            local_min_ts = None
+            local_max_ts = None
+
+            with open(face_landmark_uncompressed_file, 'a') as out_f, open(ndjson_filename, 'r') as in_f:
+                for line in in_f:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    try:
+                        data = json.loads(stripped)
+                    except json.JSONDecodeError:
+                        continue
+
+                    data_uncompressed = uncompress_datapoint(data)
+
+                    # Update local stats
+                    local_count += 1
+                    ts_val = data_uncompressed.get("timeStamp")
+                    if ts_val is not None:
+                        if local_min_ts is None or ts_val < local_min_ts:
+                            local_min_ts = ts_val
+                        if local_max_ts is None or ts_val > local_max_ts:
+                            local_max_ts = ts_val
+
+                    # Write line
+                    out_f.write(json.dumps(data_uncompressed) + "\n")
+
+            # Now merge local stats into the global face-landmark stats
+            face_landmark_count_points += local_count
+
+            if local_min_ts is not None:
+                if face_landmark_ts_min is None or local_min_ts < face_landmark_ts_min:
+                    face_landmark_ts_min = local_min_ts
+
+            if local_max_ts is not None:
+                if face_landmark_ts_max is None or local_max_ts > face_landmark_ts_max:
+                    face_landmark_ts_max = local_max_ts
+
+        # after we processed all face_landmark TS for this stage
+        if face_landmark_series and face_landmark_count_points > 0:
+            if face_landmark_ts_min is not None and face_landmark_ts_max is not None:
+                face_landmark_duration_s = (face_landmark_ts_max - face_landmark_ts_min) / 1000.0
+                face_landmark_fs = face_landmark_count_points / face_landmark_duration_s if face_landmark_duration_s > 0 else None
+            else:
+                face_landmark_duration_s = None
+                face_landmark_fs = None
+
+            # store it in experiment_time_series
+            key = "face_landmark"
+            experiment_time_series[key] = {
+                "filename": os.path.basename(face_landmark_uncompressed_file),
+                "file_count": face_landmark_file_count,
+                "count_points": face_landmark_count_points,
+                "duration_seconds": face_landmark_duration_s,
+                "avg_fs_hz": face_landmark_fs
             }
 
+        # --------------------------------------------------------
+        # MOUSE
+        # --------------------------------------------------------
+        mouse_file_count = len(mouse_series)
+        if mouse_series:
+            base_filename = result_path_generator.result_path_for(f"{args.study_id}_{user_id}_", subfolder='mouse')
+            # If you expect only one mouse time series, simply use that file.
+            if mouse_file_count == 1:
+                ts = mouse_series[0]
+                query_filename = base_filename + ts.series_type + "." + ts.file_type
+                downloaded_filename = fetch_time_series(
+                    url=ts.file_url,
+                    file_type=ts.file_type,
+                    base_filename=base_filename,
+                    filename=query_filename,
+                    authorization=el.auth_header(),
+                    verify=True
+                )
+                safe_copy_and_remove(downloaded_filename, query_filename)
+                final_filename = query_filename
+
+                # Compute stats directly from this file.
+                mouse_count_points = 0
+                mouse_ts_min = None
+                mouse_ts_max = None
+
+                with open(final_filename, 'r', encoding='utf-8') as in_f:
+                    in_reader = csv.DictReader(in_f, delimiter='\t')
+                    for row in in_reader:
+                        if (row.get("x", "").lower() == "x" and 
+                            row.get("y", "").lower() == "y" and 
+                            row.get("timeStamp", "").lower() == "timestamp"):
+                            continue
+                        try:
+                            ts_val = float(row["timeStamp"])
+                        except (ValueError, KeyError):
+                            continue
+                        mouse_count_points += 1
+                        if mouse_ts_min is None or ts_val < mouse_ts_min:
+                            mouse_ts_min = ts_val
+                        if mouse_ts_max is None or ts_val > mouse_ts_max:
+                            mouse_ts_max = ts_val
+
+                if mouse_ts_min is not None and mouse_ts_max is not None:
+                    mouse_duration_s = (mouse_ts_max - mouse_ts_min) / 1000.0
+                    mouse_fs = mouse_count_points / mouse_duration_s if mouse_duration_s > 0 else None
+                else:
+                    mouse_duration_s = None
+                    mouse_fs = None
+
+                experiment_time_series["mouse"] = {
+                    "filename": os.path.basename(final_filename),
+                    "file_count": 1,
+                    "count_points": mouse_count_points,
+                    "duration_seconds": mouse_duration_s,
+                    "avg_fs_hz": mouse_fs
+                }
+            else:
+                print(f"Warning: Expected only one mouse time series, but found {mouse_file_count}.")
+                # (Optional: add unification logic here if needed)
+
+    # Return after processing all stages
     return experiment_time_series
 
 def analyze_and_dump_user_data_points(user_datapoints, user_id):
     """Dump json data points for a single user."""
-    with open(result_path_generator.result_path_for(f"{args.study_id}_{user_id}_datapoints.json", user_id), 'w') as outfile:
+    with open(result_path_generator.result_path_for(f"{args.study_id}_{user_id}_datapoints.json", subfolder='datapoints'), 'w') as outfile:
         list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
         list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith(
             '{"') else row, user_datapoints))
         json.dump(user_datapoints, outfile, indent=2)
 
         print(
-            f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_generator.result_path_for('datapoints.json', user_id)}")
+            f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_generator.result_path_for('datapoints.json')}")
 
-        landmarker_configuration, duration, summary_df = analyze_landmarker_summary(user_datapoints, user_id)
-        collector.add_landmarker_configuration(user_id, landmarker_configuration, duration, summary_df)
+        # track the events that are generated when landmarker data is sent
+        landmarker_event_configuration, duration, summary_df = analyze_landmarker_event_summary(user_datapoints, user_id)
+        collector.add_landmarker_event_configuration(user_id, landmarker_event_configuration, duration, summary_df)
 
-        mouse_tracking_configuration, duration, summary_df = analyze_mouse_tracking_summary(user_datapoints, user_id)
-        collector.add_mouse_tracking_summary(user_id, mouse_tracking_configuration, duration, summary_df)
+        # track the events that are generated when mouse data is sent
+        mouse_event_tracking_configuration, duration, summary_df = analyze_mouse_tracking_event_summary(user_datapoints, user_id)
+        collector.add_mouse_tracking_event_summary(user_id, mouse_event_tracking_configuration, duration, summary_df)
 
 def process(collector: ResultCollector, results_path_generator: ResultPathGenerator):
     study_results = el.find_study_results(study_definition_id=args.study_id)
@@ -893,7 +935,7 @@ def process(collector: ResultCollector, results_path_generator: ResultPathGenera
             trial_definitions[trial_def['id']] = trial_def
 
     collector.trial_definitions = trial_definitions
-    print("\n\nSTUDY_RESULTS\n\n")
+    print("\nSTUDY_RESULTS\n")
     if args.debug:
         pp.pprint([with_dates(study_result) for study_result in study_results])
     else:
@@ -902,7 +944,7 @@ def process(collector: ResultCollector, results_path_generator: ResultPathGenera
     for study_result in study_results:
         experiments = el.find_experiments(study_result_id=study_result.id)
 
-        print("\n\nEXPERIMENTS\n\n")
+        print("\nEXPERIMENTS\n")
 
         if args.debug:
             pp.pprint([with_dates(experiment) for experiment in experiments])
@@ -929,12 +971,11 @@ def process(collector: ResultCollector, results_path_generator: ResultPathGenera
                 user_datapoints += response_data_points
 
                 collector.add_data_points(experiment, trial_result, response_data_points)
-                print(f"        Got {len(response_data_points)} data points for trial {trial_result.id} (user {user_id})")
+                #print(f"        Got {len(response_data_points)} data points for trial {trial_result.id} (user {user_id})")
 
             analyze_and_dump_user_data_points(user_datapoints, user_id)
             for answer in synthesize_answers(user_datapoints, trial_definitions):
                 collector.add_answer(answer)
-
 
 ##
 ## MAIN

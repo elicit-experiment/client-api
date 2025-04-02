@@ -180,61 +180,54 @@ def fetch_time_series(url, file_type, base_filename, filename, authorization, ve
         'Content-Type': 'application/json',
         'Authorization': authorization,
     }
-    with requests.get(url, headers=headers, stream=True, verify=verify) as r:
-        content_disposition = r.headers.get('Content-Disposition')
-        location = r.headers.get('Location')
-        # print(r.headers)
-        # print(r.body)
-        # print(r.status_code)
 
+    with requests.get(url, headers=headers, stream=True, verify=verify) as r:
+        # Optional: Check status code, etc.
         if r.status_code == 500:
+            print("Server error 500, exiting.")
             exit()
 
-        # print(location)
-        # print(content_disposition)
-        # print(r.headers.get('Content-Encoding', ''))
+        content_disposition = r.headers.get('Content-Disposition')
+        location = r.headers.get('Location')
+        
+        # If the server gives a content-disposition filename, rename local file accordingly
         if content_disposition:
             value, params = cgi.parse_header(content_disposition)
             filename = base_filename + params['filename']
 
+        # Check if it's gzipped
         is_gzip = ('gzip' in r.headers.get('Content-Encoding', '')) or ('gzip' in r.headers.get('Content-Type', ''))
 
-        # Check the first few bytes of the content to verify if it is actually a gzip file, despite the headers.
-        # This can happen for in-progress files, since the content type is only for the base type in that case.
-        # if not is_gzip:
-        #     print(f"Checking gzip content for {filename}...")
+        # Grab the 'Content-Length' if available
+        # content_length_str = r.headers.get('Content-Length')
+        # expected_size = None
+        # if content_length_str is not None:
         #     try:
-        #         with open(filename, 'rb', encoding=None) as fd:
-        #             content_peek = fd.read(2)
-        #             if content_peek == b'\x1f\x8b':  # Magic number for gzip
-        #                 print("File is gzip despite headers suggesting otherwise.")
-        #
-        #                 # move the file on disk to have the ".gz" extension
-        #                 gzip_filename = f"{filename}.gz"
-        #                 os.rename(filename, gzip_filename)
-        #                 filename = gzip_filename
-        #                 is_gzip = True
-        #
-        #     except Exception as e:
-        #         print(f"Error while checking gzip content: {e}")
+        #         expected_size = int(content_length_str)
+        #     except ValueError:
+        #         pass  # If it fails to parse, we ignore
 
-
+        # Remove any .gz extension from our local filename, if present
         filename = filename.replace('.gz', '')
-        # Open the output file
+
+        # Write chunks
         with open(filename, 'wb') as fd:
-            # Check if the response content is gzipped
             if is_gzip:
-                # Stream-gunzip the content
                 with gzip.GzipFile(fileobj=r.raw, mode='rb') as gzipped_stream:
                     for chunk in iter(lambda: gzipped_stream.read(128), b''):
                         fd.write(chunk)
             else:
-                # Non-gzipped streaming
                 for chunk in r.iter_content(chunk_size=128):
                     fd.write(chunk)
 
-        return filename
+    # # Closed the file, do a size check if we have an expected_size
+    # if expected_size is not None:
+    #     actual_size = os.path.getsize(filename)
+    #     if abs(expected_size - actual_size) > 100:  # allow 100 bytes tolerance
+    #         print(f"Warning: File size mismatch for {filename}. "
+    #               f"Expected ~{expected_size}, got {actual_size}")
 
+    return filename
 
 def convert_msgpack_to_ndjson(final_filename, ndjson_filename):
     """

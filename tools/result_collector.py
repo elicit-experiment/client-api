@@ -75,7 +75,7 @@ class ResultCollector:
         self.trial_results = []
         self.data_points = []
         self.mouse_tracking_summary = []
-        self.landmarker_summary = []
+        self.landmarker_event_summary = []
         self.trial_definitions = {}
     def emit(self):
         if len(self.answers) > 0:
@@ -103,19 +103,21 @@ class ResultCollector:
     def emit_experiment_events(self):
         base_events = pd.DataFrame.from_records(self.experiment_events)
         url_params = pd.DataFrame.from_records(self.url_parameters)
-        landmarker_summary = pd.DataFrame.from_records(self.landmarker_summary)
+        
+        # landmarker event summary
+        landmarker_event_summary = pd.DataFrame.from_records(self.landmarker_event_summary)
     
         # Count the number of completed trials per user (assuming trial_results is available)
         trials_completed_df = pd.DataFrame(self.trial_results)
         trials_completed_count = trials_completed_df.groupby('user_id').size().reset_index(name='trials_completed')
     
-        # Rename duration in landmarker_summary
-        landmarker_summary = landmarker_summary.rename(columns={'duration': 'duration_landmark_events'})
+        # Rename duration in landmarker_event_summary
+        landmarker_event_summary = landmarker_event_summary.rename(columns={'duration': 'duration_landmark_events'})
     
         # Merge datasets carefully to avoid duplicates
         merged_data = base_events.merge(url_params, on="user_id", how="left", suffixes=(None, "_url"))
         merged_data = merged_data.merge(trials_completed_count, on="user_id", how="left")
-        merged_data = merged_data.merge(landmarker_summary[['user_id', 'duration_landmark_events']], on="user_id", how="left")
+        merged_data = merged_data.merge(landmarker_event_summary[['user_id', 'duration_landmark_events']], on="user_id", how="left")
     
         # Select and rename final columns
         final_columns = [
@@ -294,7 +296,6 @@ class ResultCollector:
     
             video_events.append(video_event)
     
-        #print(f"✅ Successfully processed {len(video_events)} video events.")  # Debugging
         self.emit_to_csv(video_events, "video_events.csv")
 
     def emit_video_playback_summary(self):
@@ -372,7 +373,7 @@ class ResultCollector:
             layouts.append(video_layout_event)
         self.emit_to_csv(layouts, "video_layout_events.csv")
 
-    def add_mouse_tracking_summary(self, user_id, mouse_tracking_configuration, duration, summary_df):
+    def add_mouse_tracking_event_summary(self, user_id, mouse_tracking_configuration, duration, summary_df):
         summary_row = {
             "user_id": user_id,
             "duration": duration,
@@ -392,7 +393,7 @@ class ResultCollector:
     def emit_mouse_tracking_summary_events(self):
         self.emit_to_csv(self.mouse_tracking_summary, "mouse_tracking_summary.csv")
 
-    def add_landmarker_configuration(self, user_id, landmarker_configuration, duration, summary_df):
+    def add_landmarker_event_configuration(self, user_id, landmarker_event_configuration, duration, summary_df):
         summary_row = {
             "user_id": user_id,
             "duration": duration,
@@ -404,15 +405,15 @@ class ResultCollector:
                 "lm_points_per_second": point_count / duration,
             })
 
-        if landmarker_configuration is not None:
-            summary_row.update(landmarker_configuration)
+        if landmarker_event_configuration is not None:
+            summary_row.update(landmarker_event_configuration)
 
-        self.landmarker_summary.append(summary_row)
+        self.landmarker_event_summary.append(summary_row)
 
     def emit_landmarker_summary_events(self):
-        self.emit_to_csv(self.landmarker_summary, "landmarker_summary.csv")
+        self.emit_to_csv(self.landmarker_event_summary, "landmarker_event_summary.csv")
 
-    def emit_to_csv(self, data, filename):
+    def emit_to_csv(self, data, filename, subfolder=None):
         if data:
             # Use the keys from the first row as the header
             header = list(data[0].keys())
@@ -421,7 +422,10 @@ class ResultCollector:
                 for key in row.keys():
                     if key not in header:
                         header.append(key)
-            with open(self.result_path_generator.result_path_for(filename), 'w', newline='') as file:
+    
+            # Pass subfolder=... so we store CSV in that folder
+            csv_path = self.result_path_generator.result_path_for(filename, subfolder=subfolder)
+            with open(csv_path, 'w', newline='') as file:
                 writer = csv.DictWriter(file, fieldnames=header)
                 writer.writeheader()
                 writer.writerows(data)
