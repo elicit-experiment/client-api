@@ -76,6 +76,7 @@ class ResultCollector:
         self.data_points = []
         self.mouse_tracking_summary = []
         self.landmarker_event_summary = []
+        self.landmarker_calibration_events = []
         self.trial_definitions = {}
     def emit(self):
         if len(self.answers) > 0:
@@ -90,16 +91,143 @@ class ResultCollector:
             self.emit_data_points()
             self.emit_video_events(self.trial_definitions)
             self.emit_video_layout_events()
-            self.emit_video_playback_summary()            
+            self.emit_video_playback_summary(self.trial_definitions)            
             self.emit_mouse_tracking_summary_events()
             self.emit_landmarker_summary_events()
-
+        if len(self.landmarker_calibration_events) > 0:
+            self.emit_landmarker_calibration_events()
+        
     def emit_answers(self):
         self.emit_to_csv(self.answers, "answers.csv")
 
     def add_answer(self, answer):
         self.answers.append(answer)
 
+    def add_landmarker_calibration_events(self, raw_calibration_datapoints):
+        """
+        Given a list of raw face_landmark_calibration datapoints,
+        flatten them so that each calibration point becomes one row with:
+          - Common fields (datetime, experiment_id, etc.)
+          - A "point" column (e.g. "Pt1", "Pt2", etc.)
+          - Columns "x", "y", "width", "height", "top", "right", "bottom", "left" (if available)
+        
+        For Change events (user clicks) the value is already a flat dict.
+        For Render events the value is a nested dict; we iterate over its keys.
+        Then we deduplicate so that only one row per unique calibration point remains.
+        """
+        parsed_calibration_datapoints = []
+        
+        # The keys we want to include in our final flattened row:
+        desired_keys = {
+            "datetime", "datestring", "experiment_id", "phase_definition_id",
+            "trial_definition_id", "component_id", "study_result_id", "id",
+            "protocol_user_id", "user_id", "point_type", "kind", "method", "entity_type",
+            "point", "x", "y", "width", "height", "top", "right", "bottom", "left"
+        }
+        
+        for dp in raw_calibration_datapoints:
+            # Build a dict of common fields
+            common = {
+                "datetime": dp.get("datetime"),
+                "datestring": dp.get("datestring"),
+                "experiment_id": dp.get("experiment_id"),
+                "phase_definition_id": dp.get("phase_definition_id"),
+                "trial_definition_id": dp.get("trial_definition_id"),
+                "component_id": dp.get("component_id"),
+                "study_result_id": dp.get("study_result_id"),
+                "id": dp.get("id"),
+                "protocol_user_id": dp.get("protocol_user_id"),
+                "user_id": dp.get("user_id"),
+                "point_type": dp.get("point_type"),
+                "kind": dp.get("kind"),
+                "method": dp.get("method"),
+                "entity_type": dp.get("entity_type")
+            }
+            
+            if dp.get("point_type") == "Change":
+                # For Change events, the value is a flat dict
+                val = dp.get("value", {})
+                row = common.copy()
+                row["point"] = val.get("Id")
+                row["x"] = val.get("x")
+                row["y"] = val.get("y")
+                # For Change events we may not have width/height etc.
+                row["width"] = None
+                row["height"] = None
+                row["top"] = None
+                row["right"] = None
+                row["bottom"] = None
+                row["left"] = None
+                # Filter to keep only desired keys
+                row = {k: row[k] for k in row if k in desired_keys}
+                parsed_calibration_datapoints.append(row)
+                
+            elif dp.get("point_type") == "Render":
+                # For Render events, the value is a nested dict with keys like "#Pt1", "#Pt2", etc.
+                val = dp.get("value", {})
+                if isinstance(val, dict):
+                    for raw_point_label, subdict in val.items():
+                        # Create one row per calibration point
+                        row = common.copy()
+                        # Use the key (stripping the '#' character) as the "point" value
+                        row["point"] = raw_point_label.lstrip('#')
+                        if isinstance(subdict, dict):
+                            row["x"] = subdict.get("x")
+                            row["y"] = subdict.get("y")
+                            row["width"] = subdict.get("width")
+                            row["height"] = subdict.get("height")
+                            row["top"] = subdict.get("top")
+                            row["right"] = subdict.get("right")
+                            row["bottom"] = subdict.get("bottom")
+                            row["left"] = subdict.get("left")
+                        else:
+                            # If subdict isn’t a dict, skip it
+                            continue
+                        row = {k: row[k] for k in row if k in desired_keys}
+                        parsed_calibration_datapoints.append(row)
+                else:
+                    # Fallback: if the value isn’t a dict, just use the common fields
+                    row = common.copy()
+                    row = {k: row[k] for k in row if k in desired_keys}
+                    parsed_calibration_datapoints.append(row)
+            else:
+                # Skip any events that are not Change or Render
+                continue
+    
+        # Convert to DataFrame and deduplicate so that for each user/trial/point only one row remains.
+        df = pd.DataFrame(parsed_calibration_datapoints)
+        df_unique = df.drop_duplicates(subset=["datetime","user_id", "trial_definition_id", "point","point_type"], keep="first")
+        
+        # Update the collector's calibration events (or however you wish to store them)
+        self.landmarker_calibration_events.extend(df_unique.to_dict(orient="records"))
+
+    
+    def emit_landmarker_calibration_events(self):
+        """
+        Emit all calibration events to a CSV file.
+        """
+        if not self.landmarker_calibration_events:
+            return
+
+        # Convert to a DataFrame
+        calibration_df = pd.DataFrame.from_records(self.landmarker_calibration_events)
+        # Optionally, define a specific order of columns if desired:
+        final_columns = [
+            "datetime", "datestring", "experiment_id", "phase_definition_id",
+            "trial_definition_id", "component_id", "study_result_id", "id",
+            "protocol_user_id", "user_id", "point_type", "kind", "method", "entity_type"
+        ]
+        
+        # Plus any calibration-specific columns. If columns vary, you may just use all:
+        for col in calibration_df.columns:
+            if col not in final_columns:
+                final_columns.append(col)
+        
+        calibration_df = calibration_df[final_columns]
+        
+        # Use the result_path_generator to build the output file path, for example in a subfolder "calibration"
+        self.emit_to_csv(calibration_df.to_dict(orient="records"), "face_landmark_calibration.csv")
+        
     def emit_experiment_events(self):
         base_events = pd.DataFrame.from_records(self.experiment_events)
         url_params = pd.DataFrame.from_records(self.url_parameters)
@@ -149,7 +277,6 @@ class ResultCollector:
         merged_data = merged_data[final_columns]
     
         self.emit_to_csv(merged_data.to_dict(orient="records"), "experiment_events.csv")
-
 
     def add_experiment_event(self, experiment, experiment_time_series):
         user_id = experiment['protocol_user']['user_id']
@@ -263,7 +390,6 @@ class ResultCollector:
     
             self.data_points.append(dp_entry)
 
-
     def emit_video_events(self, trial_definitions):
         video_event_points = list(filter(lambda x: is_video_event(x), self.data_points))
        
@@ -298,7 +424,7 @@ class ResultCollector:
     
         self.emit_to_csv(video_events, "video_events.csv")
 
-    def emit_video_playback_summary(self):
+    def emit_video_playback_summary(self, trial_definitions):
         video_event_points = filter(lambda x: is_video_event(x), self.data_points)
         user_playback_events = {}
     
@@ -316,8 +442,10 @@ class ResultCollector:
                     "experiment_id": dp["experiment_id"],
                     "phase_definition_id": dp["phase_definition_id"],
                     "trial_definition_id": dp["trial_definition_id"],
+                    "trial_name": get_trial_name(dp["trial_definition_id"], trial_definitions),
                     "component_id": dp["component_id"],
-                    "user_id": dp["user_id"]
+                    "user_id": dp["user_id"],
+                    "component_name": get_component_name(dp["trial_definition_id"], dp["component_id"], trial_definitions)                    
                 })
     
             raw_dt, iso_dt = process_datetime(dp["datetime"])
@@ -350,7 +478,11 @@ class ResultCollector:
             return
         layouts = []
         for layout_data_point in layout_data_points:
-            video_layout = json.loads(layout_data_point['value'])
+            # Only call json.loads if layout_data_point['value'] is a string
+            if isinstance(layout_data_point['value'], str):
+                video_layout = json.loads(layout_data_point['value'])
+            else:
+                video_layout = layout_data_point['value']
             # Process datetime into two forms:
             raw_dt, iso_dt = process_datetime(layout_data_point['datetime'])
             
