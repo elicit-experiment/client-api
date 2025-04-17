@@ -1,13 +1,14 @@
 import csv
 import json
-from datetime import datetime
-from collections import OrderedDict
+import datetime as dt
+from dateutil.parser import isoparse
+from dateutil.tz import tzutc
+import pyswagger.primitives._time     # ← keep only if you really need it
 import pandas as pd
 import pyswagger.primitives
 from dump_utilities import is_video_event
 from result_path_generator import ResultPathGenerator
-from dateutil.parser import isoparse
-from dateutil import parser
+from collections import OrderedDict
 
 def get_trial_name(trial_definition_id, trial_definitions):
         trial_def = trial_definitions.get(trial_definition_id, {})
@@ -22,50 +23,54 @@ def get_component_name(trial_definition_id, answer_component_id, trial_definitio
                 component_name = component['name']
         return component_name
     
-def process_datetime(dt):
-    """
-    Converts various datetime formats into:
-      - A raw numerical timestamp (seconds since epoch)
-      - A cleaned ISO 8601 string WITHOUT timezone info
-    Ensures compatibility across all functions using this.
-    """
-    if dt is None:
-        return None, None  # Handle missing timestamps safely
+ISO_FMT = "%Y-%m-%dT%H:%M:%S.%f"     # six‑digit µs -> we'll cut to 3 ms
 
-    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # Ensure microsecond precision
-    raw = None
-    iso = None
+def process_datetime(value):
+    """
+    Convert many datetime representations to UTC.
+
+    Returns (epoch_utc_seconds, iso_utc_no_tz)  or  (None, None).
+    """
+    if value is None:
+        return None, None
 
     try:
-        # Handle pyswagger.primitives._time.Datetime
-        if isinstance(dt, pyswagger.primitives._time.Datetime):
-            dt = dt.to_json()  # Convert to string
+        # Swagger helper ----------------------------------------------------
+        if isinstance(value, pyswagger.primitives._time.Datetime):
+            value = value.to_json()
 
-        if isinstance(dt, (int, float)):  # Unix timestamp
-            d = datetime.utcfromtimestamp(dt)
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # Numeric epoch ------------------------------------------------------
+        if isinstance(value, (int, float)):
+            ts = value / 1000.0 if value > 1e11 else float(value)
+            d_utc = dt.datetime.utcfromtimestamp(ts).replace(tzinfo=tzutc())
 
-        elif isinstance(dt, str):  # String timestamps
-            dt_cleaned = dt.replace("Z", "").replace("+00:00", "")  # Remove timezone offsets
-            d = isoparse(dt_cleaned)
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # ISO string ---------------------------------------------------------
+        elif isinstance(value, str):
+            d_local = isoparse(value)
+            d_utc   = (
+                d_local.replace(tzinfo=tzutc()) if d_local.tzinfo is None
+                else d_local.astimezone(tzutc())
+            )
 
-        elif isinstance(dt, datetime):  # Already a datetime object
-            d = dt.replace(tzinfo=None)  # Ensure timezone is removed
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # datetime object ----------------------------------------------------
+        elif isinstance(value, dt.datetime):
+            d_utc = (
+                value.replace(tzinfo=tzutc()) if value.tzinfo is None
+                else value.astimezone(tzutc())
+            )
 
-        if raw is None or iso is None:
-            raise ValueError("Conversion failed")
+        else:
+            raise TypeError(f"Unsupported type: {type(value)}")
 
-    except Exception as e:
-        print(f"⚠️ Could not parse datetime: {dt} → Error: {e}")
-        return None, None  # Prevent breaking the script
+        # Outputs ------------------------------------------------------------
+        epoch = d_utc.timestamp()
+        iso   = d_utc.replace(tzinfo=None).strftime(ISO_FMT)[:-3]  # 3‑digit ms
+        return epoch, iso
 
-    return raw, iso
-
+    except Exception as exc:
+        print(f"⚠️  Could not parse datetime {value!r} → {exc}")
+        return None, None
+    
 class ResultCollector:
     def __init__(self, result_path_generator: ResultPathGenerator):
         self.result_path_generator = result_path_generator
@@ -249,8 +254,10 @@ class ResultCollector:
     
         # Select and rename final columns
         final_columns = [
-            "started_at", 
-            "completed_at", 
+            "datestring_started", 
+            "datestring_completed", 
+            "datetime_started", 
+            "datetime_completed", 
             "duration", 
             "experiment_id", 
             "user_id", 
@@ -260,10 +267,19 @@ class ResultCollector:
             "PROLIFIC_PID",  # From url_params
             "duration_landmark_events",
             "points_landmark_timeseries",
+            "datetime_start_landmark_timeseries",
+            "datetime_end_landmark_timeseries",
+            "datestring_start_landmark_timeseries",
+            "datestring_end_landmark_timeseries",
             "duration_landmark_timeseries",
-            "fs_landmark_timeseries",
+            "fs_mean_landmark_timeseries",
+            "fs_median_landmark_timeseries",
             "filename_landmark_timeseries",
             "points_mouse_timeseries",
+            "datetime_start_mouse_timeseries",
+            "datetime_end_mouse_timeseries",
+            "datestring_start_mouse_timeseries",
+            "datestring_end_mouse_timeseries",
             "duration_mouse_timeseries",
             "fs_mouse_timeseries",
             "filename_mouse_timeseries",
@@ -282,18 +298,17 @@ class ResultCollector:
         user_id = experiment['protocol_user']['user_id']
     
         # Check if both timestamps exist before computing duration
-        if experiment.completed_at and experiment.started_at:
-            duration = (
-                datetime.fromisoformat(experiment.completed_at.to_json()) -
-                datetime.fromisoformat(experiment.started_at.to_json())
-            ).total_seconds()
-        else:
-            duration = None  # Or choose another default/handling mechanism
-    
+        start_raw, start_iso = process_datetime(experiment.started_at)
+        end_raw,   end_iso   = process_datetime(experiment.completed_at)
+
+        duration = (end_raw - start_raw) if (start_raw and end_raw) else None
+
         # Create an OrderedDict for experiment_event
         experiment_event = OrderedDict()
-        experiment_event["started_at"] = experiment.started_at
-        experiment_event["completed_at"] = experiment.completed_at
+        experiment_event["datestring_started"] = start_iso
+        experiment_event["datestring_completed"] = end_iso
+        experiment_event["datetime_started"] = start_raw
+        experiment_event["datetime_completed"] = end_raw
         experiment_event["duration"] = duration
         experiment_event["experiment_id"] = experiment.id
         experiment_event["user_id"] = user_id
@@ -308,15 +323,23 @@ class ResultCollector:
             if ts_type == "face_landmark":
                 experiment_event["filename_landmark_timeseries"] = ts_info["filename"]
                 experiment_event["points_landmark_timeseries"] = ts_info["count_points"]
-                experiment_event["duration_landmark_timeseries"] = ts_info["duration_seconds"]
-                experiment_event["fs_landmark_timeseries"] = ts_info["avg_fs_hz"]
+                experiment_event["datetime_start_landmark_timeseries"] = ts_info["datetime_start"]
+                experiment_event["datetime_end_landmark_timeseries"] = ts_info["datetime_end"]
+                experiment_event["datestring_start_landmark_timeseries"] = ts_info["datestring_start"]
+                experiment_event["datestring_end_landmark_timeseries"] = ts_info["datestring_end"]
+                experiment_event["duration_landmark_timeseries"] = ts_info["duration"]
+                experiment_event["fs_mean_landmark_timeseries"] = ts_info["fs_mean_hz"]
+                experiment_event["fs_median_landmark_timeseries"] = ts_info["fs_median_hz"]
     
             elif ts_type == "mouse":
                 experiment_event["filename_mouse_timeseries"] = ts_info["filename"]
                 experiment_event["points_mouse_timeseries"] = ts_info["count_points"]
-                experiment_event["duration_mouse_timeseries"] = ts_info["duration_seconds"]
-                experiment_event["fs_mouse_timeseries"] = ts_info["avg_fs_hz"]
-    
+                experiment_event["datetime_start_mouse_timeseries"] = ts_info["datetime_start"]
+                experiment_event["datetime_end_mouse_timeseries"] = ts_info["datetime_end"]
+                experiment_event["datestring_start_mouse_timeseries"] = ts_info["datestring_start"]
+                experiment_event["datestring_end_mouse_timeseries"] = ts_info["datestring_end"]
+                experiment_event["duration_mouse_timeseries"] = ts_info["duration"]
+                experiment_event["fs_mouse_timeseries"] = ts_info["avg_fs_hz"]    
             else:
                 # If there are other timeseries you don't care about, you can skip or handle them here
                 pass
@@ -343,16 +366,17 @@ class ResultCollector:
 
     def add_trial_results(self, experiment, trial_results, trial_definitions: pyswagger.primitives.Model):
         for trial_result in trial_results:
+            
+            start_raw, start_iso = process_datetime(trial_result.started_at)
+            end_raw,   end_iso   = process_datetime(trial_result.completed_at)
+            duration = (end_raw - start_raw) if (start_raw and end_raw) else None
+
             trial_result_entry = OrderedDict()
-            trial_result_entry["started_at"] = trial_result.started_at
-            trial_result_entry["completed_at"] = trial_result.completed_at
-            if trial_result.completed_at and trial_result.started_at:
-                trial_result_entry["duration"] = (
-                    datetime.fromisoformat(trial_result.completed_at.to_json()) -
-                    datetime.fromisoformat(trial_result.started_at.to_json())
-                ).total_seconds()
-            else:
-                trial_result_entry["duration"] = None
+            trial_result_entry["datestring_started"] = start_iso
+            trial_result_entry["datestring_completed"] = end_iso
+            trial_result_entry["datetime_started"] = start_raw
+            trial_result_entry["datetime_completed"] = end_raw
+            trial_result_entry["duration"] = duration
             trial_result_entry["protocol_definition_id"] = experiment['protocol_user']['protocol_definition_id']
             trial_result_entry["experiment_id"] = experiment.id
             trial_result_entry["phase_definition_id"] = trial_result.phase_definition_id

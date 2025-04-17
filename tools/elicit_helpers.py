@@ -9,9 +9,12 @@ import shutil
 import yaml
 import csv
 import pandas as pd
-from result_path_generator import ResultPathGenerator
+import datetime as dt
+import numpy as np
 from datetime import datetime
 from dateutil.parser import isoparse
+from dateutil.tz import tzutc
+from result_path_generator import ResultPathGenerator
 from pyelicit import elicit
 from dump_time_series import convert_msgpack_to_ndjson, uncompress_datapoint, fetch_time_series
 from study_definition_helpers import dump_study_definition
@@ -72,50 +75,77 @@ def clean_multi_answer_value(val):
     else:
         return remove_formatting_recursive(val)
 
-def process_datetime(dt):
-    """
-    Converts various datetime formats into:
-      - A raw numerical timestamp (seconds since epoch)
-      - A cleaned ISO 8601 string WITHOUT timezone info
-    Ensures compatibility across all functions using this.
-    """
-    if dt is None:
-        return None, None  # Handle missing timestamps safely
+ISO_FMT = "%Y-%m-%dT%H:%M:%S.%f"   # we’ll trim to 3 ms digits later
 
-    fmt = "%Y-%m-%dT%H:%M:%S.%f"  # Ensure microsecond precision
-    raw = None
-    iso = None
+def process_datetime(value):
+    """
+    Convert *anything* to UTC.
+
+    Accepts
+      • int / float  – epoch (s or ms)
+      • str          – ISO‑8601 (tz‑aware OR naïve)
+      • datetime     – tz‑aware OR naïve
+      • pyswagger.primitives._time.Datetime
+
+    Returns (epoch_seconds_UTC, iso_string_UTC_no_tz) or (None, None) on failure.
+
+    The iso string always shows millisecond precision and NO timezone suffix,
+    e.g.  '2025-03-15T18:09:18.162'
+    """
+    if value is None:
+        return None, None
 
     try:
-        # Handle pyswagger.primitives._time.Datetime
-        if isinstance(dt, pyswagger.primitives._time.Datetime):
-            dt = dt.to_json()  # Convert to string
+        # ------------------------------------------------------------------ #
+        # Swagger helper
+        # ------------------------------------------------------------------ #
+        if isinstance(value, pyswagger.primitives._time.Datetime):
+            value = value.to_json()
 
-        if isinstance(dt, (int, float)):  # Unix timestamp
-            d = datetime.utcfromtimestamp(dt)
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # ------------------------------------------------------------------ #
+        # 1. numeric epoch
+        # ------------------------------------------------------------------ #
+        if isinstance(value, (int, float)):
+            ts = value / 1000.0 if value > 1e11 else float(value)
+            d_utc = dt.datetime.utcfromtimestamp(ts).replace(tzinfo=tzutc())
 
-        elif isinstance(dt, str):  # String timestamps
-            dt_cleaned = dt.replace("Z", "").replace("+00:00", "")  # Remove timezone offsets
-            d = isoparse(dt_cleaned)
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # ------------------------------------------------------------------ #
+        # 2. ISO string
+        # ------------------------------------------------------------------ #
+        elif isinstance(value, str):
+            d = isoparse(value)
+            # if the string is naïve, treat it as UTC
+            if d.tzinfo is None:
+                d_utc = d.replace(tzinfo=tzutc())
+            else:
+                d_utc = d.astimezone(tzutc())
 
-        elif isinstance(dt, datetime):  # Already a datetime object
-            d = dt.replace(tzinfo=None)  # Ensure timezone is removed
-            raw = d.timestamp()
-            iso = d.strftime(fmt)
+        # ------------------------------------------------------------------ #
+        # 3. datetime object
+        # ------------------------------------------------------------------ #
+        elif isinstance(value, dt.datetime):
+            if value.tzinfo is None:
+                d_utc = value.replace(tzinfo=tzutc())
+            else:
+                d_utc = value.astimezone(tzutc())
 
-        if raw is None or iso is None:
-            raise ValueError("Conversion failed")
+        else:
+            raise TypeError(f"Unsupported type: {type(value)}")
+
+        # ------------------------------------------------------------------ #
+        # final canonical outputs
+        # ------------------------------------------------------------------ #
+        epoch = d_utc.timestamp()
+
+        # make an ISO string **without tzinfo** but still representing UTC time
+        naive_utc = d_utc.replace(tzinfo=None)
+        iso = naive_utc.strftime(ISO_FMT)[:-3]   # keep exactly 3 ms digits
+
+        return epoch, iso
 
     except Exception as e:
-        print(f"⚠️ Could not parse datetime: {dt} → Error: {e}")
-        return None, None  # Prevent breaking the script
-
-    return raw, iso
-
+        print(f"⚠️ Could not parse datetime: {value} → {e}")
+        return None, None
 
 def remove_file_retry(filepath, retries=5, delay=0.5):
     for attempt in range(retries):
@@ -755,14 +785,15 @@ def fetch_all_time_series(el,study_id,study_result, experiment,result_path_gener
             # FACE_LANDMARK
             # --------------------------------------------------------
             face_landmark_uncompressed_file = None
-            face_landmark_file_count = 0
-            face_landmark_count_points = 0
-            face_landmark_ts_min = None
-            face_landmark_ts_max = None
+            file_count_face_landmark = 0
+            count_points_face_landmark = 0
+            intervals_face_landmark_s = []
+            timestamp_face_landmark_previous_s = None
+            timestamp_face_landmark_s_min = None
+            timestamp_face_landmark_s_max = None
     
             if face_landmark_series:
                 # Path for the final uncompressed file. 
-                first_ts = face_landmark_series[0]
                 base_filename = result_path_generator.result_path_for(f"{study_id}_{user_id}_", subfolder='face_landmark')
                 face_landmark_uncompressed_file = os.path.join(
                     base_filename + "face_landmark_uncompressed.json"
@@ -797,10 +828,10 @@ def fetch_all_time_series(el,study_id,study_result, experiment,result_path_gener
                     ndjson_filename = final_filename
     
                 # Append to the single uncompressed file
-                face_landmark_file_count += 1
+                file_count_face_landmark += 1
                 local_count = 0
-                local_min_ts = None
-                local_max_ts = None
+                timestamp_local_min = None
+                timestamp_local_max = None
     
                 with open(face_landmark_uncompressed_file, 'a') as out_f, open(ndjson_filename, 'r') as in_f:
                     for line in in_f:
@@ -813,47 +844,77 @@ def fetch_all_time_series(el,study_id,study_result, experiment,result_path_gener
                             continue
     
                         data_uncompressed = uncompress_datapoint(data)
-    
+
                         # Update local stats
                         local_count += 1
-                        ts_val = data_uncompressed.get("timeStamp")
-                        if ts_val is not None:
-                            if local_min_ts is None or ts_val < local_min_ts:
-                                local_min_ts = ts_val
-                            if local_max_ts is None or ts_val > local_max_ts:
-                                local_max_ts = ts_val
+
+                        # get timestamp                        
+                        timestamp_face_landmark_ms = data_uncompressed.get("timeStamp")        # original value
+                        
+                        if timestamp_face_landmark_ms is not None:
+                            timestamp_face_landmark_s = timestamp_face_landmark_ms / 1000.0
+                        
+                            if timestamp_face_landmark_previous_s is not None:
+                                    delta_s = timestamp_face_landmark_s - timestamp_face_landmark_previous_s
+                                    if delta_s > 0:
+                                        intervals_face_landmark_s.append(delta_s)
+                            timestamp_face_landmark_previous_s = timestamp_face_landmark_s
+    
+                            data_row = {"timestamp_ms": timestamp_face_landmark_ms,
+                                        "timestamp_s":  timestamp_face_landmark_s,
+                                        **data_uncompressed
+                                        }
+                        
+                            # update local min / max (in seconds)
+                            if timestamp_local_min is None or timestamp_face_landmark_s < timestamp_local_min:
+                                timestamp_local_min = timestamp_face_landmark_s
+                            if timestamp_local_max is None or timestamp_face_landmark_s > timestamp_local_max:
+                                timestamp_local_max = timestamp_face_landmark_s
     
                         # Write line
-                        out_f.write(json.dumps(data_uncompressed) + "\n")
+                        out_f.write(json.dumps(data_row) + "\n")
     
                 # Now merge local stats into the global face-landmark stats
-                face_landmark_count_points += local_count
+                count_points_face_landmark += local_count
     
-                if local_min_ts is not None:
-                    if face_landmark_ts_min is None or local_min_ts < face_landmark_ts_min:
-                        face_landmark_ts_min = local_min_ts
+                if timestamp_local_min is not None:
+                    if timestamp_face_landmark_s_min is None or timestamp_local_min < timestamp_face_landmark_s_min:
+                        timestamp_face_landmark_s_min = timestamp_local_min
     
-                if local_max_ts is not None:
-                    if face_landmark_ts_max is None or local_max_ts > face_landmark_ts_max:
-                        face_landmark_ts_max = local_max_ts
+                if timestamp_local_max is not None:
+                    if timestamp_face_landmark_s_max is None or timestamp_local_max > timestamp_face_landmark_s_max:
+                        timestamp_face_landmark_s_max = timestamp_local_max
     
             # after we processed all face_landmark timestamps for this stage
-            if face_landmark_series and face_landmark_count_points > 0:
-                if face_landmark_ts_min is not None and face_landmark_ts_max is not None:
-                    face_landmark_duration_s = (face_landmark_ts_max - face_landmark_ts_min) / 1000.0
-                    face_landmark_fs = face_landmark_count_points / face_landmark_duration_s if face_landmark_duration_s > 0 else None
+            if face_landmark_series and count_points_face_landmark > 0:
+                if timestamp_face_landmark_s_min is not None and timestamp_face_landmark_s_max is not None:
+                    duration_face_landmark_s = timestamp_face_landmark_s_max - timestamp_face_landmark_s_min
                 else:
-                    face_landmark_duration_s = None
-                    face_landmark_fs = None
+                    duration_face_landmark_s = None
+            
+                if intervals_face_landmark_s:
+                    mean_dt  = np.mean(intervals_face_landmark_s)      # s
+                    median_dt = np.median(intervals_face_landmark_s)   # s
+                    fs_face_landmark_mean  = 1.0 / mean_dt                                   # Hz
+                    fs_face_landmark_median = 1.0 / median_dt                                # Hz
+                else:
+                    mean_dt = median_dt = fs_face_landmark_mean = fs_face_landmark_median = None
     
-                # store it in experiment_time_series
-                key = "face_landmark"
-                experiment_time_series[key] = {
+                # raw = epoch seconds, iso = string
+                datetime_start, datestring_start = process_datetime(timestamp_face_landmark_s_min)
+                datetime_end,   datestring_end   = process_datetime(timestamp_face_landmark_s_max)
+            
+                experiment_time_series["face_landmark"] = {
                     "filename": os.path.basename(face_landmark_uncompressed_file),
-                    "file_count": face_landmark_file_count,
-                    "count_points": face_landmark_count_points,
-                    "duration_seconds": face_landmark_duration_s,
-                    "avg_fs_hz": face_landmark_fs
+                    "file_count":  file_count_face_landmark,
+                    "count_points": count_points_face_landmark,
+                    "datetime_start": datetime_start,          # seconds since epoch
+                    "datetime_end":   datetime_end,
+                    "datestring_start": datestring_start,
+                    "datestring_end":   datestring_end,
+                    "duration": duration_face_landmark_s,   # seconds
+                    "fs_mean_hz": fs_face_landmark_mean,
+                    "fs_median_hz": fs_face_landmark_median
                 }
     
             # --------------------------------------------------------
@@ -906,11 +967,18 @@ def fetch_all_time_series(el,study_id,study_result, experiment,result_path_gener
                         mouse_duration_s = None
                         mouse_fs = None
     
+                    datetime_start,datestring_start = process_datetime(mouse_ts_min)
+                    datetime_end,datestring_end = process_datetime(mouse_ts_max)
+                    
                     experiment_time_series["mouse"] = {
                         "filename": os.path.basename(final_filename),
                         "file_count": 1,
                         "count_points": mouse_count_points,
-                        "duration_seconds": mouse_duration_s,
+                        "datetime_start": datetime_start,
+                        "datetime_end": datetime_end,
+                        "datestring_start": datestring_start,
+                        "datestring_end": datestring_end,
+                        "duration": mouse_duration_s,
                         "avg_fs_hz": mouse_fs
                     }
                 else:
@@ -951,23 +1019,3 @@ def dump_user_data_points(user_datapoints, study_id, user_id, result_path_genera
         json.dump(user_datapoints, outfile, indent=2)
     
     print(f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {filename}")
-
-
-def analyze_and_dump_user_data_points(user_datapoints, user_id):
-        """Dump json data points for a single user."""
-        with open(result_path_generator.result_path_for(f"{args.study_id}_{user_id}_datapoints.json", subfolder='datapoints'), 'w') as outfile:
-            list(map(lambda row: row.update({"datetime": row["datetime"].v.timestamp()}), user_datapoints))
-            list(map(lambda row: row.update({"value": json.loads(row["value"])}) if row['value'].startswith(
-                '{"') else row, user_datapoints))
-            json.dump(user_datapoints, outfile, indent=2)
-    
-            print(
-                f"Wrote {len(user_datapoints)} datapoints for user {user_id} to {result_path_generator.result_path_for('datapoints.json')}")
-    
-            # track the events that are generated when landmarker data is sent
-            landmarker_event_configuration, duration, summary_df = analyze_landmarker_event_summary(user_datapoints, user_id)
-            collector.add_landmarker_event_configuration(user_id, landmarker_event_configuration, duration, summary_df)
-    
-            # track the events that are generated when mouse data is sent
-            mouse_event_tracking_configuration, duration, summary_df = analyze_mouse_tracking_event_summary(user_datapoints, user_id)
-            collector.add_mouse_tracking_event_summary(user_id, mouse_event_tracking_configuration, duration, summary_df)       
