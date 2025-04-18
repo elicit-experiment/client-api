@@ -14,7 +14,7 @@ import elicit_helpers as elicit_helper
 ##
 
 arg_defaults = {
-    "study_id": 1422,
+    "study_id": 1426,
     "env": "prod",
     "user_id": None, # all users
     "result_root_dir": "../../results",

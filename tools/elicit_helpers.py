@@ -22,6 +22,10 @@ from collections import OrderedDict
 
 pp = pprint.PrettyPrinter(indent=4)
 
+def embed_elicit_fontsize(str_input,FontSize):
+    str_output = "{{style|font-size: " + FontSize + "px;|" + str_input + "}}"        
+    return str_output
+
 def remove_elicit_formatting(text: str) -> str:
     # Remove literal tokens that we know should vanish.
     text = text.replace("{{n}}", "")
