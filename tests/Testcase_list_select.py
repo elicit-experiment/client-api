@@ -346,6 +346,7 @@ list_select = dict(name='ListSelect',
                                                     UserInputBox='Outside', # This will be ignored because UserTextInput = False
                                                     MaxNoOfSelections='4',
                                                     MinNoOfSelections='2',
+                                                    RandomizeOrder=True,
                                                     Items=dict(
                                                         Item=[
                                                             dict(Id='0', Label='Item-0'),

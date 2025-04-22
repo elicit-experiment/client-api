@@ -12,8 +12,8 @@ from pyelicit.command_line import parse_command_line_args
 from pyelicit import elicit
 from random import shuffle
 
-FontSize = 15;
-FontSize_options = 12;
+FontSize = 15
+FontSize_options = 12
 
 def embed_elicit_fontsize(str_input, FontSize):
     return "{{style|font-size: " + str(FontSize) + "px;|" + str_input + "}}"
@@ -152,6 +152,7 @@ component_definition_description = dict(name='ListSelect',
                                                                             UserInputBox = 'Inside',
                                                                             MaxNoOfSelections='2',
                                                                             MinNoOfSelections='0',
+                                                                            RandomizeOrder = True,
                                                                             Items=dict(
                                                                                 Item=[
                                                                                       dict(Id='0',Label='Item-0',Selected='1',Correct=False),
@@ -187,6 +188,7 @@ component_definition_description = dict(name='ListSelect',
                                                                             UserInputBox = 'Outside',
                                                                             MaxNoOfSelections='2',
                                                                             MinNoOfSelections='0',
+                                                                            RandomizeOrder = True,
                                                                             Items=dict(
                                                                                 Item=[
                                                                                       dict(Id='0',Label='Item-0',Selected='1',Correct=False),
