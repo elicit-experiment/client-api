@@ -9,6 +9,7 @@ import pyswagger.primitives
 from dump_utilities import is_video_event
 from result_path_generator import ResultPathGenerator
 from collections import OrderedDict
+import re
 
 def get_trial_name(trial_definition_id, trial_definitions):
         trial_def = trial_definitions.get(trial_definition_id, {})
@@ -104,7 +105,43 @@ class ResultCollector:
         
     def emit_answers(self):
         self.emit_to_csv(self.answers, "answers.csv")
-
+        self.emit_answers_transposed()
+    
+    def emit_answers_transposed(self):
+        if not self.answers:
+            return
+    
+        df = pd.DataFrame(self.answers)
+    
+        if df.empty:
+            return
+    
+        if "user_id" not in df.columns or "component_name" not in df.columns or "answer_id" not in df.columns:
+            print("Missing one of required columns: user_id, component_name, answer_id")
+            return
+    
+        df = df[["user_id", "component_name", "answer_id"]].copy()
+        df = df.dropna(subset=["user_id", "component_name"])
+    
+        def normalize_answer_id(x):
+            if isinstance(x, list):
+                return ";".join(str(v) for v in x)
+            return x
+    
+        df["answer_id"] = df["answer_id"].apply(normalize_answer_id)
+    
+        answers_transposed = df.pivot_table(
+            index="user_id",
+            columns="component_name",
+            values="answer_id",
+            aggfunc="last"
+        ).reset_index()
+    
+        self.emit_to_csv(
+            answers_transposed.to_dict(orient="records"),
+            "answers_transposed.csv"
+        )
+        
     def add_answer(self, answer):
         self.answers.append(answer)
 
