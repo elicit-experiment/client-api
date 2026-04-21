@@ -474,8 +474,9 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
     desired_order = [
         "datestring", "datetime", "experiment_id", "phase_definition_id", "trial_definition_id", "trial_name",
         "component_id", "id", "study_result_id", "protocol_user_id", "user_id", "answer_component_id",
-        "point_type", "kind", "method", "entity_type", 
-        "render_id", "render_label", "component_name", "HeaderLabel", "value", "answer_id", "answer",
+        "point_type", "answer_source", "kind", "method", "entity_type", 
+        "render_id", "render_label", "component_name", "HeaderLabel",
+        "value", "answer_id", "answer",
     ]
     
     answer_datapoints = list(filter(lambda row: row['point_type'] in ['State', 'Render'], datapoints))
@@ -499,11 +500,17 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
         else:
             base_answer = render_answer_datapoints[0]
 
+        if base_answer.get("point_type") == "State":
+            default_answer_source = "state"
+        else:
+            default_answer_source = "render"
+    
         # Build a new OrderedDict in the desired order.
         new_answer = OrderedDict()
         for key in desired_order:
             new_answer[key] = base_answer.get(key, None)
         
+        new_answer["answer_source"] = default_answer_source
         kind = base_answer.get("kind", "")
         
         # Branch based on component kind.
@@ -528,6 +535,41 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                     selected_ids = selections
 
                 new_answer["answer_id"] = selected_ids
+
+                # INSERT HERE
+                if len(selected_ids) == 0 and render_answer_datapoints:
+                    try:
+                        render_value = render_answer_datapoints[0].get("value")
+                        if isinstance(render_value, str):
+                            render_options = json.loads(render_value)
+                        else:
+                            render_options = render_value
+                    except Exception as e:
+                        print(f"Error decoding Render value for CheckBoxGroup preselected fallback: {e}")
+                        render_options = []
+
+                    preselected_ids = []
+                    preselected_labels = []
+
+                    for opt in render_options:
+                        if opt.get("Preselected") is True:
+                            rid = opt.get("Id")
+                            try:
+                                rid = int(rid)
+                            except Exception:
+                                pass
+                            preselected_ids.append(rid)
+
+                            label = opt.get("Label", "")
+                            label = remove_elicit_formatting(label)
+                            label = remove_html_tags(label)
+                            preselected_labels.append(label)
+
+                    if len(preselected_ids) > 0:
+                        selected_ids = preselected_ids
+                        new_answer["answer_id"] = preselected_ids
+                        new_answer["answer"] = preselected_labels
+                        new_answer["answer_source"] = "render_preselected"
 
                 if render_answer_datapoints:
                     try:
@@ -563,47 +605,17 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
 
                     new_answer["render_id"] = all_rendered_ids
                     new_answer["render_label"] = all_rendered_labels
-                    new_answer["answer"] = selected_labels
+
+                    # only overwrite answer if fallback did not already set it
+                    if new_answer.get("answer_source") == "render_preselected":
+                        pass
+                    else:
+                        new_answer["answer"] = selected_labels
                 else:
                     new_answer["render_id"] = []
                     new_answer["render_label"] = []
                     new_answer["answer"] = selections
-
-            else:
-                # Fallback: no State event, infer from Render Preselected=true
-                if not render_answer_datapoints:
-                    continue
-
-                render_value = render_answer_datapoints[0].get("value")
-                selected_ids, selected_labels = get_preselected_from_render(render_value)
-
-                try:
-                    render_options = json.loads(render_value) if isinstance(render_value, str) else render_value
-                except Exception:
-                    render_options = []
-
-                all_rendered_ids = []
-                all_rendered_labels = []
-                for opt in render_options:
-                    rid = opt.get("Id", "")
-                    try:
-                        rid = int(rid)
-                    except Exception:
-                        pass
-                    all_rendered_ids.append(rid)
-
-                    label = opt.get("Label", "")
-                    if isinstance(label, str):
-                        label = remove_elicit_formatting(label)
-                        label = remove_html_tags(label)
-                    all_rendered_labels.append(label)
-
-                new_answer["value"] = remove_formatting_recursive(render_options)
-                new_answer["render_id"] = all_rendered_ids
-                new_answer["render_label"] = all_rendered_labels
-                new_answer["answer_id"] = selected_ids
-                new_answer["answer"] = selected_labels
-
+                    
         elif kind in ["RadioButtonGroup"]:
             if state_answer_datapoints:
                 try:
@@ -616,7 +628,42 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                     state_values = {}
 
                 if 'Id' not in state_values:
-                    continue
+                    if render_answer_datapoints:
+                        try:
+                            render_value = render_answer_datapoints[0].get("value")
+                            if isinstance(render_value, str):
+                                render_options = json.loads(render_value)
+                            else:
+                                render_options = render_value
+                        except Exception as e:
+                            print(f"Error decoding Render value for RadioButtonGroup preselected fallback: {e}")
+                            render_options = []
+
+                        preselected_id = None
+                        preselected_label = None
+
+                        for opt in render_options:
+                            if opt.get("Preselected") is True:
+                                rid = opt.get("Id")
+                                try:
+                                    rid = int(rid)
+                                except Exception:
+                                    pass
+                                preselected_id = rid
+
+                                label = opt.get("Label", "")
+                                label = remove_elicit_formatting(label)
+                                label = remove_html_tags(label)
+                                preselected_label = label
+                                break
+
+                        if preselected_id is not None:
+                            state_values["Id"] = preselected_id
+                            new_answer["answer_source"] = "render_preselected"
+                        else:
+                            continue
+                    else:
+                        continue
 
                 try:
                     answer_id = int(state_values['Id'])
@@ -710,6 +757,7 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
                 new_answer["render_label"] = all_rendered_labels
                 new_answer["answer_id"] = selected_ids[0]
                 new_answer["answer"] = selected_labels[0] if selected_labels else selected_ids[0]
+                new_answer["answer_source"] = "render_preselected"
                 
         elif kind in ["ListSelect", "Main_ListSelect_ListSelect"]:
                     try:
