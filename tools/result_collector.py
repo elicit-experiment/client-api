@@ -490,15 +490,21 @@ class ResultCollector:
         user_playback_events = {}
     
         for dp in video_event_points:
-            user_id = dp["user_id"]
+            playback_key = (
+                dp["user_id"],
+                dp["experiment_id"],
+                dp["phase_definition_id"],
+                dp["trial_definition_id"],
+                dp["component_id"],
+            )
     
-            if user_id not in user_playback_events:
-                user_playback_events[user_id] = OrderedDict({
-                    "datestring_start": None,  # ISO string
-                    "datestring_end": None,  # ISO string
-                    "datetime_start": None,  # Numerical timestamp
-                    "datetime_end": None,    # Numerical timestamp
-                    "duration": None,  # Playback duration
+            if playback_key not in user_playback_events:
+                user_playback_events[playback_key] = OrderedDict({
+                    "datestring_start": None,
+                    "datestring_end": None,
+                    "datetime_start": None,
+                    "datetime_end": None,
+                    "duration": None,
                     "study_result_id": dp["study_result_id"],
                     "experiment_id": dp["experiment_id"],
                     "phase_definition_id": dp["phase_definition_id"],
@@ -506,27 +512,27 @@ class ResultCollector:
                     "trial_name": get_trial_name(dp["trial_definition_id"], trial_definitions),
                     "component_id": dp["component_id"],
                     "user_id": dp["user_id"],
-                    "component_name": get_component_name(dp["trial_definition_id"], dp["component_id"], trial_definitions)                    
+                    "component_name": get_component_name(dp["trial_definition_id"], dp["component_id"], trial_definitions)
                 })
     
             raw_dt, iso_dt = process_datetime(dp["datetime"])
     
             if raw_dt is None or iso_dt is None:
                 print(f"⚠️ Skipping event due to unparseable datetime: {dp['datetime']}")
-                continue  # Don't process unparseable timestamps
+                continue
     
             event_type = dp["point_type"]
     
-            if event_type == "PLAYING":
-                user_playback_events[user_id]["datetime_start"] = raw_dt
-                user_playback_events[user_id]["datestring_start"] = iso_dt
+            if event_type in ["PLAYING", "Start"]:
+                user_playback_events[playback_key]["datetime_start"] = raw_dt
+                user_playback_events[playback_key]["datestring_start"] = iso_dt
             elif event_type in ["ENDED", "PAUSED", "Stop"]:
-                user_playback_events[user_id]["datetime_end"] = raw_dt
-                user_playback_events[user_id]["datestring_end"] = iso_dt
+                user_playback_events[playback_key]["datetime_end"] = raw_dt
+                user_playback_events[playback_key]["datestring_end"] = iso_dt
     
         video_playback_summary = []
         for playback_event in user_playback_events.values():
-            if playback_event["datetime_start"] and playback_event["datetime_end"]:
+            if playback_event["datetime_start"] is not None and playback_event["datetime_end"] is not None:
                 playback_event["duration"] = playback_event["datetime_end"] - playback_event["datetime_start"]
     
             video_playback_summary.append(playback_event)

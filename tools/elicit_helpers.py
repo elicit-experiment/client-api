@@ -268,12 +268,12 @@ def analyze_landmarker_event_summary(datapoints, user_id):
     else:
         time_range = end[0]['datetime'] - start[0]['datetime']
 
-    if not face_landmark_event_summary_df.empty:
-        print(f'Aggregate values for entire experiment {time_range}s')
-        pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum())
-        print('\nRates count/s')
-        pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum() / time_range)
-        print("\n")
+    #if not face_landmark_event_summary_df.empty:
+        #print(f'Aggregate values for entire experiment {time_range}s')
+        #pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum())
+        #print('\nRates count/s')
+        #pp.pprint(face_landmark_event_summary_df.drop('datetime', axis=1).sum() / time_range)
+        #print("\n")
 
     return landmarker_configuration, time_range, face_landmark_event_summary_df
 
@@ -347,7 +347,7 @@ def fetch_datapoints(el, study_result, experiment, trial_result, protocol_user_i
             break
         page += 1
 
-    print(f"\tGot {len(response_data_points)} datapoints for study result {study_result.id}, trial result {trial_result.id} protocol user {protocol_user_id}")
+    #print(f"\tGot {len(response_data_points)} datapoints for study result {study_result.id}, trial result {trial_result.id} protocol user {protocol_user_id}")
 
     mapped_data_points = []
     for raw_dp in response_data_points:
@@ -420,6 +420,47 @@ def parse_datapoints(user_datapoints, category):
             remaining.append(dp)
     return extracted, remaining
 
+def get_preselected_from_render(render_value):
+    """
+    Parse a Render payload like:
+      [{"Id":"1","Label":"Yes","Preselected":true}, ...]
+    and return the preselected ids and labels.
+    """
+    try:
+        if isinstance(render_value, str):
+            render_options = json.loads(render_value)
+        else:
+            render_options = render_value
+    except Exception:
+        return [], []
+
+    if not isinstance(render_options, list):
+        return [], []
+
+    selected_ids = []
+    selected_labels = []
+
+    for opt in render_options:
+        if not isinstance(opt, dict):
+            continue
+
+        if opt.get("Preselected") is True:
+            rid = opt.get("Id")
+            try:
+                rid = int(rid)
+            except Exception:
+                pass
+
+            label = opt.get("Label", "")
+            if isinstance(label, str):
+                label = remove_elicit_formatting(label)
+                label = remove_html_tags(label)
+
+            selected_ids.append(rid)
+            selected_labels.append(label)
+
+    return selected_ids, selected_labels
+
 def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.primitives.Model):
     """
     Synthesize answers from datapoints & trial/component definitions.
@@ -467,141 +508,208 @@ def synthesize_answers(datapoints: list[dict], trial_definitions: pyswagger.prim
         
         # Branch based on component kind.
         if kind in ["CheckBoxGroup"]:
-            try:
-                if isinstance(base_answer.get('value'), dict):
-                    state_values = base_answer['value']
-                else:
-                    state_values = json.loads(base_answer.get('value'))
-            except (json.JSONDecodeError, TypeError) as e:
-                print(f"Error decoding JSON from base_answer['value'] for CheckBoxGroup: {e} {base_answer}")
-                state_values = {}
-        
-            cleaned_state_values = remove_formatting_recursive(state_values)
-            new_answer["value"] = cleaned_state_values
-        
-            # Convert selections to ints.
-            selections = cleaned_state_values.get("Selections", [])
-            try:
-                selected_ids = [int(s) for s in selections]
-            except Exception:
-                selected_ids = selections
-            new_answer["answer_id"] = selected_ids
-        
-            if render_answer_datapoints:
+            if state_answer_datapoints:
                 try:
-                    render_value = render_answer_datapoints[0].get("value")
-                    if isinstance(render_value, str):
-                        render_options = json.loads(render_value)
+                    if isinstance(base_answer.get('value'), dict):
+                        state_values = base_answer['value']
                     else:
-                        render_options = render_value
-                except Exception as e:
-                    print(f"Error decoding Render value for CheckBoxGroup: {e}")
+                        state_values = json.loads(base_answer.get('value'))
+                except (json.JSONDecodeError, TypeError) as e:
+                    print(f"Error decoding JSON from base_answer['value'] for CheckBoxGroup: {e} {base_answer}")
+                    state_values = {}
+
+                cleaned_state_values = remove_formatting_recursive(state_values)
+                new_answer["value"] = cleaned_state_values
+
+                selections = cleaned_state_values.get("Selections", [])
+                try:
+                    selected_ids = [int(s) for s in selections]
+                except Exception:
+                    selected_ids = selections
+
+                new_answer["answer_id"] = selected_ids
+
+                if render_answer_datapoints:
+                    try:
+                        render_value = render_answer_datapoints[0].get("value")
+                        if isinstance(render_value, str):
+                            render_options = json.loads(render_value)
+                        else:
+                            render_options = render_value
+                    except Exception as e:
+                        print(f"Error decoding Render value for CheckBoxGroup: {e}")
+                        render_options = []
+
+                    all_rendered_ids = []
+                    all_rendered_labels = []
+                    selected_labels = []
+
+                    for opt in render_options:
+                        rid_str = str(opt.get("Id", "")).strip()
+                        cleaned_rid_str = remove_elicit_formatting(rid_str)
+                        try:
+                            rid_int = int(cleaned_rid_str)
+                        except ValueError:
+                            rid_int = cleaned_rid_str
+                        all_rendered_ids.append(rid_int)
+
+                        raw_label = opt.get("Label", "")
+                        cleaned_label = remove_elicit_formatting(raw_label)
+                        cleaned_label = remove_html_tags(cleaned_label)
+                        all_rendered_labels.append(cleaned_label)
+
+                        if rid_int in selected_ids:
+                            selected_labels.append(cleaned_label)
+
+                    new_answer["render_id"] = all_rendered_ids
+                    new_answer["render_label"] = all_rendered_labels
+                    new_answer["answer"] = selected_labels
+                else:
+                    new_answer["render_id"] = []
+                    new_answer["render_label"] = []
+                    new_answer["answer"] = selections
+
+            else:
+                # Fallback: no State event, infer from Render Preselected=true
+                if not render_answer_datapoints:
+                    continue
+
+                render_value = render_answer_datapoints[0].get("value")
+                selected_ids, selected_labels = get_preselected_from_render(render_value)
+
+                try:
+                    render_options = json.loads(render_value) if isinstance(render_value, str) else render_value
+                except Exception:
                     render_options = []
-        
+
                 all_rendered_ids = []
                 all_rendered_labels = []
-                selected_labels = []
                 for opt in render_options:
-                    # Get the rendered ID, remove formatting, and then try to convert to int.
-                    rid_str = str(opt.get("Id", "")).strip()
-                    cleaned_rid_str = remove_elicit_formatting(rid_str)
+                    rid = opt.get("Id", "")
                     try:
-                        rid_int = int(cleaned_rid_str)
-                    except ValueError:
-                        rid_int = cleaned_rid_str  # fallback if conversion fails.
-                    all_rendered_ids.append(rid_int)
-        
-                    # Clean the rendered label.
-                    raw_label = opt.get("Label", "")
-                    cleaned_label = remove_elicit_formatting(raw_label)
-                    cleaned_label = remove_html_tags(cleaned_label)
-                    all_rendered_labels.append(cleaned_label)
-        
-                    # Check if the rendered ID is in the list of selected IDs.
-                    if rid_int in selected_ids:
-                        selected_labels.append(cleaned_label)
-                
+                        rid = int(rid)
+                    except Exception:
+                        pass
+                    all_rendered_ids.append(rid)
+
+                    label = opt.get("Label", "")
+                    if isinstance(label, str):
+                        label = remove_elicit_formatting(label)
+                        label = remove_html_tags(label)
+                    all_rendered_labels.append(label)
+
+                new_answer["value"] = remove_formatting_recursive(render_options)
                 new_answer["render_id"] = all_rendered_ids
                 new_answer["render_label"] = all_rendered_labels
+                new_answer["answer_id"] = selected_ids
                 new_answer["answer"] = selected_labels
-            else:
-                new_answer["render_id"] = []
-                new_answer["render_label"] = []
-                new_answer["answer"] = selections
 
         elif kind in ["RadioButtonGroup"]:
-            # Process state value.
-            try:
-                if isinstance(base_answer.get('value'), dict):
-                    state_values = base_answer['value']
-                else:
-                    state_values = json.loads(base_answer.get('value'))
-            except (json.JSONDecodeError, TypeError) as e:
-                print(f"Error decoding JSON from base_answer['value'] for RadioButtonGroup: {e} {base_answer}")
-                state_values = {}
-            
-            if 'Id' not in state_values:
-                continue
-        
-            try:
-                answer_id = int(state_values['Id'])
-            except ValueError:
-                #print(f"WARN: Found answer datapoint for RadioButtonGroup with Id {state_values['Id']} but it is not an integer")
-                answer_id = state_values['Id']
-            
-            # Process the raw value.
-            value = base_answer.get("value")
-            if isinstance(value, str):
-                new_answer["value"] = remove_elicit_formatting(value)
-            else:
-                new_answer["value"] = remove_formatting_recursive(value)
-            new_answer["answer_id"] = answer_id
-            new_answer["answer"] = state_values['Id']  # default to the raw value for now
-        
-            # Process the Render datapoint.
-            if render_answer_datapoints:
+            if state_answer_datapoints:
                 try:
-                    render_value = render_answer_datapoints[0].get("value")
-                    if isinstance(render_value, str):
-                        render_options = json.loads(render_value)
+                    if isinstance(base_answer.get('value'), dict):
+                        state_values = base_answer['value']
                     else:
-                        render_options = render_value
-                except Exception as e:
-                    print(f"Error decoding Render value for RadioButtonGroup: {e}")
+                        state_values = json.loads(base_answer.get('value'))
+                except (json.JSONDecodeError, TypeError) as e:
+                    print(f"Error decoding JSON from base_answer['value'] for RadioButtonGroup: {e} {base_answer}")
+                    state_values = {}
+
+                if 'Id' not in state_values:
+                    continue
+
+                try:
+                    answer_id = int(state_values['Id'])
+                except ValueError:
+                    answer_id = state_values['Id']
+
+                value = base_answer.get("value")
+                if isinstance(value, str):
+                    new_answer["value"] = remove_elicit_formatting(value)
+                else:
+                    new_answer["value"] = remove_formatting_recursive(value)
+
+                new_answer["answer_id"] = answer_id
+                new_answer["answer"] = state_values['Id']
+
+                if render_answer_datapoints:
+                    try:
+                        render_value = render_answer_datapoints[0].get("value")
+                        if isinstance(render_value, str):
+                            render_options = json.loads(render_value)
+                        else:
+                            render_options = render_value
+                    except Exception as e:
+                        print(f"Error decoding Render value for RadioButtonGroup: {e}")
+                        render_options = []
+
+                    all_rendered_ids = []
+                    all_rendered_labels = []
+                    selected_label = None
+
+                    for opt in render_options:
+                        rid_str = str(opt.get("Id", "")).strip()
+                        cleaned_rid_str = remove_elicit_formatting(rid_str)
+                        try:
+                            rid_int = int(cleaned_rid_str)
+                        except ValueError:
+                            rid_int = cleaned_rid_str
+
+                        all_rendered_ids.append(rid_int)
+
+                        raw_label = opt.get("Label", "")
+                        cleaned_label = remove_elicit_formatting(raw_label)
+                        cleaned_label = remove_html_tags(cleaned_label)
+                        all_rendered_labels.append(cleaned_label)
+
+                        if rid_int == answer_id:
+                            selected_label = cleaned_label
+
+                    new_answer["render_id"] = all_rendered_ids
+                    new_answer["render_label"] = all_rendered_labels
+                    if selected_label is not None:
+                        new_answer["answer"] = selected_label
+                else:
+                    new_answer["render_id"] = []
+                    new_answer["render_label"] = []
+
+            else:
+                # Fallback: no State event, infer from Render Preselected=true
+                if not render_answer_datapoints:
+                    continue
+
+                render_value = render_answer_datapoints[0].get("value")
+                selected_ids, selected_labels = get_preselected_from_render(render_value)
+
+                if len(selected_ids) == 0:
+                    continue
+
+                try:
+                    render_options = json.loads(render_value) if isinstance(render_value, str) else render_value
+                except Exception:
                     render_options = []
-                
+
                 all_rendered_ids = []
                 all_rendered_labels = []
-                selected_label = None
                 for opt in render_options:
-                    # Get and clean the rendered ID.
-                    rid_str = str(opt.get("Id", "")).strip()
-                    cleaned_rid_str = remove_elicit_formatting(rid_str)
+                    rid = opt.get("Id", "")
                     try:
-                        rid_int = int(cleaned_rid_str)
-                    except ValueError:
-                        rid_int = cleaned_rid_str
-                    all_rendered_ids.append(rid_int)
-                    
-                    # Clean the rendered label.
-                    raw_label = opt.get("Label", "")
-                    cleaned_label = remove_elicit_formatting(raw_label)
-                    cleaned_label = remove_html_tags(cleaned_label)
-                    all_rendered_labels.append(cleaned_label)
-                    
-                    # If this option's ID matches the answer_id, record its label.
-                    if rid_int == answer_id:
-                        selected_label = cleaned_label
-                
+                        rid = int(rid)
+                    except Exception:
+                        pass
+                    all_rendered_ids.append(rid)
+
+                    label = opt.get("Label", "")
+                    if isinstance(label, str):
+                        label = remove_elicit_formatting(label)
+                        label = remove_html_tags(label)
+                    all_rendered_labels.append(label)
+
+                new_answer["value"] = remove_formatting_recursive(render_options)
                 new_answer["render_id"] = all_rendered_ids
                 new_answer["render_label"] = all_rendered_labels
-                if selected_label is not None:
-                    new_answer["answer"] = selected_label
-                else:
-                    new_answer["answer"] = state_values['Id']
-            else:
-                new_answer["render_id"] = []
-                new_answer["render_label"] = []
+                new_answer["answer_id"] = selected_ids[0]
+                new_answer["answer"] = selected_labels[0] if selected_labels else selected_ids[0]
                 
         elif kind in ["ListSelect", "Main_ListSelect_ListSelect"]:
                     try:
